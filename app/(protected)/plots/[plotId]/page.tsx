@@ -22,7 +22,7 @@ export default async function PlotDetailPage({
 
   if (!plot) notFound();
 
-  const boundary = plot.boundary as Polygon | null;
+  const boundary = plot.boundary_geojson as Polygon | null;
   const conversions = plot.area_sq_meters ? convertArea(plot.area_sq_meters) : null;
   const navigateUrl = boundary
     ? googleMapsDirectionsUrl(polygonCentroid(boundary))

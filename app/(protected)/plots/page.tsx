@@ -7,7 +7,7 @@ export default async function PlotsPage() {
   const supabase = await createClient();
   const { data: plots } = await supabase
     .from("land_plots")
-    .select("id, name, village, district, area_sq_meters, boundary")
+    .select("id, name, village, district, area_sq_meters, boundary_geojson")
     .order("created_at", { ascending: false });
 
   const mapped = (plots ?? []).map((p) => ({
@@ -16,7 +16,7 @@ export default async function PlotsPage() {
     village: p.village,
     district: p.district,
     areaSqMeters: p.area_sq_meters,
-    boundary: p.boundary as Polygon | null,
+    boundary: p.boundary_geojson as Polygon | null,
   }));
 
   return (
