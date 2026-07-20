@@ -6,19 +6,57 @@ import type { Feature, FeatureCollection } from "geojson";
 import maplibregl from "@/lib/map";
 import { SATELLITE_STYLE } from "@/lib/mapStyles";
 import type { LatLng } from "@/lib/geo";
-import { savePlotBoundary } from "@/app/actions/plots";
+import {
+  resumeOrCreateSession,
+  recordPoint,
+  undoLastPoint,
+  finishSession,
+  pendingCount,
+  onSyncStateChange,
+} from "@/lib/offline/syncQueue";
 
-// Phase 1: points live only in React state — a page reload mid-walk loses
-// them. Phase 2 adds a Dexie-backed queue underneath so taps survive a crash
-// and zero-signal stretches while walking a village boundary.
+// Points are written to IndexedDB (via lib/offline/syncQueue) before touching
+// the network, so a crash, tab close, or zero-signal stretch mid-walk never
+// loses a tap — the walk resumes from local storage on next visit, and
+// pending points sync out once connectivity returns.
 export default function BoundaryWalker({ plotId }: { plotId: string }) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [points, setPoints] = useState<LatLng[]>([]);
   const [capturing, setCapturing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [queuedMessage, setQueuedMessage] = useState<string | null>(null);
+  const [pending, setPending] = useState(0);
+  const [online, setOnline] = useState(
+    () => typeof navigator === "undefined" || navigator.onLine,
+  );
+
+  useEffect(() => {
+    resumeOrCreateSession(plotId).then(({ session, points: existing }) => {
+      setSessionId(session.id);
+      setPoints(existing.map((p) => ({ lat: p.lat, lng: p.lng })));
+    });
+  }, [plotId]);
+
+  useEffect(() => {
+    const refreshPending = () => {
+      pendingCount(plotId).then(setPending);
+    };
+    refreshPending();
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    const unsubscribe = onSyncStateChange(refreshPending);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+      unsubscribe();
+    };
+  }, [plotId]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -77,6 +115,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
   }, [points]);
 
   function markPoint() {
+    if (!sessionId) return;
     if (!navigator.geolocation) {
       setError("Geolocation is not available on this device/browser.");
       return;
@@ -84,11 +123,17 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
     setCapturing(true);
     setError(null);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setPoints((prev) => [
-          ...prev,
-          { lat: pos.coords.latitude, lng: pos.coords.longitude },
-        ]);
+      async (pos) => {
+        const point = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        await recordPoint(
+          sessionId,
+          plotId,
+          points.length,
+          point.lat,
+          point.lng,
+          pos.coords.accuracy ?? null,
+        );
+        setPoints((prev) => [...prev, point]);
         setCapturing(false);
       },
       (err) => {
@@ -99,25 +144,39 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
     );
   }
 
-  function undoLast() {
+  async function undoLast() {
+    if (!sessionId) return;
+    await undoLastPoint(sessionId);
     setPoints((prev) => prev.slice(0, -1));
   }
 
   async function finish() {
+    if (!sessionId) return;
     setSaving(true);
     setError(null);
-    const result = await savePlotBoundary(plotId, points);
+    setQueuedMessage(null);
+    const { finished } = await finishSession(plotId, sessionId);
     setSaving(false);
-    if (result?.error) {
-      setError(result.error);
-      return;
+    if (finished.includes(plotId)) {
+      router.refresh();
+    } else {
+      setQueuedMessage(
+        "Saved on this device — will finish syncing once you're back online.",
+      );
     }
-    router.refresh();
   }
 
   return (
     <div className="flex flex-col gap-3">
       <div ref={containerRef} className="h-80 w-full rounded" />
+      {!online && (
+        <p className="rounded bg-amber-50 px-2 py-1 text-sm text-amber-700">
+          Offline — points are saved on this device and will sync automatically.
+        </p>
+      )}
+      {pending > 0 && (
+        <p className="text-sm text-neutral-600">{pending} point(s) waiting to sync.</p>
+      )}
       <p className="text-sm text-neutral-600">
         Walk the boundary of the plot. Tap &ldquo;Mark point&rdquo; at each corner as you go.
       </p>
@@ -125,7 +184,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
         <button
           type="button"
           onClick={markPoint}
-          disabled={capturing}
+          disabled={capturing || !sessionId}
           className="rounded bg-black px-3 py-2 text-white disabled:opacity-50"
         >
           {capturing ? "Getting location..." : "Mark point"}
@@ -147,6 +206,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
           {saving ? "Saving..." : `Finish (${points.length} points)`}
         </button>
       </div>
+      {queuedMessage && <p className="text-sm text-amber-700">{queuedMessage}</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );

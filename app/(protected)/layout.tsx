@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/actions/auth";
+import SyncManager from "@/components/system/SyncManager";
 
 // Phase 0: auth-only gate. Trial/subscription check (lib/access.ts) is added
 // in Phase 5 once the subscriptions table and paywall page exist.
@@ -21,6 +22,7 @@ export default async function ProtectedLayout({
 
   return (
     <div className="min-h-screen">
+      <SyncManager />
       <header className="flex items-center justify-between border-b px-6 py-3">
         <div className="flex items-center gap-4">
           <span className="font-semibold">Landly</span>
