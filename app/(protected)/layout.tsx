@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/actions/auth";
@@ -23,12 +24,12 @@ export default async function ProtectedLayout({
       <header className="flex items-center justify-between border-b px-6 py-3">
         <div className="flex items-center gap-4">
           <span className="font-semibold">Landly</span>
-          <a href="/dashboard" className="text-sm">
+          <Link href="/dashboard" className="text-sm">
             Dashboard
-          </a>
-          <a href="/plots" className="text-sm">
+          </Link>
+          <Link href="/plots" className="text-sm">
             Plots
-          </a>
+          </Link>
         </div>
         <form action={signOut}>
           <button type="submit" className="text-sm underline">

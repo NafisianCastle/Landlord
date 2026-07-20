@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Feature, FeatureCollection } from "geojson";
-import mapboxgl from "@/lib/mapbox";
+import maplibregl from "@/lib/map";
+import { SATELLITE_STYLE } from "@/lib/mapStyles";
 import type { LatLng } from "@/lib/geo";
 import { savePlotBoundary } from "@/app/actions/plots";
 
@@ -13,7 +14,7 @@ import { savePlotBoundary } from "@/app/actions/plots";
 export default function BoundaryWalker({ plotId }: { plotId: string }) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
   const [points, setPoints] = useState<LatLng[]>([]);
   const [capturing, setCapturing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,9 +23,9 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
-    const map = new mapboxgl.Map({
+    const map = new maplibregl.Map({
       container: containerRef.current,
-      style: "mapbox://styles/mapbox/satellite-streets-v12",
+      style: SATELLITE_STYLE,
       center: [90.4125, 23.8103],
       zoom: 16,
     });
@@ -68,7 +69,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
     const map = mapRef.current;
     if (!map) return;
     const apply = () => {
-      const source = map.getSource("walk") as mapboxgl.GeoJSONSource | undefined;
+      const source = map.getSource("walk") as maplibregl.GeoJSONSource | undefined;
       source?.setData(walkPreview(points));
     };
     if (map.isStyleLoaded()) apply();
