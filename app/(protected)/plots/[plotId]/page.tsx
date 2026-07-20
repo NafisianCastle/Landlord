@@ -6,6 +6,8 @@ import { convertArea } from "@/lib/units";
 import { polygonCentroid, googleMapsDirectionsUrl } from "@/lib/geo";
 import PlotMetadataForm from "@/components/plots/PlotMetadataForm";
 import PlotBoundarySection from "@/components/plots/PlotBoundarySection";
+import DocumentUploader from "@/components/documents/DocumentUploader";
+import DocumentRow from "@/components/documents/DocumentRow";
 
 export default async function PlotDetailPage({
   params,
@@ -21,6 +23,12 @@ export default async function PlotDetailPage({
     .single();
 
   if (!plot) notFound();
+
+  const { data: documents } = await supabase
+    .from("plot_documents")
+    .select("id, file_name, storage_path")
+    .eq("plot_id", plotId)
+    .order("uploaded_at", { ascending: false });
 
   const boundary = plot.boundary_geojson as Polygon | null;
   const conversions = plot.area_sq_meters ? convertArea(plot.area_sq_meters) : null;
@@ -88,6 +96,25 @@ export default async function PlotDetailPage({
           }}
           submitLabel="Save changes"
         />
+      </div>
+
+      <div>
+        <h2 className="mb-2 font-medium">Documents</h2>
+        <ul className="mb-3 divide-y rounded border px-3">
+          {(documents ?? []).map((doc) => (
+            <DocumentRow
+              key={doc.id}
+              plotId={plot.id}
+              documentId={doc.id}
+              storagePath={doc.storage_path}
+              fileName={doc.file_name}
+            />
+          ))}
+          {(!documents || documents.length === 0) && (
+            <li className="py-2 text-sm text-neutral-600">No documents yet.</li>
+          )}
+        </ul>
+        <DocumentUploader plotId={plot.id} />
       </div>
 
       <form action={deletePlot.bind(null, plot.id)}>
