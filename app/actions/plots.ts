@@ -6,6 +6,45 @@ import { createClient } from "@/lib/supabase/server";
 import type { LatLng } from "@/lib/geo";
 import { pointsToPolygon } from "@/lib/geo";
 
+/**
+ * village/mutation_number/purchase_price/purchase_date/current_estimated_value/notes
+ * are either written plaintext, or — when the client has encryption unlocked —
+ * as one AES-GCM blob in sensitive_encrypted/sensitive_iv (see
+ * lib/crypto/encryption.ts and PlotMetadataForm). Never both: whichever mode
+ * the client submitted in, the other representation is cleared so a stale
+ * plaintext copy can't linger after a switch to encrypted.
+ */
+function sensitiveFieldsFromForm(formData: FormData) {
+  const encryptedHex = formData.get("sensitiveEncryptedHex");
+  const ivHex = formData.get("sensitiveIvHex");
+
+  if (typeof encryptedHex === "string" && typeof ivHex === "string" && encryptedHex) {
+    return {
+      sensitive_encrypted: encryptedHex,
+      sensitive_iv: ivHex,
+      village: null,
+      mutation_number: null,
+      purchase_price: null,
+      purchase_date: null,
+      current_estimated_value: null,
+      notes: null,
+    };
+  }
+
+  return {
+    sensitive_encrypted: null,
+    sensitive_iv: null,
+    village: String(formData.get("village") ?? "") || null,
+    mutation_number: String(formData.get("mutationNumber") ?? "") || null,
+    purchase_price: formData.get("purchasePrice") ? Number(formData.get("purchasePrice")) : null,
+    purchase_date: String(formData.get("purchaseDate") ?? "") || null,
+    current_estimated_value: formData.get("currentEstimatedValue")
+      ? Number(formData.get("currentEstimatedValue"))
+      : null,
+    notes: String(formData.get("notes") ?? "") || null,
+  };
+}
+
 export async function createPlot(_prevState: unknown, formData: FormData) {
   const supabase = await createClient();
   const {
@@ -21,19 +60,10 @@ export async function createPlot(_prevState: unknown, formData: FormData) {
     .insert({
       user_id: user.id,
       name,
-      village: String(formData.get("village") ?? "") || null,
       upazila: String(formData.get("upazila") ?? "") || null,
       district: String(formData.get("district") ?? "") || null,
       division: String(formData.get("division") ?? "") || null,
-      mutation_number: String(formData.get("mutationNumber") ?? "") || null,
-      purchase_price: formData.get("purchasePrice")
-        ? Number(formData.get("purchasePrice"))
-        : null,
-      purchase_date: String(formData.get("purchaseDate") ?? "") || null,
-      current_estimated_value: formData.get("currentEstimatedValue")
-        ? Number(formData.get("currentEstimatedValue"))
-        : null,
-      notes: String(formData.get("notes") ?? "") || null,
+      ...sensitiveFieldsFromForm(formData),
     })
     .select("id")
     .single();
@@ -54,19 +84,10 @@ export async function updatePlotMetadata(
     .from("land_plots")
     .update({
       name: String(formData.get("name") ?? "").trim(),
-      village: String(formData.get("village") ?? "") || null,
       upazila: String(formData.get("upazila") ?? "") || null,
       district: String(formData.get("district") ?? "") || null,
       division: String(formData.get("division") ?? "") || null,
-      mutation_number: String(formData.get("mutationNumber") ?? "") || null,
-      purchase_price: formData.get("purchasePrice")
-        ? Number(formData.get("purchasePrice"))
-        : null,
-      purchase_date: String(formData.get("purchaseDate") ?? "") || null,
-      current_estimated_value: formData.get("currentEstimatedValue")
-        ? Number(formData.get("currentEstimatedValue"))
-        : null,
-      notes: String(formData.get("notes") ?? "") || null,
+      ...sensitiveFieldsFromForm(formData),
     })
     .eq("id", plotId);
 

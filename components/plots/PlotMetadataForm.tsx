@@ -1,22 +1,41 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { encryptJSON, decryptJSON, toPgBytea, fromPgBytea } from "@/lib/crypto/encryption";
+import { getSessionDEK, onSessionChange } from "@/lib/crypto/session";
+
+export interface SensitiveValues {
+  village: string | null;
+  mutationNumber: string | null;
+  purchasePrice: number | null;
+  purchaseDate: string | null;
+  currentEstimatedValue: number | null;
+  notes: string | null;
+}
+
+const EMPTY_SENSITIVE: SensitiveValues = {
+  village: "",
+  mutationNumber: "",
+  purchasePrice: null,
+  purchaseDate: "",
+  currentEstimatedValue: null,
+  notes: "",
+};
 
 export interface PlotMetadataValues {
   name?: string;
-  village?: string | null;
   upazila?: string | null;
   district?: string | null;
   division?: string | null;
-  mutationNumber?: string | null;
-  purchasePrice?: number | null;
-  purchaseDate?: string | null;
-  currentEstimatedValue?: number | null;
-  notes?: string | null;
+  /** Plaintext fallback — set when this plot's sensitive fields were never encrypted. */
+  plaintext?: SensitiveValues;
+  /** Present when this plot's sensitive fields are stored encrypted (see migration 0009). */
+  sensitiveEncryptedHex?: string | null;
+  sensitiveIvHex?: string | null;
 }
 
 interface PlotMetadataFormProps {
@@ -32,8 +51,63 @@ export default function PlotMetadataForm({
 }: PlotMetadataFormProps) {
   const [state, formAction, pending] = useActionState(action, undefined);
 
+  const isEncryptedRecord = Boolean(initial?.sensitiveEncryptedHex && initial?.sensitiveIvHex);
+  const [unlocked, setUnlocked] = useState(() => getSessionDEK() !== null);
+  const [sensitive, setSensitive] = useState<SensitiveValues>(
+    initial?.plaintext ?? EMPTY_SENSITIVE,
+  );
+  const [decryptError, setDecryptError] = useState<string | null>(null);
+
+  useEffect(() => onSessionChange(() => setUnlocked(getSessionDEK() !== null)), []);
+
+  useEffect(() => {
+    if (!isEncryptedRecord) return;
+    const dek = getSessionDEK();
+    if (!dek) return;
+    let cancelled = false;
+    decryptJSON<SensitiveValues>(
+      fromPgBytea(initial!.sensitiveEncryptedHex!),
+      fromPgBytea(initial!.sensitiveIvHex!),
+      dek,
+    )
+      .then((values) => {
+        if (!cancelled) setSensitive(values);
+      })
+      .catch(() => {
+        if (!cancelled) setDecryptError("Couldn't decrypt with the current session key.");
+      });
+    return () => {
+      cancelled = true;
+    };
+    // Re-run whenever the session unlocks so a mid-page unlock fills the fields in.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unlocked, isEncryptedRecord]);
+
+  const willEncrypt = unlocked; // once unlocked, saves always go out encrypted
+  const sensitiveLocked = isEncryptedRecord && !unlocked;
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (!willEncrypt) return; // plaintext path: let the form submit normally
+    e.preventDefault();
+
+    const dek = getSessionDEK();
+    if (!dek) return;
+
+    const fd = new FormData(e.currentTarget);
+    const { ciphertext, iv } = await encryptJSON(sensitive, dek);
+    fd.set("sensitiveEncryptedHex", toPgBytea(ciphertext));
+    fd.set("sensitiveIvHex", toPgBytea(iv));
+    fd.delete("village");
+    fd.delete("mutationNumber");
+    fd.delete("purchasePrice");
+    fd.delete("purchaseDate");
+    fd.delete("currentEstimatedValue");
+    fd.delete("notes");
+    formAction(fd);
+  }
+
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="name">Plot name</Label>
         <Input
@@ -47,7 +121,14 @@ export default function PlotMetadataForm({
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="village">Village</Label>
-          <Input id="village" name="village" defaultValue={initial?.village ?? ""} />
+          <Input
+            id="village"
+            name="village"
+            value={sensitive.village ?? ""}
+            onChange={(e) => setSensitive((s) => ({ ...s, village: e.target.value }))}
+            disabled={sensitiveLocked}
+            placeholder={sensitiveLocked ? "Locked" : undefined}
+          />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="upazila">Upazila</Label>
@@ -67,7 +148,10 @@ export default function PlotMetadataForm({
         <Input
           id="mutationNumber"
           name="mutationNumber"
-          defaultValue={initial?.mutationNumber ?? ""}
+          value={sensitive.mutationNumber ?? ""}
+          onChange={(e) => setSensitive((s) => ({ ...s, mutationNumber: e.target.value }))}
+          disabled={sensitiveLocked}
+          placeholder={sensitiveLocked ? "Locked" : undefined}
         />
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -78,7 +162,14 @@ export default function PlotMetadataForm({
             name="purchasePrice"
             type="number"
             step="0.01"
-            defaultValue={initial?.purchasePrice ?? ""}
+            value={sensitive.purchasePrice ?? ""}
+            onChange={(e) =>
+              setSensitive((s) => ({
+                ...s,
+                purchasePrice: e.target.value ? Number(e.target.value) : null,
+              }))
+            }
+            disabled={sensitiveLocked}
           />
         </div>
         <div className="flex flex-col gap-1.5">
@@ -87,7 +178,9 @@ export default function PlotMetadataForm({
             id="purchaseDate"
             name="purchaseDate"
             type="date"
-            defaultValue={initial?.purchaseDate ?? ""}
+            value={sensitive.purchaseDate ?? ""}
+            onChange={(e) => setSensitive((s) => ({ ...s, purchaseDate: e.target.value }))}
+            disabled={sensitiveLocked}
           />
         </div>
       </div>
@@ -98,15 +191,36 @@ export default function PlotMetadataForm({
           name="currentEstimatedValue"
           type="number"
           step="0.01"
-          defaultValue={initial?.currentEstimatedValue ?? ""}
+          value={sensitive.currentEstimatedValue ?? ""}
+          onChange={(e) =>
+            setSensitive((s) => ({
+              ...s,
+              currentEstimatedValue: e.target.value ? Number(e.target.value) : null,
+            }))
+          }
+          disabled={sensitiveLocked}
         />
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="notes">Notes</Label>
-        <Textarea id="notes" name="notes" defaultValue={initial?.notes ?? ""} rows={3} />
+        <Textarea
+          id="notes"
+          name="notes"
+          rows={3}
+          value={sensitive.notes ?? ""}
+          onChange={(e) => setSensitive((s) => ({ ...s, notes: e.target.value }))}
+          disabled={sensitiveLocked}
+          placeholder={sensitiveLocked ? "Unlock encryption in Profile to view/edit" : undefined}
+        />
       </div>
+      {decryptError && <p className="text-sm text-destructive">{decryptError}</p>}
+      {willEncrypt && (
+        <p className="text-xs text-muted-foreground">
+          Village, mutation number, prices, dates, and notes will be saved encrypted.
+        </p>
+      )}
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" disabled={pending || sensitiveLocked}>
         {pending ? "Saving..." : submitLabel}
       </Button>
     </form>

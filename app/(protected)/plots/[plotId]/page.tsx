@@ -89,15 +89,19 @@ export default async function PlotDetailPage({
               action={updatePlotMetadata.bind(null, plot.id)}
               initial={{
                 name: plot.name,
-                village: plot.village,
                 upazila: plot.upazila,
                 district: plot.district,
                 division: plot.division,
-                mutationNumber: plot.mutation_number,
-                purchasePrice: plot.purchase_price,
-                purchaseDate: plot.purchase_date,
-                currentEstimatedValue: plot.current_estimated_value,
-                notes: plot.notes,
+                sensitiveEncryptedHex: plot.sensitive_encrypted,
+                sensitiveIvHex: plot.sensitive_iv,
+                plaintext: {
+                  village: plot.village,
+                  mutationNumber: plot.mutation_number,
+                  purchasePrice: plot.purchase_price,
+                  purchaseDate: plot.purchase_date,
+                  currentEstimatedValue: plot.current_estimated_value,
+                  notes: plot.notes,
+                },
               }}
               submitLabel="Save changes"
             />
