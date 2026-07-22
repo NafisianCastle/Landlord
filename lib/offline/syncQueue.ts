@@ -77,6 +77,34 @@ export async function undoLastPoint(sessionId: string) {
   notify();
 }
 
+/**
+ * Removes an arbitrary point (not just the last one) and renumbers the rest
+ * to stay contiguous 0..n-1 — `seq` doubles as the array index the UI relies
+ * on, and the remote audit table's uniqueness is keyed on (session_id, seq),
+ * so gaps or duplicate seqs after a mid-walk delete would corrupt both.
+ * Renumbered rows are marked unsynced so the audit trail re-uploads under
+ * their new seq.
+ */
+export async function deletePointAt(sessionId: string, index: number) {
+  const points = await db.walkPoints.where("sessionId").equals(sessionId).sortBy("seq");
+  const remaining = points.filter((_, i) => i !== index);
+  const toDelete = points[index];
+
+  await db.transaction("rw", db.walkPoints, async () => {
+    if (toDelete?.id !== undefined) await db.walkPoints.delete(toDelete.id);
+    await Promise.all(
+      remaining.map((p, i) =>
+        p.id !== undefined && p.seq !== i
+          ? db.walkPoints.update(p.id, { seq: i, synced: 0 })
+          : Promise.resolve(),
+      ),
+    );
+  });
+
+  notify();
+  void syncPending();
+}
+
 /** Marks a walk as ready to finalize — synced immediately if online, otherwise queued. */
 export async function finishSession(plotId: string, sessionId: string) {
   await db.walkSessions.update(sessionId, { status: "pending-finish" });

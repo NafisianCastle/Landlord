@@ -29,12 +29,13 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const readyRef = useRef(false);
-  const [baseStyle, setBaseStyle] = useState<BaseStyle>("satellite");
+  const [baseStyle, setBaseStyle] = useState<BaseStyle>("streets");
   const [tileWarning, setTileWarning] = useState<string | null>(null);
   const [areas, setAreas] = useState<OfflineArea[]>([]);
   const [downloading, setDownloading] = useState(false);
   const [progress, setProgress] = useState<DownloadProgress | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [mapError, setMapError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -44,22 +45,35 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: styleFor(baseStyle),
-      center: [90.4125, 23.8103], // Dhaka, sensible default before plots load
-      zoom: 6,
-      maxZoom: 19,
-    });
+    let map: maplibregl.Map;
+    try {
+      map = new maplibregl.Map({
+        container: containerRef.current,
+        style: styleFor(baseStyle),
+        center: [90.4125, 23.8103], // Dhaka, sensible default before plots load
+        zoom: 6,
+        maxZoom: 19,
+      });
+    } catch {
+      setMapError(
+        "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
+      );
+      return;
+    }
     mapRef.current = map;
 
     map.on("error", (e) => {
-      const status = (e.error as { status?: number } | undefined)?.status;
-      if (status === 404 || status === 204) {
+      const err = e.error as { status?: number; type?: string } | undefined;
+      if (err?.status === 404 || err?.status === 204) {
         setTileWarning("Imagery not available at this zoom level here — zoom out a bit.");
+      } else if (err?.type === "webglcontextcreationerror" || err?.type === "webglcontextlost") {
+        setMapError(
+          "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
+        );
       }
     });
     map.on("zoom", () => setTileWarning(null));
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-left");
 
     const attachLayers = () => {
       addPlotLayers(map, plots);
@@ -178,6 +192,16 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
       readyRef.current = true;
     });
     setBaseStyle(next);
+  }
+
+  if (mapError) {
+    return (
+      <div
+        className={`flex items-center justify-center rounded border bg-neutral-50 p-4 text-center text-sm text-neutral-600 ${className ?? "h-full w-full"}`}
+      >
+        {mapError}
+      </div>
+    );
   }
 
   return (

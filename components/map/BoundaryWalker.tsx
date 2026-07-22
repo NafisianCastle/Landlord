@@ -1,15 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Feature, FeatureCollection } from "geojson";
 import maplibregl from "@/lib/map";
-import { SATELLITE_STYLE } from "@/lib/mapStyles";
-import type { LatLng } from "@/lib/geo";
+import { styleFor, type BaseStyle } from "@/lib/mapStyles";
+import {
+  type LatLng,
+  pathLengthMeters,
+  closedPerimeterMeters,
+  polygonAreaSqMeters,
+} from "@/lib/geo";
+import { convertArea } from "@/lib/units";
 import {
   resumeOrCreateSession,
   recordPoint,
   undoLastPoint,
+  deletePointAt,
   finishSession,
   pendingCount,
   onSyncStateChange,
@@ -34,7 +41,16 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
     () => typeof navigator === "undefined" || navigator.onLine,
   );
   const locationMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const pointsRef = useRef<LatLng[]>([]);
+  const sessionIdRef = useRef<string | null>(null);
+  const currentLocationRef = useRef<[number, number] | null>(null);
   const [tileWarning, setTileWarning] = useState<string | null>(null);
+  const [baseStyle, setBaseStyle] = useState<BaseStyle>("streets");
+  const [mapError, setMapError] = useState<string | null>(null);
+
+  useEffect(() => {
+    sessionIdRef.current = sessionId;
+  }, [sessionId]);
 
   useEffect(() => {
     resumeOrCreateSession(plotId).then(({ session, points: existing }) => {
@@ -63,47 +79,54 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: SATELLITE_STYLE,
-      center: [90.4125, 23.8103],
-      zoom: 16,
-      maxZoom: 19,
-    });
+    let map: maplibregl.Map;
+    try {
+      map = new maplibregl.Map({
+        container: containerRef.current,
+        style: styleFor(baseStyle),
+        center: [90.4125, 23.8103],
+        zoom: 16,
+        maxZoom: 19,
+      });
+    } catch {
+      setMapError(
+        "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
+      );
+      return;
+    }
     mapRef.current = map;
 
     map.on("error", (e) => {
-      const status = (e.error as { status?: number } | undefined)?.status;
-      if (status === 404 || status === 204) {
+      const err = e.error as { status?: number; type?: string } | undefined;
+      if (err?.status === 404 || err?.status === 204) {
         setTileWarning("Imagery not available at this zoom level here — zoom out a bit.");
+      } else if (err?.type === "webglcontextcreationerror" || err?.type === "webglcontextlost") {
+        setMapError(
+          "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
+        );
       }
     });
 
-    map.on("load", () => {
-      map.addSource("walk", { type: "geojson", data: emptyCollection() });
-      map.addLayer({
-        id: "walk-fill",
-        type: "fill",
-        source: "walk",
-        filter: ["==", "$type", "Polygon"],
-        paint: { "fill-color": "#22c55e", "fill-opacity": 0.35 },
-      });
-      map.addLayer({
-        id: "walk-line",
-        type: "line",
-        source: "walk",
-        paint: { "line-color": "#16a34a", "line-width": 3 },
-      });
-      map.addLayer({
-        id: "walk-points",
-        type: "circle",
-        source: "walk",
-        filter: ["==", "$type", "Point"],
-        paint: { "circle-color": "#16a34a", "circle-radius": 5 },
-      });
-    });
+    map.once("load", () => addWalkLayers(map, pointsRef.current));
 
     map.on("zoom", () => setTileWarning(null));
+
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-left");
+
+    map.on("click", "walk-points", async (e) => {
+      const idx = e.features?.[0]?.properties?.index;
+      const sid = sessionIdRef.current;
+      if (typeof idx !== "number" || !sid) return;
+      if (!window.confirm("Remove this point from the boundary?")) return;
+      await deletePointAt(sid, idx);
+      setPoints((prev) => prev.filter((_, i) => i !== idx));
+    });
+    map.on("mouseenter", "walk-points", () => {
+      map.getCanvas().style.cursor = "pointer";
+    });
+    map.on("mouseleave", "walk-points", () => {
+      map.getCanvas().style.cursor = "";
+    });
 
     let centered = false;
     const el = document.createElement("div");
@@ -114,6 +137,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
     const watchId = navigator.geolocation?.watchPosition(
       (pos) => {
         const lngLat: [number, number] = [pos.coords.longitude, pos.coords.latitude];
+        currentLocationRef.current = lngLat;
         marker.setLngLat(lngLat).addTo(map);
         if (!centered) {
           map.setCenter(lngLat);
@@ -135,6 +159,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
   }, []);
 
   useEffect(() => {
+    pointsRef.current = points;
     const map = mapRef.current;
     if (!map) return;
     const apply = () => {
@@ -144,6 +169,32 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
     if (map.isStyleLoaded()) apply();
     else map.once("load", apply);
   }, [points]);
+
+  const stats = useMemo(() => {
+    if (points.length < 2) return null;
+    if (points.length < 3) {
+      return { distance: pathLengthMeters(points), area: null };
+    }
+    return {
+      distance: closedPerimeterMeters(points),
+      area: convertArea(polygonAreaSqMeters(points)),
+    };
+  }, [points]);
+
+  function recenter() {
+    const map = mapRef.current;
+    if (!map || !currentLocationRef.current) return;
+    map.setCenter(currentLocationRef.current);
+  }
+
+  function toggleStyle() {
+    const map = mapRef.current;
+    if (!map) return;
+    const next: BaseStyle = baseStyle === "satellite" ? "streets" : "satellite";
+    map.setStyle(styleFor(next));
+    map.once("style.load", () => addWalkLayers(map, pointsRef.current));
+    setBaseStyle(next);
+  }
 
   function markPoint() {
     if (!sessionId) return;
@@ -199,13 +250,45 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div ref={containerRef} className="h-[65vh] min-h-[400px] w-full rounded" />
+      {mapError ? (
+        <div className="flex h-[65vh] min-h-[400px] w-full items-center justify-center rounded border bg-neutral-50 p-4 text-center text-sm text-neutral-600">
+          {mapError} You can still mark points below — they&rsquo;ll save without a map
+          preview.
+        </div>
+      ) : (
+        <div className="relative h-[65vh] min-h-[400px] w-full">
+          <div ref={containerRef} className="h-full w-full rounded" />
+          <div className="absolute right-2 top-2 flex flex-col items-end gap-1">
+            <button
+              type="button"
+              onClick={toggleStyle}
+              className="rounded bg-white px-2 py-1 text-xs shadow"
+            >
+              {baseStyle === "satellite" ? "Streets" : "Satellite"}
+            </button>
+            <button
+              type="button"
+              onClick={recenter}
+              className="rounded bg-white px-2 py-1 text-xs shadow"
+            >
+              Recenter on me
+            </button>
+          </div>
+          {stats && (
+            <div className="absolute bottom-2 left-2 rounded bg-white px-2 py-1 text-xs shadow">
+              {points.length < 3
+                ? `${stats.distance.toFixed(1)} m walked so far`
+                : `${stats.distance.toFixed(1)} m perimeter • ${stats.area!.decimal.toFixed(2)} decimal (${stats.area!.sqMeters.toFixed(0)} m²)`}
+            </div>
+          )}
+        </div>
+      )}
       {tileWarning && (
         <p className="rounded bg-amber-50 px-2 py-1 text-sm text-amber-700">{tileWarning}</p>
       )}
       <p className="text-xs text-neutral-500">
         The blue dot is your current GPS position — that&rsquo;s the exact point &ldquo;Mark
-        point&rdquo; will record.
+        point&rdquo; will record. Tap a marked point on the map to remove just that one.
       </p>
       {!online && (
         <p className="rounded bg-amber-50 px-2 py-1 text-sm text-amber-700">
@@ -254,11 +337,35 @@ function emptyCollection(): FeatureCollection {
   return { type: "FeatureCollection", features: [] };
 }
 
+function addWalkLayers(map: maplibregl.Map, points: LatLng[]) {
+  map.addSource("walk", { type: "geojson", data: walkPreview(points) });
+  map.addLayer({
+    id: "walk-fill",
+    type: "fill",
+    source: "walk",
+    filter: ["==", "$type", "Polygon"],
+    paint: { "fill-color": "#22c55e", "fill-opacity": 0.35 },
+  });
+  map.addLayer({
+    id: "walk-line",
+    type: "line",
+    source: "walk",
+    paint: { "line-color": "#16a34a", "line-width": 3 },
+  });
+  map.addLayer({
+    id: "walk-points",
+    type: "circle",
+    source: "walk",
+    filter: ["==", "$type", "Point"],
+    paint: { "circle-color": "#16a34a", "circle-radius": 5 },
+  });
+}
+
 function walkPreview(points: LatLng[]): FeatureCollection {
-  const features: Feature[] = points.map((p) => ({
+  const features: Feature[] = points.map((p, index) => ({
     type: "Feature",
     geometry: { type: "Point", coordinates: [p.lng, p.lat] },
-    properties: {},
+    properties: { index },
   }));
 
   if (points.length >= 2) {
