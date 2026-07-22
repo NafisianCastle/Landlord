@@ -35,6 +35,9 @@ export default async function ProtectedLayout({
           <Link href="/plots" className="text-sm">
             Plots
           </Link>
+          <Link href="/profile" className="text-sm">
+            Profile
+          </Link>
         </div>
         <form action={signOut}>
           <button type="submit" className="text-sm underline">

@@ -5,7 +5,11 @@
       "Bash(npm run *)",
       "Bash(npm install *)",
       "Bash(curl -s https://tiles.openfreemap.org/styles/liberty)",
-      "Bash(curl -s https://tiles.openfreemap.org/planet)"
+      "Bash(curl -s https://tiles.openfreemap.org/planet)",
+      "Bash(mkdir -p \"/run/media/nafis/Storage/Projects/landly/app/\\(protected\\)/profile\" /run/media/nafis/Projects/landly/components/profile 2>/dev/null; mkdir -p \"/run/media/nafis/Storage/Projects/landly/components/profile\")"
+    ],
+    "additionalDirectories": [
+      "/run/media/nafis/Projects/landly/components"
     ]
   }
 }
