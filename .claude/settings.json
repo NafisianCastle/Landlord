@@ -8,7 +8,14 @@
       "Bash(curl -s https://tiles.openfreemap.org/planet)",
       "Bash(mkdir -p \"/run/media/nafis/Storage/Projects/landly/app/\\(protected\\)/profile\" /run/media/nafis/Projects/landly/components/profile 2>/dev/null; mkdir -p \"/run/media/nafis/Storage/Projects/landly/components/profile\")",
       "Bash(npm ls *)",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(node -e \"console.log\\(require.resolve\\('sharp'\\)\\)\")",
+      "Bash(cat)",
+      "Bash(node -e ' *)",
+      "Bash(tail -30 /tmp/dev.log)",
+      "Read(//tmp/**)",
+      "Bash(curl -s http://localhost:3000/manifest.webmanifest)",
+      "Bash(curl -s http://localhost:3000/login)"
     ],
     "additionalDirectories": [
       "/run/media/nafis/Projects/landly/components"
