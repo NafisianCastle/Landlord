@@ -1,7 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/signup", "/auth/callback"];
+// /api/payments is exempt because SSLCommerz's IPN webhook calls it
+// server-to-server with no browser session at all.
+const PUBLIC_PATHS = ["/login", "/signup", "/auth/callback", "/api/payments"];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
