@@ -20,11 +20,19 @@ export async function uploadDocument(
   if (!(file instanceof File) || file.size === 0) {
     return { error: "Choose a PDF file" };
   }
-  if (file.type !== "application/pdf") {
+
+  const encryptionIvHex = formData.get("encryptionIvHex");
+  const isEncrypted = typeof encryptionIvHex === "string" && encryptionIvHex.length > 0;
+  // When encrypted, `file` is ciphertext (opaque bytes) — the client already
+  // checked the original was a PDF before encrypting it, so only enforce the
+  // mime check on the plaintext path.
+  if (!isEncrypted && file.type !== "application/pdf") {
     return { error: "Only PDF files are supported" };
   }
 
-  const storagePath = `${user.id}/${plotId}/${crypto.randomUUID()}-${file.name}`;
+  const fileName =
+    (isEncrypted ? String(formData.get("originalFileName") ?? "") : "") || file.name;
+  const storagePath = `${user.id}/${plotId}/${crypto.randomUUID()}-${fileName}`;
 
   const { error: uploadError } = await supabase.storage
     .from(BUCKET)
@@ -35,9 +43,11 @@ export async function uploadDocument(
     plot_id: plotId,
     user_id: user.id,
     storage_path: storagePath,
-    file_name: file.name,
+    file_name: fileName,
     file_size_bytes: file.size,
-    mime_type: file.type,
+    mime_type: isEncrypted ? "application/pdf" : file.type,
+    is_encrypted: isEncrypted,
+    encryption_iv: isEncrypted ? encryptionIvHex : null,
   });
   if (insertError) {
     await supabase.storage.from(BUCKET).remove([storagePath]);

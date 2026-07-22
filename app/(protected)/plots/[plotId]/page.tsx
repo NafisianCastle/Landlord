@@ -28,7 +28,7 @@ export default async function PlotDetailPage({
 
   const { data: documents } = await supabase
     .from("plot_documents")
-    .select("id, file_name, storage_path")
+    .select("id, file_name, storage_path, is_encrypted, encryption_iv")
     .eq("plot_id", plotId)
     .order("uploaded_at", { ascending: false });
 
@@ -119,6 +119,8 @@ export default async function PlotDetailPage({
               documentId={doc.id}
               storagePath={doc.storage_path}
               fileName={doc.file_name}
+              isEncrypted={doc.is_encrypted}
+              encryptionIvHex={doc.encryption_iv}
             />
           ))}
           {(!documents || documents.length === 0) && (
