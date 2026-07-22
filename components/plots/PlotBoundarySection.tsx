@@ -26,7 +26,7 @@ export default function PlotBoundarySection({
     <div className="flex flex-col gap-2">
       <PlotMap
         plots={[{ id: plotId, name: plotName, boundary }]}
-        className="h-64 w-full rounded"
+        className="h-[70vh] min-h-[420px] w-full rounded"
       />
       <button
         type="button"

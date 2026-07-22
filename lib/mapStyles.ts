@@ -17,6 +17,10 @@ export const SATELLITE_STYLE: StyleSpecification = {
         "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       ],
       tileSize: 256,
+      // Esri World_Imagery has no real imagery past z19 in most areas; capping
+      // here makes MapLibre oversample the z19 tile instead of requesting a
+      // tile that doesn't exist (which otherwise renders as a blank/grey tile).
+      maxzoom: 19,
       attribution: "Esri, Maxar, Earthstar Geographics",
     },
   },

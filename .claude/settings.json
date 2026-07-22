@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(curl -s https://tiles.openfreemap.org/styles/liberty)",
+      "Bash(curl -s https://tiles.openfreemap.org/planet)"
+    ]
+  }
+}

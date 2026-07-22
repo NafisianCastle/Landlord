@@ -19,7 +19,7 @@ export async function signUp(_prevState: unknown, formData: FormData) {
     return { error: error.message };
   }
 
-  redirect("/dashboard");
+  return { success: true };
 }
 
 export async function signIn(_prevState: unknown, formData: FormData) {

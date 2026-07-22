@@ -33,6 +33,8 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
   const [online, setOnline] = useState(
     () => typeof navigator === "undefined" || navigator.onLine,
   );
+  const locationMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const [tileWarning, setTileWarning] = useState<string | null>(null);
 
   useEffect(() => {
     resumeOrCreateSession(plotId).then(({ session, points: existing }) => {
@@ -66,8 +68,16 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
       style: SATELLITE_STYLE,
       center: [90.4125, 23.8103],
       zoom: 16,
+      maxZoom: 19,
     });
     mapRef.current = map;
+
+    map.on("error", (e) => {
+      const status = (e.error as { status?: number } | undefined)?.status;
+      if (status === 404 || status === 204) {
+        setTileWarning("Imagery not available at this zoom level here — zoom out a bit.");
+      }
+    });
 
     map.on("load", () => {
       map.addSource("walk", { type: "geojson", data: emptyCollection() });
@@ -93,11 +103,32 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
       });
     });
 
-    navigator.geolocation?.getCurrentPosition((pos) => {
-      map.setCenter([pos.coords.longitude, pos.coords.latitude]);
-    });
+    map.on("zoom", () => setTileWarning(null));
+
+    let centered = false;
+    const el = document.createElement("div");
+    el.className = "h-4 w-4 rounded-full border-2 border-white bg-blue-500 shadow";
+    const marker = new maplibregl.Marker({ element: el });
+    locationMarkerRef.current = marker;
+
+    const watchId = navigator.geolocation?.watchPosition(
+      (pos) => {
+        const lngLat: [number, number] = [pos.coords.longitude, pos.coords.latitude];
+        marker.setLngLat(lngLat).addTo(map);
+        if (!centered) {
+          map.setCenter(lngLat);
+          centered = true;
+        }
+      },
+      () => {
+        /* ignore — GPS may be briefly unavailable indoors/underground */
+      },
+      { enableHighAccuracy: true, maximumAge: 5000 },
+    );
 
     return () => {
+      if (watchId != null) navigator.geolocation?.clearWatch(watchId);
+      marker.remove();
       map.remove();
       mapRef.current = null;
     };
@@ -168,7 +199,14 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div ref={containerRef} className="h-80 w-full rounded" />
+      <div ref={containerRef} className="h-[65vh] min-h-[400px] w-full rounded" />
+      {tileWarning && (
+        <p className="rounded bg-amber-50 px-2 py-1 text-sm text-amber-700">{tileWarning}</p>
+      )}
+      <p className="text-xs text-neutral-500">
+        The blue dot is your current GPS position — that&rsquo;s the exact point &ldquo;Mark
+        point&rdquo; will record.
+      </p>
       {!online && (
         <p className="rounded bg-amber-50 px-2 py-1 text-sm text-amber-700">
           Offline — points are saved on this device and will sync automatically.
