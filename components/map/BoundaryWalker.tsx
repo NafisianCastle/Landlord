@@ -89,8 +89,10 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
         maxZoom: 19,
       });
     } catch {
-      setMapError(
-        "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
+      queueMicrotask(() =>
+        setMapError(
+          "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
+        ),
       );
       return;
     }
@@ -331,10 +333,6 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
-}
-
-function emptyCollection(): FeatureCollection {
-  return { type: "FeatureCollection", features: [] };
 }
 
 function addWalkLayers(map: maplibregl.Map, points: LatLng[]) {

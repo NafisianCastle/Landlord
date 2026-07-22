@@ -1,31 +1,54 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 const STORAGE_KEY = "landly-theme";
+type Theme = "light" | "dark";
 
-function applyTheme(theme: "light" | "dark") {
+let listeners: Array<() => void> = [];
+let cached: Theme | undefined;
+
+function computeTheme(): Theme {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored === "light" || stored === "dark") return stored;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyTheme(theme: Theme) {
   document.documentElement.classList.remove("light", "dark");
   document.documentElement.classList.add(theme);
 }
 
-export default function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark" | null>(null);
+function subscribe(listener: () => void) {
+  listeners.push(listener);
+  return () => {
+    listeners = listeners.filter((l) => l !== listener);
+  };
+}
 
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "light" || stored === "dark") {
-      setTheme(stored);
-      return;
-    }
-    setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-  }, []);
+function getSnapshot(): Theme {
+  if (cached === undefined) {
+    cached = computeTheme();
+  }
+  return cached;
+}
+
+function getServerSnapshot(): Theme | null {
+  return null;
+}
+
+function setTheme(next: Theme) {
+  cached = next;
+  localStorage.setItem(STORAGE_KEY, next);
+  applyTheme(next);
+  listeners.forEach((listener) => listener());
+}
+
+export default function ThemeToggle() {
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   function toggle() {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    localStorage.setItem(STORAGE_KEY, next);
-    applyTheme(next);
+    setTheme(theme === "dark" ? "light" : "dark");
   }
 
   if (!theme) return null;

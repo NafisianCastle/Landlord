@@ -55,8 +55,10 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
         maxZoom: 19,
       });
     } catch {
-      setMapError(
-        "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
+      queueMicrotask(() =>
+        setMapError(
+          "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
+        ),
       );
       return;
     }
