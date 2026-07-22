@@ -14,6 +14,7 @@ import { getSessionDEK, setSessionDEK, lockSession, onSessionChange } from "@/li
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import MigratePlotsToEncrypted from "./MigratePlotsToEncrypted";
 
 export interface EncryptionProfile {
   encryptionEnabled: boolean;
@@ -142,14 +143,17 @@ export default function EncryptionSettings({
 
   if (enabled && unlocked) {
     return (
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          Unlocked for this session. Sensitive plot fields (mutation number, prices, dates,
-          notes, village) are encrypted before leaving your device.
-        </p>
-        <Button type="button" variant="outline" size="sm" onClick={lockSession}>
-          Lock
-        </Button>
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Unlocked for this session. Sensitive plot fields (mutation number, prices, dates,
+            notes, village) are encrypted before leaving your device.
+          </p>
+          <Button type="button" variant="outline" size="sm" onClick={lockSession}>
+            Lock
+          </Button>
+        </div>
+        <MigratePlotsToEncrypted userId={userId} />
       </div>
     );
   }
