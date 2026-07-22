@@ -3,6 +3,8 @@
 @import "react-pdf/dist/Page/TextLayer.css";
 @import "react-pdf/dist/Page/AnnotationLayer.css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -15,11 +17,19 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* System preference is the default when the user hasn't toggled manually
+   (no .light/.dark class yet on <html>). Once ThemeToggle sets one of those
+   classes, it wins regardless of system preference. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light):not(.dark) {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+
+:root.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
