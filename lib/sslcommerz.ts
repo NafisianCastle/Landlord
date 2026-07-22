@@ -35,7 +35,7 @@ export async function createSslcommerzSession(params: InitSessionParams): Promis
     cus_country: "Bangladesh",
     cus_phone: "N/A",
     shipping_method: "NO",
-    product_name: "Landly Lifetime Subscription",
+    product_name: "Landlord Lifetime Subscription",
     product_category: "Service",
     product_profile: "general",
   });

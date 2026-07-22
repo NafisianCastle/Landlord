@@ -27,9 +27,9 @@ export async function POST(request: Request) {
     const gatewayUrl = await createSslcommerzSession({
       tranId,
       amount: LIFETIME_PRICE_BDT,
-      customerEmail: user.email ?? "unknown@landly.app",
+      customerEmail: user.email ?? "unknown@landlord.app",
       customerName:
-        (user.user_metadata as { full_name?: string } | null)?.full_name ?? "Landly user",
+        (user.user_metadata as { full_name?: string } | null)?.full_name ?? "Landlord user",
       successUrl: `${origin}/api/payments/sslcommerz/success`,
       failUrl: `${origin}/paywall?status=failed`,
       cancelUrl: `${origin}/paywall?status=cancelled`,

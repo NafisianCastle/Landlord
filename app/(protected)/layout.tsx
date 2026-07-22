@@ -28,7 +28,7 @@ export default async function ProtectedLayout({
       <SyncManager />
       <header className="flex items-center justify-between border-b px-6 py-3">
         <div className="flex items-center gap-4">
-          <span className="font-semibold">Landly</span>
+          <span className="font-semibold">Landlord</span>
           <Link href="/dashboard" className="text-sm">
             Dashboard
           </Link>

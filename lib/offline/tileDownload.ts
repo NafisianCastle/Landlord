@@ -5,7 +5,7 @@
 // now downloads only work against the Esri satellite tiles, which are a
 // plain {z}/{x}/{y} raster grid and match this app's default base layer.
 
-export const TILE_CACHE_NAME = "landly-map-tiles-v1";
+export const TILE_CACHE_NAME = "landlord-map-tiles-v1";
 const SATELLITE_TILE_URL = (z: number, x: number, y: number) =>
   `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
 

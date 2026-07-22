@@ -4,7 +4,7 @@ import "./globals.css";
 import RegisterServiceWorker from "@/components/system/RegisterServiceWorker";
 import ThemeToggle from "@/components/system/ThemeToggle";
 
-const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("landly-theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.classList.add(t);}catch(e){}})();`;
+const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("landlord-theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.classList.add(t);}catch(e){}})();`;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,12 +17,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Landly",
+  title: "Landlord",
   description: "Plot boundary mapping and land management",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Landly",
+    title: "Landlord",
   },
 };
 

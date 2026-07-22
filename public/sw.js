@@ -6,7 +6,7 @@
 // viewed keeps rendering its map when offline. Everything else (pages, data)
 // passes straight through to the network — this is not a full app-shell PWA.
 
-const TILE_CACHE = "landly-map-tiles-v1";
+const TILE_CACHE = "landlord-map-tiles-v1";
 const TILE_HOSTS = ["tiles.openfreemap.org", "server.arcgisonline.com"];
 const MAX_ENTRIES = 4000;
 

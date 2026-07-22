@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Landly",
-    short_name: "Landly",
+    name: "Landlord",
+    short_name: "Landlord",
     description: "Plot boundary mapping and land management",
     start_url: "/",
     display: "standalone",

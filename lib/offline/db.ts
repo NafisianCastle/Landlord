@@ -33,7 +33,7 @@ export interface OfflineArea {
   downloadedAt: number;
 }
 
-const db = new Dexie("landly") as Dexie & {
+const db = new Dexie("landlord") as Dexie & {
   walkSessions: EntityTable<WalkSession, "id">;
   walkPoints: EntityTable<WalkPoint, "id">;
   offlineAreas: EntityTable<OfflineArea, "id">;

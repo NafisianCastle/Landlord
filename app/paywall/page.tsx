@@ -28,7 +28,7 @@ export default async function PaywallPage({
     <div className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-4 p-6">
       <h1 className="text-2xl font-semibold">Your free trial has ended</h1>
       <p className="text-neutral-600">
-        Pay once, use Landly for life — no renewals, no subscription.
+        Pay once, use Landlord for life — no renewals, no subscription.
       </p>
       <p className="text-3xl font-bold">
         BDT {LIFETIME_PRICE_BDT.toLocaleString()}

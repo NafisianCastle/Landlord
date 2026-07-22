@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
-const STORAGE_KEY = "landly-theme";
+const STORAGE_KEY = "landlord-theme";
 type Theme = "light" | "dark";
 
 let listeners: Array<() => void> = [];
