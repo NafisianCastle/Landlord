@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { Moon, Sun } from "lucide-react";
 
 const STORAGE_KEY = "landlord-theme";
 type Theme = "light" | "dark";
@@ -58,9 +59,10 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label="Toggle light/dark mode"
-      className="fixed right-3 top-3 z-50 rounded-full border bg-white px-3 py-1.5 text-xs shadow dark:bg-neutral-800 dark:text-neutral-100"
+      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-card-foreground shadow-sm"
     >
-      {theme === "dark" ? "🌙 Dark" : "☀️ Light"}
+      {theme === "dark" ? <Moon className="size-3.5" /> : <Sun className="size-3.5" />}
+      {theme === "dark" ? "Dark" : "Light"}
     </button>
   );
 }

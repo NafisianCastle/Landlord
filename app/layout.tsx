@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import RegisterServiceWorker from "@/components/system/RegisterServiceWorker";
-import ThemeToggle from "@/components/system/ThemeToggle";
 
 const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("landlord-theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.classList.add(t);}catch(e){}})();`;
 
@@ -46,7 +45,6 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <RegisterServiceWorker />
-        <ThemeToggle />
         {children}
       </body>
     </html>

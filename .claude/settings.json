@@ -15,7 +15,11 @@
       "Bash(tail -30 /tmp/dev.log)",
       "Read(//tmp/**)",
       "Bash(curl -s http://localhost:3000/manifest.webmanifest)",
-      "Bash(curl -s http://localhost:3000/login)"
+      "Bash(curl -s http://localhost:3000/login)",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(node -e \"console.log\\(require.resolve\\('playwright'\\)\\)\")",
+      "Bash(npm init *)"
     ],
     "additionalDirectories": [
       "/run/media/nafis/Projects/landly/components"

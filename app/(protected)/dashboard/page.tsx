@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import StatsCards from "@/components/dashboard/StatsCards";
 import LocationBreakdown from "@/components/dashboard/LocationBreakdown";
 
@@ -14,7 +15,7 @@ export default async function DashboardPage() {
   ]);
 
   return (
-    <div className="flex flex-col gap-4 p-6">
+    <div className="flex flex-col gap-6 p-4 md:p-6">
       <h1 className="text-xl font-semibold">Welcome, {user?.email}</h1>
 
       <StatsCards
@@ -24,16 +25,20 @@ export default async function DashboardPage() {
         totalCurrentValue={stats?.total_current_value ?? 0}
       />
 
-      <div>
-        <h2 className="mb-2 font-medium">By district</h2>
-        <LocationBreakdown
-          districts={(byDistrict ?? []).map((d) => ({
-            district: d.district,
-            plotCount: d.plot_count,
-            totalAreaSqMeters: d.total_area_sq_meters,
-          }))}
-        />
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">By district</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <LocationBreakdown
+            districts={(byDistrict ?? []).map((d) => ({
+              district: d.district,
+              plotCount: d.plot_count,
+              totalAreaSqMeters: d.total_area_sq_meters,
+            }))}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -1,9 +1,13 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/actions/auth";
 import { hasActiveAccess } from "@/lib/access";
 import SyncManager from "@/components/system/SyncManager";
+import HeaderNav from "@/components/system/HeaderNav";
+import BottomNav from "@/components/system/BottomNav";
+import ThemeToggle from "@/components/system/ThemeToggle";
+import { Button } from "@/components/ui/button";
 
 export default async function ProtectedLayout({
   children,
@@ -26,26 +30,23 @@ export default async function ProtectedLayout({
   return (
     <div className="min-h-screen">
       <SyncManager />
-      <header className="flex items-center justify-between border-b px-6 py-3">
-        <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/95 px-4 py-3 backdrop-blur md:px-6">
+        <div className="flex items-center gap-6">
           <span className="font-semibold">Landlord</span>
-          <Link href="/dashboard" className="text-sm">
-            Dashboard
-          </Link>
-          <Link href="/plots" className="text-sm">
-            Plots
-          </Link>
-          <Link href="/profile" className="text-sm">
-            Profile
-          </Link>
+          <HeaderNav />
         </div>
-        <form action={signOut}>
-          <button type="submit" className="text-sm underline">
-            Log out
-          </button>
-        </form>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <form action={signOut}>
+            <Button type="submit" variant="ghost" size="sm">
+              <LogOut className="size-4" />
+              Log out
+            </Button>
+          </form>
+        </div>
       </header>
-      <main>{children}</main>
+      <main className="pb-16 md:pb-0">{children}</main>
+      <BottomNav />
     </div>
   );
 }

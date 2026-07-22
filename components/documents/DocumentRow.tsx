@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import PdfPreviewModal from "./PdfPreviewModal";
 import { deleteDocument } from "@/app/actions/documents";
+import { Button } from "@/components/ui/button";
 
 interface DocumentRowProps {
   plotId: string;
@@ -27,8 +28,10 @@ export default function DocumentRow({
       <span className="truncate text-sm">{fileName}</span>
       <div className="flex shrink-0 gap-3">
         <PdfPreviewModal storagePath={storagePath} fileName={fileName} />
-        <button
+        <Button
           type="button"
+          variant="link"
+          className="h-auto p-0 text-destructive"
           disabled={pending}
           onClick={() =>
             startTransition(async () => {
@@ -36,10 +39,9 @@ export default function DocumentRow({
               setRemoved(true);
             })
           }
-          className="text-sm text-red-600 underline disabled:opacity-50"
         >
           Delete
-        </button>
+        </Button>
       </div>
     </li>
   );

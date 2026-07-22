@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Polygon } from "geojson";
 import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/button";
 import PlotsMapClient from "./PlotsMapClient";
 
 export default async function PlotsPage() {
@@ -23,12 +24,9 @@ export default async function PlotsPage() {
     <div className="flex flex-col gap-4 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Your plots</h1>
-        <Link
-          href="/plots/new"
-          className="rounded bg-black px-3 py-2 text-sm text-white"
-        >
-          Add plot
-        </Link>
+        <Button asChild>
+          <Link href="/plots/new">Add plot</Link>
+        </Button>
       </div>
 
       <PlotsMapClient
@@ -37,12 +35,12 @@ export default async function PlotsPage() {
         )}
       />
 
-      <ul className="flex flex-col divide-y rounded border">
+      <ul className="flex flex-col divide-y divide-border rounded-lg border border-border">
         {mapped.map((plot) => (
           <li key={plot.id} className="p-3">
             <Link href={`/plots/${plot.id}`} className="flex flex-col">
               <span className="font-medium">{plot.name}</span>
-              <span className="text-sm text-neutral-600">
+              <span className="text-sm text-muted-foreground">
                 {[plot.village, plot.district].filter(Boolean).join(", ") ||
                   "No location set"}
                 {plot.areaSqMeters
@@ -53,7 +51,7 @@ export default async function PlotsPage() {
           </li>
         ))}
         {mapped.length === 0 && (
-          <li className="p-3 text-sm text-neutral-600">
+          <li className="p-3 text-sm text-muted-foreground">
             No plots yet. Add your first one.
           </li>
         )}

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { uploadDocument } from "@/app/actions/documents";
+import { Button } from "@/components/ui/button";
 
 export default function DocumentUploader({ plotId }: { plotId: string }) {
   const [state, formAction, pending] = useActionState(
@@ -16,16 +17,12 @@ export default function DocumentUploader({ plotId }: { plotId: string }) {
         type="file"
         accept="application/pdf"
         required
-        className="text-sm"
+        className="text-sm text-foreground"
       />
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      <button
-        type="submit"
-        disabled={pending}
-        className="self-start rounded bg-black px-3 py-2 text-sm text-white disabled:opacity-50"
-      >
+      {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
+      <Button type="submit" size="sm" disabled={pending} className="self-start">
         {pending ? "Uploading..." : "Upload document"}
-      </button>
+      </Button>
     </form>
   );
 }

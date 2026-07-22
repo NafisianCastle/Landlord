@@ -1,6 +1,10 @@
 "use client";
 
 import { useActionState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface PlotMetadataValues {
   name?: string;
@@ -29,85 +33,82 @@ export default function PlotMetadataForm({
   const [state, formAction, pending] = useActionState(action, undefined);
 
   return (
-    <form action={formAction} className="flex flex-col gap-3">
-      <input
-        name="name"
-        placeholder="Plot name (e.g. Behind grandfather's house)"
-        defaultValue={initial?.name ?? ""}
-        required
-        className="rounded border px-3 py-2"
-      />
-      <div className="grid grid-cols-2 gap-3">
-        <input
-          name="village"
-          placeholder="Village"
-          defaultValue={initial?.village ?? ""}
-          className="rounded border px-3 py-2"
-        />
-        <input
-          name="upazila"
-          placeholder="Upazila"
-          defaultValue={initial?.upazila ?? ""}
-          className="rounded border px-3 py-2"
-        />
-        <input
-          name="district"
-          placeholder="District"
-          defaultValue={initial?.district ?? ""}
-          className="rounded border px-3 py-2"
-        />
-        <input
-          name="division"
-          placeholder="Division"
-          defaultValue={initial?.division ?? ""}
-          className="rounded border px-3 py-2"
+    <form action={formAction} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="name">Plot name</Label>
+        <Input
+          id="name"
+          name="name"
+          placeholder="e.g. Behind grandfather's house"
+          defaultValue={initial?.name ?? ""}
+          required
         />
       </div>
-      <input
-        name="mutationNumber"
-        placeholder="Mutation number"
-        defaultValue={initial?.mutationNumber ?? ""}
-        className="rounded border px-3 py-2"
-      />
       <div className="grid grid-cols-2 gap-3">
-        <input
-          name="purchasePrice"
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="village">Village</Label>
+          <Input id="village" name="village" defaultValue={initial?.village ?? ""} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="upazila">Upazila</Label>
+          <Input id="upazila" name="upazila" defaultValue={initial?.upazila ?? ""} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="district">District</Label>
+          <Input id="district" name="district" defaultValue={initial?.district ?? ""} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="division">Division</Label>
+          <Input id="division" name="division" defaultValue={initial?.division ?? ""} />
+        </div>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="mutationNumber">Mutation number</Label>
+        <Input
+          id="mutationNumber"
+          name="mutationNumber"
+          defaultValue={initial?.mutationNumber ?? ""}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="purchasePrice">Purchase price (BDT)</Label>
+          <Input
+            id="purchasePrice"
+            name="purchasePrice"
+            type="number"
+            step="0.01"
+            defaultValue={initial?.purchasePrice ?? ""}
+          />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="purchaseDate">Purchase date</Label>
+          <Input
+            id="purchaseDate"
+            name="purchaseDate"
+            type="date"
+            defaultValue={initial?.purchaseDate ?? ""}
+          />
+        </div>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="currentEstimatedValue">Current estimated value (BDT)</Label>
+        <Input
+          id="currentEstimatedValue"
+          name="currentEstimatedValue"
           type="number"
           step="0.01"
-          placeholder="Purchase price (BDT)"
-          defaultValue={initial?.purchasePrice ?? ""}
-          className="rounded border px-3 py-2"
-        />
-        <input
-          name="purchaseDate"
-          type="date"
-          defaultValue={initial?.purchaseDate ?? ""}
-          className="rounded border px-3 py-2"
+          defaultValue={initial?.currentEstimatedValue ?? ""}
         />
       </div>
-      <input
-        name="currentEstimatedValue"
-        type="number"
-        step="0.01"
-        placeholder="Current estimated value (BDT)"
-        defaultValue={initial?.currentEstimatedValue ?? ""}
-        className="rounded border px-3 py-2"
-      />
-      <textarea
-        name="notes"
-        placeholder="Notes"
-        defaultValue={initial?.notes ?? ""}
-        className="rounded border px-3 py-2"
-        rows={3}
-      />
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-black px-3 py-2 text-white disabled:opacity-50"
-      >
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="notes">Notes</Label>
+        <Textarea id="notes" name="notes" defaultValue={initial?.notes ?? ""} rows={3} />
+      </div>
+      {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
+      <Button type="submit" disabled={pending}>
         {pending ? "Saving..." : submitLabel}
-      </button>
+      </Button>
     </form>
   );
 }

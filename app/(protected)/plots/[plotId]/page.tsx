@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { updatePlotMetadata, deletePlot } from "@/app/actions/plots";
 import { convertArea } from "@/lib/units";
 import { polygonCentroid, googleMapsDirectionsUrl } from "@/lib/geo";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PlotMetadataForm from "@/components/plots/PlotMetadataForm";
 import PlotBoundarySection from "@/components/plots/PlotBoundarySection";
 import DocumentUploader from "@/components/documents/DocumentUploader";
@@ -41,14 +43,11 @@ export default async function PlotDetailPage({
       <div>
         <h1 className="text-xl font-semibold">{plot.name}</h1>
         {navigateUrl && (
-          <a
-            href={navigateUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-blue-600 underline"
-          >
-            Navigate here
-          </a>
+          <Button variant="link" className="h-auto p-0" asChild>
+            <a href={navigateUrl} target="_blank" rel="noopener noreferrer">
+              Navigate here
+            </a>
+          </Button>
         )}
       </div>
 
@@ -59,48 +58,56 @@ export default async function PlotDetailPage({
       />
 
       {conversions && (
-        <div className="rounded border p-3 text-sm">
-          <p className="font-medium">Area</p>
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-neutral-700">
-            <li>{conversions.decimal.toFixed(2)} decimal</li>
-            <li>{conversions.bigha.toFixed(3)} bigha</li>
-            <li>{conversions.katha.toFixed(2)} katha</li>
-            <li>
-              {conversions.kani.toFixed(2)} kani <span className="text-xs">(regional est.)</span>
-            </li>
-            <li>
-              {conversions.gonda.toFixed(2)} gonda <span className="text-xs">(regional est.)</span>
-            </li>
-            <li>{conversions.acre.toFixed(4)} acre</li>
-            <li>{conversions.sqFt.toFixed(0)} sq ft</li>
-            <li>{conversions.sqKm.toFixed(6)} sq km</li>
-          </ul>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Area</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <li>{conversions.decimal.toFixed(2)} decimal</li>
+              <li>{conversions.bigha.toFixed(3)} bigha</li>
+              <li>{conversions.katha.toFixed(2)} katha</li>
+              <li>
+                {conversions.kani.toFixed(2)} kani <span className="text-xs">(regional est.)</span>
+              </li>
+              <li>
+                {conversions.gonda.toFixed(2)} gonda <span className="text-xs">(regional est.)</span>
+              </li>
+              <li>{conversions.acre.toFixed(4)} acre</li>
+              <li>{conversions.sqFt.toFixed(0)} sq ft</li>
+              <li>{conversions.sqKm.toFixed(6)} sq km</li>
+            </ul>
+          </CardContent>
+        </Card>
       )}
 
       <div>
         <h2 className="mb-2 font-medium">Details</h2>
-        <PlotMetadataForm
-          action={updatePlotMetadata.bind(null, plot.id)}
-          initial={{
-            name: plot.name,
-            village: plot.village,
-            upazila: plot.upazila,
-            district: plot.district,
-            division: plot.division,
-            mutationNumber: plot.mutation_number,
-            purchasePrice: plot.purchase_price,
-            purchaseDate: plot.purchase_date,
-            currentEstimatedValue: plot.current_estimated_value,
-            notes: plot.notes,
-          }}
-          submitLabel="Save changes"
-        />
+        <Card>
+          <CardContent className="pt-6">
+            <PlotMetadataForm
+              action={updatePlotMetadata.bind(null, plot.id)}
+              initial={{
+                name: plot.name,
+                village: plot.village,
+                upazila: plot.upazila,
+                district: plot.district,
+                division: plot.division,
+                mutationNumber: plot.mutation_number,
+                purchasePrice: plot.purchase_price,
+                purchaseDate: plot.purchase_date,
+                currentEstimatedValue: plot.current_estimated_value,
+                notes: plot.notes,
+              }}
+              submitLabel="Save changes"
+            />
+          </CardContent>
+        </Card>
       </div>
 
       <div>
         <h2 className="mb-2 font-medium">Documents</h2>
-        <ul className="mb-3 divide-y rounded border px-3">
+        <ul className="mb-3 divide-y divide-border rounded-lg border border-border px-3">
           {(documents ?? []).map((doc) => (
             <DocumentRow
               key={doc.id}
@@ -111,16 +118,16 @@ export default async function PlotDetailPage({
             />
           ))}
           {(!documents || documents.length === 0) && (
-            <li className="py-2 text-sm text-neutral-600">No documents yet.</li>
+            <li className="py-2 text-sm text-muted-foreground">No documents yet.</li>
           )}
         </ul>
         <DocumentUploader plotId={plot.id} />
       </div>
 
       <form action={deletePlot.bind(null, plot.id)}>
-        <button type="submit" className="text-sm text-red-600 underline">
+        <Button type="submit" variant="destructive" size="sm">
           Delete plot
-        </button>
+        </Button>
       </form>
     </div>
   );

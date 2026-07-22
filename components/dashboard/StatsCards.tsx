@@ -1,4 +1,5 @@
 import { convertArea } from "@/lib/units";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface StatsCardsProps {
   plotCount: number;
@@ -44,11 +45,13 @@ export default function StatsCards({
   return (
     <div className="grid grid-cols-2 gap-3">
       {cards.map((card) => (
-        <div key={card.label} className="rounded border p-3">
-          <p className="text-xs text-neutral-500">{card.label}</p>
-          <p className="text-lg font-semibold">{card.value}</p>
-          {card.sub && <p className="text-xs text-neutral-600">{card.sub}</p>}
-        </div>
+        <Card key={card.label}>
+          <CardContent className="p-3">
+            <p className="text-xs text-muted-foreground">{card.label}</p>
+            <p className="text-lg font-semibold">{card.value}</p>
+            {card.sub && <p className="text-xs text-muted-foreground">{card.sub}</p>}
+          </CardContent>
+        </Card>
       ))}
     </div>
   );
