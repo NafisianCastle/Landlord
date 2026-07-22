@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Polygon } from "geojson";
 import PlotMap from "@/components/map/PlotMap";
 import BoundaryWalker from "@/components/map/BoundaryWalker";
+import ManualBoundaryDrawer from "@/components/map/ManualBoundaryDrawer";
 
 interface PlotBoundarySectionProps {
   plotId: string;
@@ -11,15 +12,42 @@ interface PlotBoundarySectionProps {
   boundary: Polygon | null;
 }
 
+type Mode = "gps" | "manual";
+
 export default function PlotBoundarySection({
   plotId,
   plotName,
   boundary,
 }: PlotBoundarySectionProps) {
   const [redrawing, setRedrawing] = useState(false);
+  const [mode, setMode] = useState<Mode>("gps");
 
   if (!boundary || redrawing) {
-    return <BoundaryWalker plotId={plotId} />;
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="flex gap-2 text-sm">
+          <button
+            type="button"
+            onClick={() => setMode("gps")}
+            className={`rounded px-3 py-1 ${mode === "gps" ? "bg-black text-white" : "border"}`}
+          >
+            Walk with GPS
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("manual")}
+            className={`rounded px-3 py-1 ${mode === "manual" ? "bg-black text-white" : "border"}`}
+          >
+            Draw on map
+          </button>
+        </div>
+        {mode === "gps" ? (
+          <BoundaryWalker plotId={plotId} />
+        ) : (
+          <ManualBoundaryDrawer plotId={plotId} />
+        )}
+      </div>
+    );
   }
 
   return (
