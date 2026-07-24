@@ -199,7 +199,7 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
   if (mapError) {
     return (
       <div
-        className={`flex items-center justify-center rounded border bg-neutral-50 p-4 text-center text-sm text-neutral-600 ${className ?? "h-full w-full"}`}
+        className={`flex items-center justify-center rounded border border-border bg-card p-4 text-center text-sm text-card-foreground ${className ?? "h-full w-full"}`}
       >
         {mapError}
       </div>
@@ -211,21 +211,25 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
       <div className={`relative ${className ?? "h-full w-full"}`}>
         <div ref={containerRef} className="h-full w-full" />
         {tileWarning && (
-          <p className="absolute bottom-2 left-2 right-2 rounded bg-amber-50 px-2 py-1 text-xs text-amber-700 shadow">
+          <p className="absolute bottom-2 left-2 right-2 rounded bg-amber-50 px-2 py-1 text-xs text-amber-800 shadow dark:bg-amber-950 dark:text-amber-300">
             {tileWarning}
           </p>
         )}
         {downloading && progress && (
-          <div className="absolute bottom-2 left-2 right-2 rounded bg-white px-2 py-1 text-xs shadow">
+          <div className="absolute bottom-2 left-2 right-2 rounded bg-card px-2 py-1 text-xs text-card-foreground shadow">
             <div className="flex items-center justify-between gap-2">
               <span>
                 Downloading {progress.done}/{progress.total} tiles…
               </span>
-              <button type="button" onClick={cancelDownload} className="underline">
+              <button
+                type="button"
+                onClick={cancelDownload}
+                className="rounded px-2 py-1 underline"
+              >
                 Cancel
               </button>
             </div>
-            <div className="mt-1 h-1 w-full rounded bg-neutral-200">
+            <div className="mt-1 h-1 w-full rounded bg-neutral-200 dark:bg-neutral-700">
               <div
                 className="h-1 rounded bg-green-600"
                 style={{
@@ -239,7 +243,7 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
           <button
             type="button"
             onClick={toggleStyle}
-            className="rounded bg-white px-2 py-1 text-xs shadow"
+            className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow"
           >
             {baseStyle === "satellite" ? "Streets" : "Satellite"}
           </button>
@@ -248,34 +252,38 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
               type="button"
               onClick={handleDownload}
               disabled={downloading}
-              className="rounded bg-white px-2 py-1 text-xs shadow disabled:opacity-50"
+              className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow disabled:opacity-50"
             >
               Download this view offline
             </button>
           )}
         </div>
       </div>
-      {downloadError && <p className="text-xs text-red-600">{downloadError}</p>}
+      {downloadError && <p className="text-xs text-destructive">{downloadError}</p>}
       {baseStyle !== "satellite" && (
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-muted-foreground">
           Offline download only works on the satellite view for now — switch to
           Satellite to download this area.
         </p>
       )}
       {areas.length > 0 && (
-        <div className="rounded border p-2 text-xs">
-          <p className="mb-1 font-medium text-neutral-700">Downloaded for offline use</p>
+        <div className="rounded border border-border p-2 text-xs">
+          <p className="mb-1 font-medium text-foreground">Downloaded for offline use</p>
           <ul className="flex flex-col gap-1">
             {areas.map((area) => (
               <li key={area.id} className="flex items-center justify-between gap-2">
-                <button type="button" onClick={() => goToArea(area)} className="text-left underline">
+                <button
+                  type="button"
+                  onClick={() => goToArea(area)}
+                  className="rounded py-1 text-left underline"
+                >
                   {area.label} ({(area.bytesStored / 1024 / 1024).toFixed(1)} MB,{" "}
                   {area.tileCount} tiles)
                 </button>
                 <button
                   type="button"
                   onClick={() => removeArea(area)}
-                  className="text-red-600 underline"
+                  className="shrink-0 rounded px-2 py-1.5 text-destructive underline"
                 >
                   Delete
                 </button>

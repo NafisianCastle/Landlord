@@ -28,11 +28,12 @@ export default async function PaywallPage({
   if (await hasActiveAccess(user.id)) redirect("/dashboard");
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-4 p-6">
-      <div className="absolute right-4 top-4">
+    <div className="mx-auto flex min-h-screen w-full max-w-sm flex-col gap-4 p-6">
+      <div className="flex justify-end pt-2">
         <ThemeToggle />
       </div>
-      <Card>
+      <div className="flex flex-1 flex-col justify-center gap-4">
+        <Card>
         <CardContent className="flex flex-col gap-4 pt-6">
           <h1 className="text-2xl font-semibold">Your free trial has ended</h1>
           <p className="text-muted-foreground">
@@ -50,7 +51,8 @@ export default async function PaywallPage({
             </Button>
           </form>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }

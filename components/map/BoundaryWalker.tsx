@@ -253,7 +253,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
   return (
     <div className="flex flex-col gap-3">
       {mapError ? (
-        <div className="flex h-[65vh] min-h-[400px] w-full items-center justify-center rounded border bg-neutral-50 p-4 text-center text-sm text-neutral-600">
+        <div className="flex h-[65vh] min-h-[400px] w-full items-center justify-center rounded border border-border bg-card p-4 text-center text-sm text-card-foreground">
           {mapError} You can still mark points below — they&rsquo;ll save without a map
           preview.
         </div>
@@ -264,20 +264,20 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
             <button
               type="button"
               onClick={toggleStyle}
-              className="rounded bg-white px-2 py-1 text-xs shadow"
+              className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow"
             >
               {baseStyle === "satellite" ? "Streets" : "Satellite"}
             </button>
             <button
               type="button"
               onClick={recenter}
-              className="rounded bg-white px-2 py-1 text-xs shadow"
+              className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow"
             >
               Recenter on me
             </button>
           </div>
           {stats && (
-            <div className="absolute bottom-2 left-2 rounded bg-white px-2 py-1 text-xs shadow">
+            <div className="absolute bottom-2 left-2 rounded bg-card px-2 py-1 text-xs text-card-foreground shadow">
               {points.length < 3
                 ? `${stats.distance.toFixed(1)} m walked so far`
                 : `${stats.distance.toFixed(1)} m perimeter • ${stats.area!.decimal.toFixed(2)} decimal (${stats.area!.sqMeters.toFixed(0)} m²)`}
@@ -286,21 +286,21 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
         </div>
       )}
       {tileWarning && (
-        <p className="rounded bg-amber-50 px-2 py-1 text-sm text-amber-700">{tileWarning}</p>
+        <p className="rounded bg-amber-50 px-2 py-1 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-300">{tileWarning}</p>
       )}
-      <p className="text-xs text-neutral-500">
+      <p className="text-xs text-muted-foreground">
         The blue dot is your current GPS position — that&rsquo;s the exact point &ldquo;Mark
         point&rdquo; will record. Tap a marked point on the map to remove just that one.
       </p>
       {!online && (
-        <p className="rounded bg-amber-50 px-2 py-1 text-sm text-amber-700">
+        <p className="rounded bg-amber-50 px-2 py-1 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-300">
           Offline — points are saved on this device and will sync automatically.
         </p>
       )}
       {pending > 0 && (
-        <p className="text-sm text-neutral-600">{pending} point(s) waiting to sync.</p>
+        <p className="text-sm text-muted-foreground">{pending} point(s) waiting to sync.</p>
       )}
-      <p className="text-sm text-neutral-600">
+      <p className="text-sm text-muted-foreground">
         Walk the boundary of the plot. Tap &ldquo;Mark point&rdquo; at each corner as you go.
       </p>
       <div className="flex flex-wrap gap-2">

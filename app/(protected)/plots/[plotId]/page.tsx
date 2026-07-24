@@ -18,11 +18,21 @@ export default async function PlotDetailPage({
 }) {
   const { plotId } = await params;
   const supabase = await createClient();
-  const { data: plot } = await supabase
+  const { data: plot, error } = await supabase
     .from("land_plots")
     .select("*")
     .eq("id", plotId)
     .single();
+
+  if (error && error.code !== "PGRST116") {
+    return (
+      <div className="mx-auto flex max-w-lg flex-col gap-4 p-6">
+        <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          Couldn&rsquo;t load this plot — {error.message}. Try refreshing the page.
+        </p>
+      </div>
+    );
+  }
 
   if (!plot) notFound();
 
@@ -43,7 +53,7 @@ export default async function PlotDetailPage({
       <div>
         <h1 className="text-xl font-semibold">{plot.name}</h1>
         {navigateUrl && (
-          <Button variant="link" className="h-auto p-0" asChild>
+          <Button variant="link" size="sm" className="px-0" asChild>
             <a href={navigateUrl} target="_blank" rel="noopener noreferrer">
               Navigate here
             </a>
@@ -111,7 +121,7 @@ export default async function PlotDetailPage({
 
       <div>
         <h2 className="mb-2 font-medium">Documents</h2>
-        <ul className="mb-3 divide-y divide-border rounded-lg border border-border px-3">
+        <ul className="mb-3 divide-y divide-border rounded-lg border border-border px-3 py-1">
           {(documents ?? []).map((doc) => (
             <DocumentRow
               key={doc.id}

@@ -55,7 +55,8 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
     mapRef.current = map;
 
     map.once("load", () => addDrawLayers(map, pointsRef.current));
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-left");
+    map.addControl(new maplibregl.NavigationControl({ showCompass: true, visualizePitch: false }), "top-right");
+    map.getCanvas().style.cursor = "crosshair";
 
     navigator.geolocation?.getCurrentPosition(
       (pos) => map.setCenter([pos.coords.longitude, pos.coords.latitude]),
@@ -113,7 +114,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
       if (draggingIndexRef.current == null) return;
       draggingIndexRef.current = null;
       map.dragPan.enable();
-      map.getCanvas().style.cursor = "";
+      map.getCanvas().style.cursor = "crosshair";
     };
     map.on("mouseup", endDrag);
     map.on("touchend", endDrag);
@@ -122,7 +123,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
       if (draggingIndexRef.current == null) map.getCanvas().style.cursor = "grab";
     });
     map.on("mouseleave", "draw-points", () => {
-      if (draggingIndexRef.current == null) map.getCanvas().style.cursor = "";
+      if (draggingIndexRef.current == null) map.getCanvas().style.cursor = "crosshair";
     });
 
     return () => {
@@ -230,7 +231,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
   return (
     <div className="flex flex-col gap-3">
       {mapError ? (
-        <div className="flex h-[65vh] min-h-[400px] w-full items-center justify-center rounded border bg-neutral-50 p-4 text-center text-sm text-neutral-600">
+        <div className="flex h-[65vh] min-h-[400px] w-full items-center justify-center rounded border border-border bg-card p-4 text-center text-sm text-card-foreground">
           {mapError}
         </div>
       ) : (
@@ -242,17 +243,17 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search a place to navigate there..."
-              className="w-full rounded bg-white px-2 py-1 text-xs shadow outline-none"
+              className="w-full rounded bg-card px-2 py-2 text-sm text-card-foreground shadow outline-none"
             />
             {(searching || searchResults.length > 0) && (
-              <ul className="mt-1 max-h-48 overflow-y-auto rounded bg-white text-xs shadow">
-                {searching && <li className="px-2 py-1 text-neutral-500">Searching...</li>}
+              <ul className="mt-1 max-h-48 overflow-y-auto rounded bg-card text-sm text-card-foreground shadow">
+                {searching && <li className="px-2 py-2 text-muted-foreground">Searching...</li>}
                 {searchResults.map((r, i) => (
                   <li key={i}>
                     <button
                       type="button"
                       onClick={() => goToPlace(r)}
-                      className="block w-full px-2 py-1 text-left hover:bg-neutral-100"
+                      className="block w-full px-2 py-2 text-left hover:bg-neutral-100 dark:hover:bg-neutral-800"
                     >
                       {r.label}
                     </button>
@@ -261,11 +262,11 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
               </ul>
             )}
           </div>
-          <div className="absolute right-2 top-2 flex flex-col items-end gap-1">
+          <div className="absolute right-2 top-32 flex flex-col items-end gap-1">
             <button
               type="button"
               onClick={toggleStyle}
-              className="rounded bg-white px-2 py-1 text-xs shadow"
+              className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow"
             >
               {baseStyle === "satellite" ? "Streets" : "Satellite"}
             </button>
@@ -276,18 +277,18 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
             disabled={locating}
             title="Return to my location"
             aria-label="Return to my location"
-            className="absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-white text-lg shadow disabled:opacity-50"
+            className="absolute bottom-2 right-2 flex h-11 w-11 items-center justify-center rounded-full bg-card text-lg text-card-foreground shadow disabled:opacity-50"
           >
             {locating ? "…" : "📍"}
           </button>
           {stats && (
-            <div className="absolute bottom-2 left-2 rounded bg-white px-2 py-1 text-xs shadow">
+            <div className="absolute bottom-2 left-2 rounded bg-card px-2 py-1 text-xs text-card-foreground shadow">
               {`${stats.distance.toFixed(1)} m perimeter • ${stats.area.decimal.toFixed(2)} decimal (${stats.area.sqMeters.toFixed(0)} m²)`}
             </div>
           )}
         </div>
       )}
-      <p className="text-xs text-neutral-500">
+      <p className="text-xs text-muted-foreground">
         Tap the map to drop a corner (4–6 for most plots). Drag a point to reposition it,
         double-tap a point to remove it.
       </p>
@@ -317,7 +318,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
           {saving ? "Saving..." : `Save boundary (${points.length} points)`}
         </button>
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   );
 }
@@ -338,11 +339,23 @@ function addDrawLayers(map: maplibregl.Map, points: LatLng[]) {
     paint: { "line-color": "#16a34a", "line-width": 3 },
   });
   map.addLayer({
+    id: "draw-points-halo",
+    type: "circle",
+    source: "draw",
+    filter: ["==", "$type", "Point"],
+    paint: { "circle-color": "#000", "circle-opacity": 0.25, "circle-radius": 12 },
+  });
+  map.addLayer({
     id: "draw-points",
     type: "circle",
     source: "draw",
     filter: ["==", "$type", "Point"],
-    paint: { "circle-color": "#16a34a", "circle-radius": 7, "circle-stroke-color": "#fff", "circle-stroke-width": 2 },
+    paint: {
+      "circle-color": "#fff",
+      "circle-radius": 8,
+      "circle-stroke-color": "#16a34a",
+      "circle-stroke-width": 3,
+    },
   });
 }
 

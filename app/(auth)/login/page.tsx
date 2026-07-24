@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [state, formAction, pending] = useActionState(signIn, undefined);
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-4 p-6">
+    <div className="mx-auto flex w-full max-w-sm flex-col gap-4 p-6">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Log in</CardTitle>
@@ -21,11 +21,26 @@ export default function LoginPage() {
           <form action={formAction} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" required />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                aria-invalid={!!state?.error}
+                className={state?.error ? "border-destructive" : undefined}
+              />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required minLength={6} />
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                required
+                minLength={6}
+                aria-invalid={!!state?.error}
+                className={state?.error ? "border-destructive" : undefined}
+              />
             </div>
             {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
             <Button type="submit" disabled={pending}>

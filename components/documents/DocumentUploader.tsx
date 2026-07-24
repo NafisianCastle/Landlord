@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { uploadDocument } from "@/app/actions/documents";
 import { Button } from "@/components/ui/button";
 import { encryptBytes, toPgBytea } from "@/lib/crypto/encryption";
@@ -11,6 +11,7 @@ export default function DocumentUploader({ plotId }: { plotId: string }) {
     uploadDocument.bind(null, plotId),
     undefined,
   );
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const dek = getSessionDEK();
@@ -38,11 +39,14 @@ export default function DocumentUploader({ plotId }: { plotId: string }) {
         type="file"
         accept="application/pdf"
         required
+        onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
         className="text-sm text-foreground"
       />
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
       <Button type="submit" size="sm" disabled={pending} className="self-start">
-        {pending ? "Uploading..." : "Upload document"}
+        {pending
+          ? `Uploading${selectedFile ? ` ${(selectedFile.size / 1024 / 1024).toFixed(1)} MB` : ""}...`
+          : "Upload document"}
       </Button>
     </form>
   );

@@ -59,7 +59,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label="Toggle light/dark mode"
-      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-card-foreground shadow-sm"
+      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2.5 text-xs text-card-foreground shadow-sm"
     >
       {theme === "dark" ? <Moon className="size-3.5" /> : <Sun className="size-3.5" />}
       {theme === "dark" ? "Dark" : "Light"}

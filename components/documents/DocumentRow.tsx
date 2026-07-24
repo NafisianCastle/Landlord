@@ -40,14 +40,16 @@ export default function DocumentRow({
         <Button
           type="button"
           variant="link"
-          className="h-auto p-0 text-destructive"
+          size="sm"
+          className="text-destructive"
           disabled={pending}
-          onClick={() =>
+          onClick={() => {
+            if (!window.confirm(`Delete "${fileName}"? This can't be undone.`)) return;
             startTransition(async () => {
               await deleteDocument(plotId, documentId, storagePath);
               setRemoved(true);
-            })
-          }
+            });
+          }}
         >
           Delete
         </Button>

@@ -43,7 +43,7 @@ export default function StatsCards({
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
       {cards.map((card) => (
         <Card key={card.label}>
           <CardContent className="p-3">

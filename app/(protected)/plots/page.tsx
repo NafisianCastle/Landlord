@@ -6,7 +6,7 @@ import PlotsMapClient from "./PlotsMapClient";
 
 export default async function PlotsPage() {
   const supabase = await createClient();
-  const { data: plots } = await supabase
+  const { data: plots, error } = await supabase
     .from("land_plots")
     .select("id, name, village, district, area_sq_meters, boundary_geojson")
     .order("created_at", { ascending: false });
@@ -29,33 +29,41 @@ export default async function PlotsPage() {
         </Button>
       </div>
 
-      <PlotsMapClient
-        plots={mapped.filter(
-          (p): p is typeof p & { boundary: Polygon } => p.boundary !== null,
-        )}
-      />
+      {error ? (
+        <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          Couldn&rsquo;t load your plots — {error.message}. Try refreshing the page.
+        </p>
+      ) : (
+        <>
+          <PlotsMapClient
+            plots={mapped.filter(
+              (p): p is typeof p & { boundary: Polygon } => p.boundary !== null,
+            )}
+          />
 
-      <ul className="flex flex-col divide-y divide-border rounded-lg border border-border">
-        {mapped.map((plot) => (
-          <li key={plot.id} className="p-3">
-            <Link href={`/plots/${plot.id}`} className="flex flex-col">
-              <span className="font-medium">{plot.name}</span>
-              <span className="text-sm text-muted-foreground">
-                {[plot.village, plot.district].filter(Boolean).join(", ") ||
-                  "No location set"}
-                {plot.areaSqMeters
-                  ? ` · ${plot.areaSqMeters.toFixed(0)} m²`
-                  : " · boundary not walked yet"}
-              </span>
-            </Link>
-          </li>
-        ))}
-        {mapped.length === 0 && (
-          <li className="p-3 text-sm text-muted-foreground">
-            No plots yet. Add your first one.
-          </li>
-        )}
-      </ul>
+          <ul className="flex flex-col divide-y divide-border rounded-lg border border-border">
+            {mapped.map((plot) => (
+              <li key={plot.id} className="p-3">
+                <Link href={`/plots/${plot.id}`} className="flex flex-col">
+                  <span className="font-medium">{plot.name}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {[plot.village, plot.district].filter(Boolean).join(", ") ||
+                      "No location set"}
+                    {plot.areaSqMeters
+                      ? ` · ${plot.areaSqMeters.toFixed(0)} m²`
+                      : " · boundary not walked yet"}
+                  </span>
+                </Link>
+              </li>
+            ))}
+            {mapped.length === 0 && (
+              <li className="p-3 text-sm text-muted-foreground">
+                No plots yet. Add your first one.
+              </li>
+            )}
+          </ul>
+        </>
+      )}
     </div>
   );
 }

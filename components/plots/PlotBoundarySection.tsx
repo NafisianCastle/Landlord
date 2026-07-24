@@ -5,6 +5,7 @@ import type { Polygon } from "geojson";
 import PlotMap from "@/components/map/PlotMap";
 import BoundaryWalker from "@/components/map/BoundaryWalker";
 import ManualBoundaryDrawer from "@/components/map/ManualBoundaryDrawer";
+import { Button } from "@/components/ui/button";
 
 interface PlotBoundarySectionProps {
   plotId: string;
@@ -26,20 +27,22 @@ export default function PlotBoundarySection({
     return (
       <div className="flex flex-col gap-3">
         <div className="flex gap-2 text-sm">
-          <button
+          <Button
             type="button"
+            size="sm"
+            variant={mode === "gps" ? "default" : "outline"}
             onClick={() => setMode("gps")}
-            className={`rounded px-3 py-1 ${mode === "gps" ? "bg-black text-white" : "border"}`}
           >
             Walk with GPS
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            size="sm"
+            variant={mode === "manual" ? "default" : "outline"}
             onClick={() => setMode("manual")}
-            className={`rounded px-3 py-1 ${mode === "manual" ? "bg-black text-white" : "border"}`}
           >
             Draw on map
-          </button>
+          </Button>
         </div>
         {mode === "gps" ? (
           <BoundaryWalker plotId={plotId} />
@@ -56,13 +59,15 @@ export default function PlotBoundarySection({
         plots={[{ id: plotId, name: plotName, boundary }]}
         className="h-[70vh] min-h-[420px] w-full rounded"
       />
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
+        className="self-start"
         onClick={() => setRedrawing(true)}
-        className="self-start text-sm underline"
       >
         Redraw boundary
-      </button>
+      </Button>
     </div>
   );
 }

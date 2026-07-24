@@ -213,6 +213,12 @@ export default function PlotMetadataForm({
           placeholder={sensitiveLocked ? "Unlock encryption in Profile to view/edit" : undefined}
         />
       </div>
+      {sensitiveLocked && (
+        <p className="text-xs text-muted-foreground">
+          Village, mutation number, prices, and notes are encrypted. Unlock encryption in
+          Profile to view or edit them.
+        </p>
+      )}
       {decryptError && <p className="text-sm text-destructive">{decryptError}</p>}
       {willEncrypt && (
         <p className="text-xs text-muted-foreground">

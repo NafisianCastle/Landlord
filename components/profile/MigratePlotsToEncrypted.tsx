@@ -35,6 +35,12 @@ export default function MigratePlotsToEncrypted({ userId }: { userId: string }) 
   async function run() {
     const dek = getSessionDEK();
     if (!dek) return;
+    if (
+      !window.confirm(
+        "Encrypt all existing plots now? This clears the plaintext copy of each field — only recoverable by unlocking with your passphrase or recovery code.",
+      )
+    )
+      return;
     setStatus({ state: "running" });
 
     const supabase = createClient();
