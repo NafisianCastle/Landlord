@@ -17,11 +17,11 @@ export default function ChangePasswordForm() {
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="newPassword">New password</Label>
-        <Input id="newPassword" name="newPassword" type="password" required minLength={6} />
+        <Input id="newPassword" name="newPassword" type="password" required minLength={10} />
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="confirmPassword">Confirm new password</Label>
-        <Input id="confirmPassword" name="confirmPassword" type="password" required minLength={6} />
+        <Input id="confirmPassword" name="confirmPassword" type="password" required minLength={10} />
       </div>
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
       {state?.success && <p className="text-sm text-muted-foreground">Password changed.</p>}

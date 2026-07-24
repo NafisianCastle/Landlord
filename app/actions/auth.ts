@@ -9,6 +9,10 @@ export async function signUp(_prevState: unknown, formData: FormData) {
   const password = String(formData.get("password"));
   const fullName = String(formData.get("fullName") ?? "");
 
+  if (password.length < 10) {
+    return { error: "Password must be at least 10 characters." };
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signUp({
     email,
@@ -71,8 +75,8 @@ export async function changePassword(_prevState: unknown, formData: FormData) {
   const newPassword = String(formData.get("newPassword") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
-  if (newPassword.length < 6) {
-    return { error: "New password must be at least 6 characters." };
+  if (newPassword.length < 10) {
+    return { error: "New password must be at least 10 characters." };
   }
   if (newPassword !== confirmPassword) {
     return { error: "New passwords do not match." };

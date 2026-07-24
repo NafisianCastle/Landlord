@@ -2,23 +2,29 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getUserWithAccess } from "@/lib/access";
 
 const BUCKET = "land-documents";
+const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024;
 
 export async function uploadDocument(
   plotId: string,
   _prevState: unknown,
   formData: FormData,
 ) {
+  const auth = await getUserWithAccess();
+  if (!auth) return { error: "Not signed in" };
+  if (!auth.hasAccess) return { error: "Your trial has ended — please upgrade to continue." };
+  const { user } = auth;
+
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not signed in" };
 
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
     return { error: "Choose a PDF file" };
+  }
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    return { error: "File is too large — max 20 MB." };
   }
 
   const encryptionIvHex = formData.get("encryptionIvHex");
@@ -60,6 +66,21 @@ export async function uploadDocument(
 
 export async function deleteDocument(plotId: string, documentId: string, storagePath: string) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  // Belt-and-suspenders on top of RLS: confirm this row is both the document
+  // asked for and actually owned by the caller before touching storage.
+  const { data: doc } = await supabase
+    .from("plot_documents")
+    .select("id, user_id, storage_path")
+    .eq("id", documentId)
+    .eq("plot_id", plotId)
+    .single();
+  if (!doc || doc.user_id !== user.id || doc.storage_path !== storagePath) return;
+
   await supabase.storage.from(BUCKET).remove([storagePath]);
   await supabase.from("plot_documents").delete().eq("id", documentId);
   revalidatePath(`/plots/${plotId}`);
