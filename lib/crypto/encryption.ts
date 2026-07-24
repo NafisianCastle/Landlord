@@ -45,11 +45,19 @@ export async function generateDEK(): Promise<CryptoKey> {
 /** 12 groups of 4 base32-ish chars, e.g. "XY4K-9F2P-...". Shown to the user once at setup. */
 export function generateRecoveryCode(): string {
   const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no 0/O/1/I
-  const bytes = randomBytes(20);
+  const symbols = 20;
+  const radix = alphabet.length;
+  const maxUnbiased = Math.floor(256 / radix) * radix;
+
   let code = "";
-  for (let i = 0; i < bytes.length; i++) {
-    code += alphabet[bytes[i] % alphabet.length];
-    if ((i + 1) % 4 === 0 && i !== bytes.length - 1) code += "-";
+  let produced = 0;
+  while (produced < symbols) {
+    const b = randomBytes(1)[0];
+    if (b >= maxUnbiased) continue;
+
+    code += alphabet[b % radix];
+    produced++;
+    if (produced % 4 === 0 && produced !== symbols) code += "-";
   }
   return code;
 }
