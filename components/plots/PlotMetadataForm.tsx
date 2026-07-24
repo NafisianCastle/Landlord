@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { encryptJSON, decryptJSON, toPgBytea, fromPgBytea } from "@/lib/crypto/encryption";
 import { getSessionDEK, onSessionChange } from "@/lib/crypto/session";
+import { DIVISIONS, DISTRICTS, UPAZILAS } from "@/lib/data/bangladesh-geo";
 
 export interface SensitiveValues {
   village: string | null;
@@ -65,6 +66,59 @@ export default function PlotMetadataForm({
     initial?.plaintext ?? EMPTY_SENSITIVE,
   );
   const [decryptError, setDecryptError] = useState<string | null>(null);
+
+  const [divisionName, setDivisionName] = useState(initial?.division ?? "");
+  const [districtName, setDistrictName] = useState(initial?.district ?? "");
+  const [upazilaName, setUpazilaName] = useState(initial?.upazila ?? "");
+
+  const byName = (n: string) => n.trim().toLowerCase();
+  const divisionMatch = DIVISIONS.find((d) => byName(d.name) === byName(divisionName));
+  const districtMatch = DISTRICTS.find((d) => byName(d.name) === byName(districtName));
+  const upazilaMatch = UPAZILAS.find((u) => byName(u.name) === byName(upazilaName));
+
+  const districtOptions = divisionMatch
+    ? DISTRICTS.filter((d) => d.divisionId === divisionMatch.id)
+    : DISTRICTS;
+  const upazilaOptions = districtMatch
+    ? UPAZILAS.filter((u) => u.districtId === districtMatch.id)
+    : divisionMatch
+      ? UPAZILAS.filter((u) =>
+          districtOptions.some((d) => d.id === u.districtId),
+        )
+      : UPAZILAS;
+
+  // Selecting a lower level (upazila) fills in its parents (district, division).
+  useEffect(() => {
+    if (!upazilaMatch) return;
+    const parentDistrict = DISTRICTS.find((d) => d.id === upazilaMatch.districtId);
+    if (parentDistrict && byName(parentDistrict.name) !== byName(districtName)) {
+      setDistrictName(parentDistrict.name);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [upazilaName]);
+
+  // Selecting a district fills in its division, and clears an upazila that no longer belongs to it.
+  useEffect(() => {
+    if (!districtMatch) return;
+    const parentDivision = DIVISIONS.find((d) => d.id === districtMatch.divisionId);
+    if (parentDivision && byName(parentDivision.name) !== byName(divisionName)) {
+      setDivisionName(parentDivision.name);
+    }
+    if (upazilaMatch && upazilaMatch.districtId !== districtMatch.id) {
+      setUpazilaName("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [districtName]);
+
+  // Selecting a division clears a district (and upazila) that no longer belongs to it.
+  useEffect(() => {
+    if (!divisionMatch) return;
+    if (districtMatch && districtMatch.divisionId !== divisionMatch.id) {
+      setDistrictName("");
+      setUpazilaName("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [divisionName]);
 
   useEffect(() => onSessionChange(() => setUnlocked(getSessionDEK() !== null)), []);
 
@@ -139,16 +193,55 @@ export default function PlotMetadataForm({
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="upazila">{t("upazila")}</Label>
-          <Input id="upazila" name="upazila" defaultValue={initial?.upazila ?? ""} />
+          <Label htmlFor="division">{t("division")}</Label>
+          <Input
+            id="division"
+            name="division"
+            list="division-options"
+            autoComplete="off"
+            placeholder={t("selectDivision")}
+            value={divisionName}
+            onChange={(e) => setDivisionName(e.target.value)}
+          />
+          <datalist id="division-options">
+            {DIVISIONS.map((d) => (
+              <option key={d.id} value={d.name} />
+            ))}
+          </datalist>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="district">{t("district")}</Label>
-          <Input id="district" name="district" defaultValue={initial?.district ?? ""} />
+          <Input
+            id="district"
+            name="district"
+            list="district-options"
+            autoComplete="off"
+            placeholder={t("selectDistrict")}
+            value={districtName}
+            onChange={(e) => setDistrictName(e.target.value)}
+          />
+          <datalist id="district-options">
+            {districtOptions.map((d) => (
+              <option key={d.id} value={d.name} />
+            ))}
+          </datalist>
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="division">{t("division")}</Label>
-          <Input id="division" name="division" defaultValue={initial?.division ?? ""} />
+          <Label htmlFor="upazila">{t("upazila")}</Label>
+          <Input
+            id="upazila"
+            name="upazila"
+            list="upazila-options"
+            autoComplete="off"
+            placeholder={t("selectUpazila")}
+            value={upazilaName}
+            onChange={(e) => setUpazilaName(e.target.value)}
+          />
+          <datalist id="upazila-options">
+            {upazilaOptions.map((u) => (
+              <option key={u.id} value={u.name} />
+            ))}
+          </datalist>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">

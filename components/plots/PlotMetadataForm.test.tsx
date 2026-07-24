@@ -33,12 +33,34 @@ describe("PlotMetadataForm — plaintext, unencrypted record, no session", () =>
       <PlotMetadataForm
         action={vi.fn()}
         submitLabel="Save"
-        initial={{ name: "My Plot", upazila: "U", district: "D", division: "Div" }}
+        initial={{ name: "My Plot", upazila: "Savar", district: "Dhaka", division: "Dhaka" }}
       />,
     );
     expect(screen.getByLabelText("Plot name")).toHaveValue("My Plot");
     expect(screen.getByLabelText("Plot name")).toBeRequired();
-    expect(screen.getByLabelText("Upazila")).toHaveValue("U");
+    expect(screen.getByLabelText("Upazila")).toHaveValue("Savar");
+  });
+
+  it("auto-fills district and division when the user picks an upazila", async () => {
+    render(<PlotMetadataForm action={vi.fn()} submitLabel="Save" />);
+    const upazilaInput = screen.getByLabelText("Upazila");
+    await userEvent.type(upazilaInput, "Savar");
+    await waitFor(() => expect(screen.getByLabelText("District")).toHaveValue("Dhaka"));
+    expect(screen.getByLabelText("Division")).toHaveValue("Dhaka");
+  });
+
+  it("clears the upazila when the district is changed to one it doesn't belong to", async () => {
+    render(
+      <PlotMetadataForm
+        action={vi.fn()}
+        submitLabel="Save"
+        initial={{ upazila: "Savar", district: "Dhaka", division: "Dhaka" }}
+      />,
+    );
+    const districtInput = screen.getByLabelText("District");
+    await userEvent.clear(districtInput);
+    await userEvent.type(districtInput, "Gazipur");
+    await waitFor(() => expect(screen.getByLabelText("Upazila")).toHaveValue(""));
   });
 
   it("submits the form normally (no interception) when no session DEK is unlocked", async () => {
@@ -52,7 +74,7 @@ describe("PlotMetadataForm — plaintext, unencrypted record, no session", () =>
 
   it("renders the area unit selects with 'decimal' as the default", () => {
     render(<PlotMetadataForm action={vi.fn()} submitLabel="Save" />);
-    const selects = screen.getAllByRole("combobox");
+    const selects = screen.getAllByRole("combobox").filter((el) => el.tagName === "SELECT");
     expect(selects).toHaveLength(2);
     for (const select of selects) {
       expect(select).toHaveValue("decimal");
