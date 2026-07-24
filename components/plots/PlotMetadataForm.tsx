@@ -26,11 +26,17 @@ const EMPTY_SENSITIVE: SensitiveValues = {
   notes: "",
 };
 
+const AREA_UNITS = ["decimal", "katha", "bigha", "acre", "sqft", "sqmeter"] as const;
+
 export interface PlotMetadataValues {
   name?: string;
   upazila?: string | null;
   district?: string | null;
   division?: string | null;
+  dolilArea?: number | null;
+  dolilAreaUnit?: string | null;
+  actualArea?: number | null;
+  actualAreaUnit?: string | null;
   /** Plaintext fallback — set when this plot's sensitive fields were never encrypted. */
   plaintext?: SensitiveValues;
   /** Present when this plot's sensitive fields are stored encrypted (see migration 0009). */
@@ -141,6 +147,64 @@ export default function PlotMetadataForm({
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="division">Division</Label>
           <Input id="division" name="division" defaultValue={initial?.division ?? ""} />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="dolilArea">Plot measurement (as per dolil)</Label>
+          <div className="flex gap-2">
+            <Input
+              id="dolilArea"
+              name="dolilArea"
+              type="number"
+              step="0.0001"
+              min="0"
+              defaultValue={initial?.dolilArea ?? ""}
+              className="flex-1"
+            />
+            <select
+              id="dolilAreaUnit"
+              name="dolilAreaUnit"
+              defaultValue={initial?.dolilAreaUnit ?? "decimal"}
+              className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm"
+            >
+              {AREA_UNITS.map((unit) => (
+                <option key={unit} value={unit}>
+                  {unit}
+                </option>
+              ))}
+            </select>
+          </div>
+          <p className="text-xs text-muted-foreground">Area written in the deed document.</p>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="actualArea">Plot measurement (actual)</Label>
+          <div className="flex gap-2">
+            <Input
+              id="actualArea"
+              name="actualArea"
+              type="number"
+              step="0.0001"
+              min="0"
+              defaultValue={initial?.actualArea ?? ""}
+              className="flex-1"
+            />
+            <select
+              id="actualAreaUnit"
+              name="actualAreaUnit"
+              defaultValue={initial?.actualAreaUnit ?? "decimal"}
+              className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm"
+            >
+              {AREA_UNITS.map((unit) => (
+                <option key={unit} value={unit}>
+                  {unit}
+                </option>
+              ))}
+            </select>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Real/verified area — may differ from dolil or GPS.
+          </p>
         </div>
       </div>
       <div className="flex flex-col gap-1.5">

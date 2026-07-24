@@ -20,7 +20,16 @@
       "Skill(run:*)",
       "Bash(node -e \"console.log\\(require.resolve\\('playwright'\\)\\)\")",
       "Bash(npm init *)",
-      "Bash(gh repo *)"
+      "Bash(gh repo *)",
+      "Bash(npx vercel *)",
+      "Bash(git fetch *)",
+      "Bash(git checkout *)",
+      "Bash(git push *)",
+      "Bash(python3 -c \"import json,sys; print\\(json.load\\(sys.stdin\\)['scripts']\\)\")",
+      "Bash(NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=placeholder-publishable-key SUPABASE_SERVICE_ROLE_KEY=placeholder-service-role-key SSLCOMMERZ_STORE_ID=placeholder-store-id SSLCOMMERZ_STORE_PASSWORD=placeholder-store-password SSLCOMMERZ_IS_SANDBOX=true LIFETIME_PRICE_BDT=2000 npm run build)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(npx supabase *)"
     ],
     "additionalDirectories": [
       "/run/media/nafis/Projects/landly/components"

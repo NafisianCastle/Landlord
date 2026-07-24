@@ -70,7 +70,7 @@ export default async function PlotDetailPage({
       {conversions && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm">Area</CardTitle>
+            <CardTitle className="text-sm">Area (from GPS boundary)</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground">
@@ -87,6 +87,34 @@ export default async function PlotDetailPage({
               <li>{conversions.sqFt.toFixed(0)} sq ft</li>
               <li>{conversions.sqKm.toFixed(6)} sq km</li>
             </ul>
+            <p className="mt-2 text-xs text-muted-foreground">
+              GPS-derived — walking/manual boundary drawing can introduce error. See dolil and
+              actual measurements below for cross-check.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {(plot.dolil_area || plot.actual_area) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Dolil vs. actual measurement</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <li>
+                {plot.dolil_area
+                  ? `${plot.dolil_area} ${plot.dolil_area_unit ?? ""}`
+                  : "—"}{" "}
+                <span className="text-xs">(dolil)</span>
+              </li>
+              <li>
+                {plot.actual_area
+                  ? `${plot.actual_area} ${plot.actual_area_unit ?? ""}`
+                  : "—"}{" "}
+                <span className="text-xs">(actual)</span>
+              </li>
+            </ul>
           </CardContent>
         </Card>
       )}
@@ -102,6 +130,10 @@ export default async function PlotDetailPage({
                 upazila: plot.upazila,
                 district: plot.district,
                 division: plot.division,
+                dolilArea: plot.dolil_area,
+                dolilAreaUnit: plot.dolil_area_unit,
+                actualArea: plot.actual_area,
+                actualAreaUnit: plot.actual_area_unit,
                 sensitiveEncryptedHex: plot.sensitive_encrypted,
                 sensitiveIvHex: plot.sensitive_iv,
                 plaintext: {
