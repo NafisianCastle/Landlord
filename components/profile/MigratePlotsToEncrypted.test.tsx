@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MigratePlotsToEncrypted from "./MigratePlotsToEncrypted";
 
@@ -7,8 +7,6 @@ const getSessionDEKMock = vi.fn();
 const encryptJSONMock = vi.fn();
 const selectResult: { data?: unknown; error?: unknown } = { data: [], error: null };
 let selectReturn = selectResult;
-const updateMock = vi.fn();
-
 function makeChain() {
   const chain: Record<string, unknown> = {};
   chain.select = vi.fn(() => chain);
@@ -17,7 +15,7 @@ function makeChain() {
   chain.update = vi.fn(() => updateChain);
   return chain;
 }
-const updateChain = { eq: vi.fn(async () => ({ error: null })) };
+const updateChain = { eq: vi.fn(async (): Promise<{ error: unknown }> => ({ error: null })) };
 
 const fromMock = vi.fn(() => makeChain());
 vi.mock("@/lib/supabase/client", () => ({

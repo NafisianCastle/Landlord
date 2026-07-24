@@ -41,7 +41,7 @@ describe("landlord Dexie schema", () => {
       capturedAt: 2,
       synced: 0,
     });
-    expect(id2).toBeGreaterThan(id1);
+    expect(id2 as number).toBeGreaterThan(id1 as number);
   });
 
   it("supports the compound [sessionId+seq] index for ordered lookups", async () => {

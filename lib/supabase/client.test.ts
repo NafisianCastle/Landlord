@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const createBrowserClientMock = vi.fn((..._args: unknown[]) => ({ fake: "browser-client" }));
+const createBrowserClientMock = vi.fn((..._unusedArgs: unknown[]) => ({ fake: "browser-client" }));
 vi.mock("@supabase/ssr", () => ({
   createBrowserClient: (...a: unknown[]) => createBrowserClientMock(...a),
 }));

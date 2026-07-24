@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const createSupabaseClientMock = vi.fn((..._args: unknown[]) => ({ fake: "admin-client" }));
+const createSupabaseClientMock = vi.fn((..._unusedArgs: unknown[]) => ({ fake: "admin-client" }));
 vi.mock("@supabase/supabase-js", () => ({
   createClient: (...a: unknown[]) => createSupabaseClientMock(...a),
 }));

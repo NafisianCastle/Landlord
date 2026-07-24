@@ -103,7 +103,7 @@ const { downloadAreaMock, deleteAreaMock, estimateTileCountMock, FakeAreaTooLarg
     return {
       downloadAreaMock: vi.fn(),
       deleteAreaMock: vi.fn(),
-      estimateTileCountMock: vi.fn(() => 10),
+      estimateTileCountMock: vi.fn((..._unusedArgs: unknown[]) => 10),
       FakeAreaTooLargeError,
     };
   });

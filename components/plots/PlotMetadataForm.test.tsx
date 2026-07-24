@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import PlotMetadataForm from "./PlotMetadataForm";
 
 const getSessionDEKMock = vi.fn();
-const onSessionChangeMock = vi.fn(() => () => {});
+const onSessionChangeMock = vi.fn((..._unusedArgs: unknown[]) => () => {});
 const encryptJSONMock = vi.fn();
 const decryptJSONMock = vi.fn();
 

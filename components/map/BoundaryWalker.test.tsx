@@ -91,7 +91,7 @@ const undoLastPointMock = vi.fn();
 const deletePointAtMock = vi.fn();
 const finishSessionMock = vi.fn();
 const pendingCountMock = vi.fn();
-const onSyncStateChangeMock = vi.fn(() => () => {});
+const onSyncStateChangeMock = vi.fn((..._unusedArgs: unknown[]) => () => {});
 
 vi.mock("@/lib/offline/syncQueue", () => ({
   resumeOrCreateSession: (...a: unknown[]) => resumeOrCreateSessionMock(...a),

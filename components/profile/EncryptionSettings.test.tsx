@@ -6,7 +6,7 @@ import EncryptionSettings, { type EncryptionProfile } from "./EncryptionSettings
 const getSessionDEKMock = vi.fn();
 const setSessionDEKMock = vi.fn();
 const lockSessionMock = vi.fn();
-const onSessionChangeMock = vi.fn(() => () => {});
+const onSessionChangeMock = vi.fn((..._unusedArgs: unknown[]) => () => {});
 const generateDEKMock = vi.fn();
 const generateRecoveryCodeMock = vi.fn();
 const wrapDEKWithSecretMock = vi.fn();

@@ -178,9 +178,7 @@ describe("syncQueue", () => {
     });
 
     it("finalizes a pending-finish session with >=3 points via savePlotBoundary", async () => {
-      const { syncPending, resumeOrCreateSession, recordPoint, finishSession } = await import(
-        "./syncQueue"
-      );
+      const { syncPending, resumeOrCreateSession, recordPoint } = await import("./syncQueue");
       const { session } = await resumeOrCreateSession("p1");
       await recordPoint(session.id, "p1", 0, 0, 0, null);
       await recordPoint(session.id, "p1", 1, 0, 1, null);

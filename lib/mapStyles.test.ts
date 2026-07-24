@@ -18,6 +18,7 @@ describe("styleFor", () => {
 
 describe("SATELLITE_STYLE", () => {
   it("caps maxzoom at 19", () => {
-    expect(SATELLITE_STYLE.sources.esri.maxzoom).toBe(19);
+    const esriSource = SATELLITE_STYLE.sources.esri as { maxzoom?: number };
+    expect(esriSource.maxzoom).toBe(19);
   });
 });
