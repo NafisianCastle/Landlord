@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
 
@@ -12,19 +13,20 @@ export async function uploadDocument(
   _prevState: unknown,
   formData: FormData,
 ) {
+  const t = await getTranslations("DocumentActions");
   const auth = await getUserWithAccess();
-  if (!auth) return { error: "Not signed in" };
-  if (!auth.hasAccess) return { error: "Your trial has ended — please upgrade to continue." };
+  if (!auth) return { error: t("notSignedIn") };
+  if (!auth.hasAccess) return { error: t("trialEnded") };
   const { user } = auth;
 
   const supabase = await createClient();
 
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
-    return { error: "Choose a PDF file" };
+    return { error: t("choosePdf") };
   }
   if (file.size > MAX_FILE_SIZE_BYTES) {
-    return { error: "File is too large — max 20 MB." };
+    return { error: t("fileTooLarge") };
   }
 
   const encryptionIvHex = formData.get("encryptionIvHex");
@@ -33,7 +35,7 @@ export async function uploadDocument(
   // checked the original was a PDF before encrypting it, so only enforce the
   // mime check on the plaintext path.
   if (!isEncrypted && file.type !== "application/pdf") {
-    return { error: "Only PDF files are supported" };
+    return { error: t("onlyPdf") };
   }
 
   const fileName =

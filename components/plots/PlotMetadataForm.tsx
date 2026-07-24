@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -56,6 +57,7 @@ export default function PlotMetadataForm({
   submitLabel,
 }: PlotMetadataFormProps) {
   const [state, formAction, pending] = useActionState(action, undefined);
+  const t = useTranslations("PlotMetadataForm");
 
   const isEncryptedRecord = Boolean(initial?.sensitiveEncryptedHex && initial?.sensitiveIvHex);
   const [unlocked, setUnlocked] = useState(() => getSessionDEK() !== null);
@@ -80,7 +82,7 @@ export default function PlotMetadataForm({
         if (!cancelled) setSensitive(values);
       })
       .catch(() => {
-        if (!cancelled) setDecryptError("Couldn't decrypt with the current session key.");
+        if (!cancelled) setDecryptError(t("decryptError"));
       });
     return () => {
       cancelled = true;
@@ -115,43 +117,43 @@ export default function PlotMetadataForm({
   return (
     <form action={formAction} onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="name">Plot name</Label>
+        <Label htmlFor="name">{t("plotName")}</Label>
         <Input
           id="name"
           name="name"
-          placeholder="e.g. Behind grandfather's house"
+          placeholder={t("plotNamePlaceholder")}
           defaultValue={initial?.name ?? ""}
           required
         />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="village">Village</Label>
+          <Label htmlFor="village">{t("village")}</Label>
           <Input
             id="village"
             name="village"
             value={sensitive.village ?? ""}
             onChange={(e) => setSensitive((s) => ({ ...s, village: e.target.value }))}
             disabled={sensitiveLocked}
-            placeholder={sensitiveLocked ? "Locked" : undefined}
+            placeholder={sensitiveLocked ? t("locked") : undefined}
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="upazila">Upazila</Label>
+          <Label htmlFor="upazila">{t("upazila")}</Label>
           <Input id="upazila" name="upazila" defaultValue={initial?.upazila ?? ""} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="district">District</Label>
+          <Label htmlFor="district">{t("district")}</Label>
           <Input id="district" name="district" defaultValue={initial?.district ?? ""} />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="division">Division</Label>
+          <Label htmlFor="division">{t("division")}</Label>
           <Input id="division" name="division" defaultValue={initial?.division ?? ""} />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="dolilArea">Plot measurement (as per dolil)</Label>
+          <Label htmlFor="dolilArea">{t("dolilArea")}</Label>
           <div className="flex gap-2">
             <Input
               id="dolilArea"
@@ -175,10 +177,10 @@ export default function PlotMetadataForm({
               ))}
             </select>
           </div>
-          <p className="text-xs text-muted-foreground">Area written in the deed document.</p>
+          <p className="text-xs text-muted-foreground">{t("dolilAreaHint")}</p>
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="actualArea">Plot measurement (actual)</Label>
+          <Label htmlFor="actualArea">{t("actualArea")}</Label>
           <div className="flex gap-2">
             <Input
               id="actualArea"
@@ -202,25 +204,23 @@ export default function PlotMetadataForm({
               ))}
             </select>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Real/verified area — may differ from dolil or GPS.
-          </p>
+          <p className="text-xs text-muted-foreground">{t("actualAreaHint")}</p>
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="mutationNumber">Mutation number</Label>
+        <Label htmlFor="mutationNumber">{t("mutationNumber")}</Label>
         <Input
           id="mutationNumber"
           name="mutationNumber"
           value={sensitive.mutationNumber ?? ""}
           onChange={(e) => setSensitive((s) => ({ ...s, mutationNumber: e.target.value }))}
           disabled={sensitiveLocked}
-          placeholder={sensitiveLocked ? "Locked" : undefined}
+          placeholder={sensitiveLocked ? t("locked") : undefined}
         />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="purchasePrice">Purchase price (BDT)</Label>
+          <Label htmlFor="purchasePrice">{t("purchasePrice")}</Label>
           <Input
             id="purchasePrice"
             name="purchasePrice"
@@ -237,7 +237,7 @@ export default function PlotMetadataForm({
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="purchaseDate">Purchase date</Label>
+          <Label htmlFor="purchaseDate">{t("purchaseDate")}</Label>
           <Input
             id="purchaseDate"
             name="purchaseDate"
@@ -249,7 +249,7 @@ export default function PlotMetadataForm({
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="currentEstimatedValue">Current estimated value (BDT)</Label>
+        <Label htmlFor="currentEstimatedValue">{t("currentEstimatedValue")}</Label>
         <Input
           id="currentEstimatedValue"
           name="currentEstimatedValue"
@@ -266,7 +266,7 @@ export default function PlotMetadataForm({
         />
       </div>
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="notes">Notes</Label>
+        <Label htmlFor="notes">{t("notes")}</Label>
         <Textarea
           id="notes"
           name="notes"
@@ -274,24 +274,19 @@ export default function PlotMetadataForm({
           value={sensitive.notes ?? ""}
           onChange={(e) => setSensitive((s) => ({ ...s, notes: e.target.value }))}
           disabled={sensitiveLocked}
-          placeholder={sensitiveLocked ? "Unlock encryption in Profile to view/edit" : undefined}
+          placeholder={sensitiveLocked ? t("notesLockedPlaceholder") : undefined}
         />
       </div>
       {sensitiveLocked && (
-        <p className="text-xs text-muted-foreground">
-          Village, mutation number, prices, and notes are encrypted. Unlock encryption in
-          Profile to view or edit them.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("sensitiveLockedNotice")}</p>
       )}
       {decryptError && <p className="text-sm text-destructive">{decryptError}</p>}
       {willEncrypt && (
-        <p className="text-xs text-muted-foreground">
-          Village, mutation number, prices, dates, and notes will be saved encrypted.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("willEncryptNotice")}</p>
       )}
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
       <Button type="submit" disabled={pending || sensitiveLocked}>
-        {pending ? "Saving..." : submitLabel}
+        {pending ? t("saving") : submitLabel}
       </Button>
     </form>
   );

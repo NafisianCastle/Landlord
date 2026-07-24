@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Polygon } from "geojson";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { updatePlotMetadata } from "@/app/actions/plots";
 import { convertArea } from "@/lib/units";
@@ -28,11 +29,13 @@ export default async function PlotDetailPage({
       .order("uploaded_at", { ascending: false }),
   ]);
 
+  const t = await getTranslations("PlotDetailPage");
+
   if (error && error.code !== "PGRST116") {
     return (
       <div className="mx-auto flex max-w-lg flex-col gap-4 p-6">
         <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-          Couldn&rsquo;t load this plot — {error.message}. Try refreshing the page.
+          {t("loadError", { message: error.message })}
         </p>
       </div>
     );
@@ -53,7 +56,7 @@ export default async function PlotDetailPage({
         {navigateUrl && (
           <Button variant="link" size="sm" className="px-0" asChild>
             <a href={navigateUrl} target="_blank" rel="noopener noreferrer">
-              Navigate here
+              {t("navigateHere")}
             </a>
           </Button>
         )}
@@ -68,27 +71,26 @@ export default async function PlotDetailPage({
       {conversions && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm">Area (from GPS boundary)</CardTitle>
+            <CardTitle className="text-sm">{t("areaFromGps")}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground">
-              <li>{conversions.decimal.toFixed(2)} decimal</li>
-              <li>{conversions.bigha.toFixed(3)} bigha</li>
-              <li>{conversions.katha.toFixed(2)} katha</li>
+              <li>{t("unitDecimal", { value: conversions.decimal.toFixed(2) })}</li>
+              <li>{t("unitBigha", { value: conversions.bigha.toFixed(3) })}</li>
+              <li>{t("unitKatha", { value: conversions.katha.toFixed(2) })}</li>
               <li>
-                {conversions.kani.toFixed(2)} kani <span className="text-xs">(regional est.)</span>
+                {t("unitKani", { value: conversions.kani.toFixed(2) })}{" "}
+                <span className="text-xs">{t("regionalEst")}</span>
               </li>
               <li>
-                {conversions.gonda.toFixed(2)} gonda <span className="text-xs">(regional est.)</span>
+                {t("unitGonda", { value: conversions.gonda.toFixed(2) })}{" "}
+                <span className="text-xs">{t("regionalEst")}</span>
               </li>
-              <li>{conversions.acre.toFixed(4)} acre</li>
-              <li>{conversions.sqFt.toFixed(0)} sq ft</li>
-              <li>{conversions.sqKm.toFixed(6)} sq km</li>
+              <li>{t("unitAcre", { value: conversions.acre.toFixed(4) })}</li>
+              <li>{t("unitSqFt", { value: conversions.sqFt.toFixed(0) })}</li>
+              <li>{t("unitSqKm", { value: conversions.sqKm.toFixed(6) })}</li>
             </ul>
-            <p className="mt-2 text-xs text-muted-foreground">
-              GPS-derived — walking/manual boundary drawing can introduce error. See dolil and
-              actual measurements below for cross-check.
-            </p>
+            <p className="mt-2 text-xs text-muted-foreground">{t("gpsDerivedNotice")}</p>
           </CardContent>
         </Card>
       )}
@@ -96,7 +98,7 @@ export default async function PlotDetailPage({
       {(plot.dolil_area || plot.actual_area) && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm">Dolil vs. actual measurement</CardTitle>
+            <CardTitle className="text-sm">{t("dolilVsActual")}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground">
@@ -104,13 +106,13 @@ export default async function PlotDetailPage({
                 {plot.dolil_area
                   ? `${plot.dolil_area} ${plot.dolil_area_unit ?? ""}`
                   : "—"}{" "}
-                <span className="text-xs">(dolil)</span>
+                <span className="text-xs">{t("dolilLabel")}</span>
               </li>
               <li>
                 {plot.actual_area
                   ? `${plot.actual_area} ${plot.actual_area_unit ?? ""}`
                   : "—"}{" "}
-                <span className="text-xs">(actual)</span>
+                <span className="text-xs">{t("actualLabel")}</span>
               </li>
             </ul>
           </CardContent>
@@ -118,7 +120,7 @@ export default async function PlotDetailPage({
       )}
 
       <div>
-        <h2 className="mb-2 font-medium">Details</h2>
+        <h2 className="mb-2 font-medium">{t("details")}</h2>
         <Card>
           <CardContent className="pt-6">
             <PlotMetadataForm
@@ -143,14 +145,14 @@ export default async function PlotDetailPage({
                   notes: plot.notes,
                 },
               }}
-              submitLabel="Save changes"
+              submitLabel={t("saveChanges")}
             />
           </CardContent>
         </Card>
       </div>
 
       <div>
-        <h2 className="mb-2 font-medium">Documents</h2>
+        <h2 className="mb-2 font-medium">{t("documents")}</h2>
         <ul className="mb-3 divide-y divide-border rounded-lg border border-border px-3 py-1">
           {(documents ?? []).map((doc) => (
             <DocumentRow
@@ -164,7 +166,7 @@ export default async function PlotDetailPage({
             />
           ))}
           {(!documents || documents.length === 0) && (
-            <li className="py-2 text-sm text-muted-foreground">No documents yet.</li>
+            <li className="py-2 text-sm text-muted-foreground">{t("noDocumentsYet")}</li>
           )}
         </ul>
         <DocumentUploader plotId={plot.id} />

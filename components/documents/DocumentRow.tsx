@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import { deleteDocument } from "@/app/actions/documents";
 import { Button } from "@/components/ui/button";
 
@@ -27,6 +28,7 @@ export default function DocumentRow({
   const [pending, startTransition] = useTransition();
   const [removed, setRemoved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("DocumentRow");
 
   if (removed) return null;
 
@@ -48,19 +50,19 @@ export default function DocumentRow({
             className="text-destructive"
             disabled={pending}
             onClick={() => {
-              if (!window.confirm(`Delete "${fileName}"? This can't be undone.`)) return;
+              if (!window.confirm(t("confirmDelete", { fileName }))) return;
               setError(null);
               startTransition(async () => {
                 try {
                   await deleteDocument(plotId, documentId, storagePath);
                   setRemoved(true);
                 } catch {
-                  setError("Couldn't delete this document. Try again.");
+                  setError(t("deleteFailed"));
                 }
               });
             }}
           >
-            Delete
+            {t("delete")}
           </Button>
         </div>
       </div>

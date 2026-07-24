@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Polygon } from "geojson";
+import { renderWithIntl as render } from "@/test/i18n";
 import PlotBoundarySection from "./PlotBoundarySection";
 
 vi.mock("@/components/map/PlotMap", () => ({

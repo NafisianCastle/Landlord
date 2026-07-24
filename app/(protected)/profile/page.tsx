@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProfileForm from "@/components/profile/ProfileForm";
@@ -23,12 +24,14 @@ export default async function ProfilePage() {
     .eq("id", user.id)
     .single();
 
+  const t = await getTranslations("ProfilePage");
+
   return (
     <div className="mx-auto flex max-w-lg flex-col gap-6 p-6">
-      <h1 className="text-2xl font-semibold">Profile</h1>
+      <h1 className="text-2xl font-semibold">{t("title")}</h1>
       <Card>
         <CardHeader>
-          <CardTitle>Account details</CardTitle>
+          <CardTitle>{t("accountDetails")}</CardTitle>
         </CardHeader>
         <CardContent>
           <ProfileForm email={user.email ?? ""} fullName={user.user_metadata?.full_name ?? ""} />
@@ -36,7 +39,7 @@ export default async function ProfilePage() {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>Change password</CardTitle>
+          <CardTitle>{t("changePassword")}</CardTitle>
         </CardHeader>
         <CardContent>
           <ChangePasswordForm />
@@ -44,7 +47,7 @@ export default async function ProfilePage() {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>Encrypted plot data</CardTitle>
+          <CardTitle>{t("encryptedPlotData")}</CardTitle>
         </CardHeader>
         <CardContent>
           <EncryptionSettings

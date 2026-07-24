@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
 export default function PayButton() {
   const [submitting, setSubmitting] = useState(false);
+  const t = useTranslations("PayButton");
 
   return (
     <Button
@@ -13,7 +15,7 @@ export default function PayButton() {
       disabled={submitting}
       onClick={() => setSubmitting(true)}
     >
-      {submitting ? "Redirecting to payment..." : "Pay with bKash / card / bank"}
+      {submitting ? t("redirecting") : t("payWith")}
     </Button>
   );
 }

@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Polygon } from "geojson";
+import { renderWithIntl as render } from "@/test/i18n";
 import PlotMap from "./PlotMap";
 
 const { FakeMap, FakeLngLatBounds, fakeMapInstances } = vi.hoisted(() => {

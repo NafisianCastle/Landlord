@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { FeatureCollection, Polygon } from "geojson";
 import maplibregl from "@/lib/map";
 import { styleFor, type BaseStyle } from "@/lib/mapStyles";
@@ -26,6 +27,7 @@ interface PlotMapProps {
 }
 
 export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps) {
+  const t = useTranslations("PlotMap");
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const readyRef = useRef(false);
@@ -55,11 +57,7 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
         maxZoom: 19,
       });
     } catch {
-      queueMicrotask(() =>
-        setMapError(
-          "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
-        ),
-      );
+      queueMicrotask(() => setMapError(t("webglError")));
       return;
     }
     mapRef.current = map;
@@ -67,11 +65,9 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
     map.on("error", (e) => {
       const err = e.error as { status?: number; type?: string } | undefined;
       if (err?.status === 404 || err?.status === 204) {
-        setTileWarning("Imagery not available at this zoom level here — zoom out a bit.");
+        setTileWarning(t("imageryUnavailable"));
       } else if (err?.type === "webglcontextcreationerror" || err?.type === "webglcontextlost") {
-        setMapError(
-          "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
-        );
+        setMapError(t("webglError"));
       }
     });
     map.on("zoom", () => setTileWarning(null));
@@ -140,7 +136,7 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
       );
       const area: OfflineArea = {
         id: crypto.randomUUID(),
-        label: `Area downloaded ${new Date().toLocaleDateString()}`,
+        label: t("areaDownloadedLabel", { date: new Date().toLocaleDateString() }),
         ...bounds,
         minZoom,
         maxZoom,
@@ -154,7 +150,7 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
       if (err instanceof AreaTooLargeError) {
         setDownloadError(err.message);
       } else if ((err as Error).name !== "AbortError") {
-        setDownloadError("Download failed — check your connection and try again.");
+        setDownloadError(t("downloadFailed"));
       }
     } finally {
       setDownloading(false);
@@ -218,15 +214,13 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
         {downloading && progress && (
           <div className="absolute bottom-2 left-2 right-2 rounded bg-card px-2 py-1 text-xs text-card-foreground shadow">
             <div className="flex items-center justify-between gap-2">
-              <span>
-                Downloading {progress.done}/{progress.total} tiles…
-              </span>
+              <span>{t("downloadingTiles", { done: progress.done, total: progress.total })}</span>
               <button
                 type="button"
                 onClick={cancelDownload}
                 className="rounded px-2 py-1 underline"
               >
-                Cancel
+                {t("cancel")}
               </button>
             </div>
             <div className="mt-1 h-1 w-full rounded bg-neutral-200 dark:bg-neutral-700">
@@ -245,7 +239,7 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
             onClick={toggleStyle}
             className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow"
           >
-            {baseStyle === "satellite" ? "Streets" : "Satellite"}
+            {baseStyle === "satellite" ? t("streets") : t("satellite")}
           </button>
           {baseStyle === "satellite" && (
             <button
@@ -254,21 +248,18 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
               disabled={downloading}
               className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow disabled:opacity-50"
             >
-              Download this view offline
+              {t("downloadOffline")}
             </button>
           )}
         </div>
       </div>
       {downloadError && <p className="text-xs text-destructive">{downloadError}</p>}
       {baseStyle !== "satellite" && (
-        <p className="text-xs text-muted-foreground">
-          Offline download only works on the satellite view for now — switch to
-          Satellite to download this area.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("offlineDownloadHint")}</p>
       )}
       {areas.length > 0 && (
         <div className="rounded border border-border p-2 text-xs">
-          <p className="mb-1 font-medium text-foreground">Downloaded for offline use</p>
+          <p className="mb-1 font-medium text-foreground">{t("downloadedForOffline")}</p>
           <ul className="flex flex-col gap-1">
             {areas.map((area) => (
               <li key={area.id} className="flex items-center justify-between gap-2">
@@ -277,15 +268,18 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
                   onClick={() => goToArea(area)}
                   className="rounded py-1 text-left underline"
                 >
-                  {area.label} ({(area.bytesStored / 1024 / 1024).toFixed(1)} MB,{" "}
-                  {area.tileCount} tiles)
+                  {t("areaSummary", {
+                    label: area.label,
+                    mb: (area.bytesStored / 1024 / 1024).toFixed(1),
+                    tiles: area.tileCount,
+                  })}
                 </button>
                 <button
                   type="button"
                   onClick={() => removeArea(area)}
                   className="shrink-0 rounded px-2 py-1.5 text-destructive underline"
                 >
-                  Delete
+                  {t("delete")}
                 </button>
               </li>
             ))}

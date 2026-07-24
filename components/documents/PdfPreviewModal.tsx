@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Document, Page } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -29,6 +30,7 @@ export default function PdfPreviewModal({
   const [numPages, setNumPages] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("PdfPreviewModal");
 
   async function openPreview() {
     setOpen(true);
@@ -38,13 +40,13 @@ export default function PdfPreviewModal({
     if (isEncrypted) {
       const dek = getSessionDEK();
       if (!dek) {
-        setError("Unlock encryption in Profile to preview this document.");
+        setError(t("unlockEncryption"));
         setLoading(false);
         return;
       }
       const result = await getDocumentPreviewUrl(storagePath);
       if (result.error || !result.url) {
-        setError(result.error ?? "Couldn't load document");
+        setError(result.error ?? t("couldntLoad"));
         setLoading(false);
         return;
       }
@@ -54,7 +56,7 @@ export default function PdfPreviewModal({
         const plaintext = await decryptBytes(ciphertext, fromPgBytea(encryptionIvHex!), dek);
         setBytes(plaintext);
       } catch {
-        setError("Couldn't decrypt with the current session key.");
+        setError(t("decryptError"));
       } finally {
         setLoading(false);
       }
@@ -81,7 +83,7 @@ export default function PdfPreviewModal({
         onClick={openPreview}
         className="rounded px-2 py-2 text-sm text-blue-600 underline dark:text-blue-400"
       >
-        Preview
+        {t("preview")}
       </button>
 
       {open && (
@@ -90,13 +92,13 @@ export default function PdfPreviewModal({
             <div className="flex items-center justify-between">
               <span className="truncate text-sm font-medium">{fileName}</span>
               <button type="button" onClick={close} className="rounded px-2 py-2 text-sm underline">
-                Close
+                {t("close")}
               </button>
             </div>
 
             {error && <p className="text-sm text-destructive">{error}</p>}
             {loading && !error && (
-              <p className="text-sm text-muted-foreground">Loading document...</p>
+              <p className="text-sm text-muted-foreground">{t("loadingDocument")}</p>
             )}
 
             {(url || bytes) && (
@@ -105,7 +107,7 @@ export default function PdfPreviewModal({
                   file={bytes ? { data: bytes } : url!}
                   onLoadSuccess={({ numPages: n }) => setNumPages(n)}
                   onLoadError={(e) => setError(e.message)}
-                  loading={<p className="text-sm text-muted-foreground">Loading PDF...</p>}
+                  loading={<p className="text-sm text-muted-foreground">{t("loadingPdf")}</p>}
                 >
                   <Page pageNumber={pageNumber} width={420} />
                 </Document>
@@ -117,18 +119,16 @@ export default function PdfPreviewModal({
                       disabled={pageNumber <= 1}
                       className="rounded px-3 py-2 underline disabled:opacity-50"
                     >
-                      Prev
+                      {t("prev")}
                     </button>
-                    <span>
-                      Page {pageNumber} of {numPages}
-                    </span>
+                    <span>{t("pageOf", { page: pageNumber, total: numPages })}</span>
                     <button
                       type="button"
                       onClick={() => setPageNumber((p) => Math.min(numPages, p + 1))}
                       disabled={pageNumber >= numPages}
                       className="rounded px-3 py-2 underline disabled:opacity-50"
                     >
-                      Next
+                      {t("next")}
                     </button>
                   </div>
                 )}

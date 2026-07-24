@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Polygon } from "geojson";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import PlotsMapClient from "./PlotsMapClient";
@@ -20,18 +21,20 @@ export default async function PlotsPage() {
     boundary: p.boundary_geojson as Polygon | null,
   }));
 
+  const t = await getTranslations("PlotsPage");
+
   return (
     <div className="flex flex-col gap-4 p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Your plots</h1>
+        <h1 className="text-xl font-semibold">{t("title")}</h1>
         <Button asChild>
-          <Link href="/plots/new">Add plot</Link>
+          <Link href="/plots/new">{t("addPlot")}</Link>
         </Button>
       </div>
 
       {error ? (
         <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-          Couldn&rsquo;t load your plots — {error.message}. Try refreshing the page.
+          {t("loadError", { message: error.message })}
         </p>
       ) : (
         <>
@@ -48,18 +51,16 @@ export default async function PlotsPage() {
                   <span className="font-medium">{plot.name}</span>
                   <span className="text-sm text-muted-foreground">
                     {[plot.village, plot.district].filter(Boolean).join(", ") ||
-                      "No location set"}
+                      t("noLocationSet")}
                     {plot.areaSqMeters
-                      ? ` · ${plot.areaSqMeters.toFixed(0)} m²`
-                      : " · boundary not walked yet"}
+                      ? ` · ${t("areaValue", { area: plot.areaSqMeters.toFixed(0) })}`
+                      : ` · ${t("boundaryNotWalked")}`}
                   </span>
                 </Link>
               </li>
             ))}
             {mapped.length === 0 && (
-              <li className="p-3 text-sm text-muted-foreground">
-                No plots yet. Add your first one.
-              </li>
+              <li className="p-3 text-sm text-muted-foreground">{t("noPlotsYet")}</li>
             )}
           </ul>
         </>

@@ -2,15 +2,17 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function signUp(_prevState: unknown, formData: FormData) {
   const email = String(formData.get("email"));
   const password = String(formData.get("password"));
   const fullName = String(formData.get("fullName") ?? "");
+  const t = await getTranslations("AuthActions");
 
   if (password.length < 10) {
-    return { error: "Password must be at least 10 characters." };
+    return { error: t("passwordTooShort") };
   }
 
   const supabase = await createClient();
@@ -49,13 +51,14 @@ export async function signOut() {
 
 export async function updateProfile(_prevState: unknown, formData: FormData) {
   const fullName = String(formData.get("fullName") ?? "").trim();
+  const t = await getTranslations("AuthActions");
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return { error: "Not authenticated." };
+    return { error: t("notAuthenticated") };
   }
 
   const { error } = await supabase.auth.updateUser({
@@ -74,12 +77,13 @@ export async function changePassword(_prevState: unknown, formData: FormData) {
   const currentPassword = String(formData.get("currentPassword") ?? "");
   const newPassword = String(formData.get("newPassword") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
+  const t = await getTranslations("AuthActions");
 
   if (newPassword.length < 10) {
-    return { error: "New password must be at least 10 characters." };
+    return { error: t("newPasswordTooShort") };
   }
   if (newPassword !== confirmPassword) {
-    return { error: "New passwords do not match." };
+    return { error: t("passwordsDoNotMatch") };
   }
 
   const supabase = await createClient();
@@ -87,7 +91,7 @@ export async function changePassword(_prevState: unknown, formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user?.email) {
-    return { error: "Not authenticated." };
+    return { error: t("notAuthenticated") };
   }
 
   // Re-verify identity with the current password before allowing the change,
@@ -98,7 +102,7 @@ export async function changePassword(_prevState: unknown, formData: FormData) {
     password: currentPassword,
   });
   if (verifyError) {
-    return { error: "Current password is incorrect." };
+    return { error: t("currentPasswordIncorrect") };
   }
 
   const { error } = await supabase.auth.updateUser({ password: newPassword });

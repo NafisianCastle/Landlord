@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithIntl as render } from "@/test/i18n";
 import DocumentUploader from "./DocumentUploader";
 
 // jsdom's file inputs don't satisfy the `required` constraint when files are

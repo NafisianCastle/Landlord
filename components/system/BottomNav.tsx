@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "@/components/system/nav-items";
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const t = useTranslations("Nav");
 
   return (
     <nav
@@ -26,7 +28,7 @@ export default function BottomNav() {
             )}
           >
             <Icon className="size-5" />
-            {item.label}
+            {t(item.key)}
           </Link>
         );
       })}

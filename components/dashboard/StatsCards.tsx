@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { convertArea } from "@/lib/units";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -22,27 +25,28 @@ export default function StatsCards({
   totalCurrentValue,
   documentCount,
 }: StatsCardsProps) {
+  const t = useTranslations("StatsCards");
   const area = convertArea(totalAreaSqMeters);
   const delta = totalCurrentValue - totalPurchasePrice;
   const deltaPct = totalPurchasePrice > 0 ? (delta / totalPurchasePrice) * 100 : null;
 
   const cards = [
-    { label: "Total plots", value: String(plotCount) },
+    { label: t("totalPlots"), value: String(plotCount) },
     {
-      label: "Total area",
-      value: `${area.decimal.toFixed(2)} decimal`,
-      sub: `${area.bigha.toFixed(2)} bigha · ${area.acre.toFixed(3)} acre`,
+      label: t("totalArea"),
+      value: t("decimalValue", { value: area.decimal.toFixed(2) }),
+      sub: t("areaSub", { bigha: area.bigha.toFixed(2), acre: area.acre.toFixed(3) }),
     },
-    { label: "Total purchase price", value: bdt.format(totalPurchasePrice) },
+    { label: t("totalPurchasePrice"), value: bdt.format(totalPurchasePrice) },
     {
-      label: "Total current value",
+      label: t("totalCurrentValue"),
       value: bdt.format(totalCurrentValue),
       sub:
         deltaPct !== null
           ? `${delta >= 0 ? "+" : ""}${bdt.format(delta)} (${deltaPct >= 0 ? "+" : ""}${deltaPct.toFixed(1)}%)`
           : undefined,
     },
-    { label: "Documents", value: String(documentCount) },
+    { label: t("documents"), value: String(documentCount) },
   ];
 
   return (

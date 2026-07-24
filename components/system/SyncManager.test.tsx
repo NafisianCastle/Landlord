@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { render } from "@testing-library/react";
+import { renderWithIntl as render } from "@/test/i18n";
 import SyncManager from "./SyncManager";
 
 const refreshMock = vi.fn();

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { Feature, FeatureCollection } from "geojson";
 import maplibregl from "@/lib/map";
 import { styleFor, type BaseStyle } from "@/lib/mapStyles";
@@ -17,6 +18,7 @@ import { searchPlaces, type GeocodeResult } from "@/lib/geocode";
  */
 export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
   const router = useRouter();
+  const t = useTranslations("ManualBoundaryDrawer");
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [points, setPoints] = useState<LatLng[]>([]);
@@ -45,11 +47,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
         maxZoom: 19,
       });
     } catch {
-      queueMicrotask(() =>
-        setMapError(
-          "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
-        ),
-      );
+      queueMicrotask(() => setMapError(t("webglError")));
       return;
     }
     mapRef.current = map;
@@ -187,7 +185,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
         setLocating(false);
       },
       () => {
-        setError("Couldn't get your location — check location permission.");
+        setError(t("locationError"));
         setLocating(false);
       },
       { enableHighAccuracy: true, maximumAge: 60000, timeout: 10000 },
@@ -216,7 +214,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
   }
 
   function clearAll() {
-    if (points.length > 0 && !window.confirm("Clear all points and start over?")) return;
+    if (points.length > 0 && !window.confirm(t("clearAllConfirm"))) return;
     setPoints([]);
   }
 
@@ -254,12 +252,12 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
                   setSearching(false);
                 }
               }}
-              placeholder="Search a place to navigate there..."
+              placeholder={t("searchPlaceholder")}
               className="w-full rounded bg-card px-2 py-2 text-sm text-card-foreground shadow outline-none"
             />
             {!queryTooShort && (searching || searchResults.length > 0) && (
               <ul className="mt-1 max-h-48 overflow-y-auto rounded bg-card text-sm text-card-foreground shadow">
-                {searching && <li className="px-2 py-2 text-muted-foreground">Searching...</li>}
+                {searching && <li className="px-2 py-2 text-muted-foreground">{t("searching")}</li>}
                 {searchResults.map((r, i) => (
                   <li key={i}>
                     <button
@@ -280,30 +278,31 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
               onClick={toggleStyle}
               className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow"
             >
-              {baseStyle === "satellite" ? "Streets" : "Satellite"}
+              {baseStyle === "satellite" ? t("streets") : t("satellite")}
             </button>
           </div>
           <button
             type="button"
             onClick={locateMe}
             disabled={locating}
-            title="Return to my location"
-            aria-label="Return to my location"
+            title={t("returnToMyLocation")}
+            aria-label={t("returnToMyLocation")}
             className="absolute bottom-2 right-2 flex h-11 w-11 items-center justify-center rounded-full bg-card text-lg text-card-foreground shadow disabled:opacity-50"
           >
             {locating ? "…" : "📍"}
           </button>
           {stats && (
             <div className="absolute bottom-2 left-2 rounded bg-card px-2 py-1 text-xs text-card-foreground shadow">
-              {`${stats.distance.toFixed(1)} m perimeter • ${stats.area.decimal.toFixed(2)} decimal (${stats.area.sqMeters.toFixed(0)} m²)`}
+              {t("perimeterStats", {
+                distance: stats.distance.toFixed(1),
+                decimal: stats.area.decimal.toFixed(2),
+                sqMeters: stats.area.sqMeters.toFixed(0),
+              })}
             </div>
           )}
         </div>
       )}
-      <p className="text-xs text-muted-foreground">
-        Tap the map to drop a corner (4–6 for most plots). Drag a point to reposition it,
-        double-tap a point to remove it.
-      </p>
+      <p className="text-xs text-muted-foreground">{t("tapInstructions")}</p>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
@@ -311,7 +310,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
           disabled={points.length === 0}
           className="rounded border px-3 py-2 disabled:opacity-50"
         >
-          Undo last
+          {t("undoLast")}
         </button>
         <button
           type="button"
@@ -319,7 +318,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
           disabled={points.length === 0}
           className="rounded border px-3 py-2 disabled:opacity-50"
         >
-          Clear all
+          {t("clearAll")}
         </button>
         <button
           type="button"
@@ -327,7 +326,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
           disabled={points.length < 3 || saving}
           className="rounded bg-green-600 px-3 py-2 text-white disabled:opacity-50"
         >
-          {saving ? "Saving..." : `Save boundary (${points.length} points)`}
+          {saving ? t("saving") : t("saveBoundary", { count: points.length })}
         </button>
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}

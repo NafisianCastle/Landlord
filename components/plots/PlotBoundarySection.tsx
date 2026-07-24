@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Polygon } from "geojson";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
 const PlotMap = dynamic(() => import("@/components/map/PlotMap"), { ssr: false });
@@ -26,6 +27,7 @@ export default function PlotBoundarySection({
 }: PlotBoundarySectionProps) {
   const [redrawing, setRedrawing] = useState(false);
   const [mode, setMode] = useState<Mode>("gps");
+  const t = useTranslations("PlotBoundarySection");
 
   if (!boundary || redrawing) {
     return (
@@ -37,7 +39,7 @@ export default function PlotBoundarySection({
             variant={mode === "gps" ? "default" : "outline"}
             onClick={() => setMode("gps")}
           >
-            Walk with GPS
+            {t("walkWithGps")}
           </Button>
           <Button
             type="button"
@@ -45,7 +47,7 @@ export default function PlotBoundarySection({
             variant={mode === "manual" ? "default" : "outline"}
             onClick={() => setMode("manual")}
           >
-            Draw on map
+            {t("drawOnMap")}
           </Button>
         </div>
         {mode === "gps" ? (
@@ -70,7 +72,7 @@ export default function PlotBoundarySection({
         className="self-start"
         onClick={() => setRedrawing(true)}
       >
-        Redraw boundary
+        {t("redrawBoundary")}
       </Button>
     </div>
   );

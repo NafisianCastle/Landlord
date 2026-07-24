@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const STORAGE_KEY = "landlord-theme";
 type Theme = "light" | "dark";
@@ -47,6 +48,7 @@ function setTheme(next: Theme) {
 
 export default function ThemeToggle() {
   const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const t = useTranslations("ThemeToggle");
 
   function toggle() {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -58,11 +60,11 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      aria-label="Toggle light/dark mode"
+      aria-label={t("toggleAriaLabel")}
       className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2.5 text-xs text-card-foreground shadow-sm"
     >
       {theme === "dark" ? <Moon className="size-3.5" /> : <Sun className="size-3.5" />}
-      {theme === "dark" ? "Dark" : "Light"}
+      {theme === "dark" ? t("dark") : t("light")}
     </button>
   );
 }

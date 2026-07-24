@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { Feature, FeatureCollection } from "geojson";
 import maplibregl from "@/lib/map";
 import { styleFor, type BaseStyle } from "@/lib/mapStyles";
@@ -28,6 +29,7 @@ import {
 // pending points sync out once connectivity returns.
 export default function BoundaryWalker({ plotId }: { plotId: string }) {
   const router = useRouter();
+  const t = useTranslations("BoundaryWalker");
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -89,11 +91,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
         maxZoom: 19,
       });
     } catch {
-      queueMicrotask(() =>
-        setMapError(
-          "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
-        ),
-      );
+      queueMicrotask(() => setMapError(t("webglError")));
       return;
     }
     mapRef.current = map;
@@ -101,11 +99,9 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
     map.on("error", (e) => {
       const err = e.error as { status?: number; type?: string } | undefined;
       if (err?.status === 404 || err?.status === 204) {
-        setTileWarning("Imagery not available at this zoom level here — zoom out a bit.");
+        setTileWarning(t("imageryUnavailable"));
       } else if (err?.type === "webglcontextcreationerror" || err?.type === "webglcontextlost") {
-        setMapError(
-          "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
-        );
+        setMapError(t("webglError"));
       }
     });
 
@@ -119,7 +115,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
       const idx = e.features?.[0]?.properties?.index;
       const sid = sessionIdRef.current;
       if (typeof idx !== "number" || !sid) return;
-      if (!window.confirm("Remove this point from the boundary?")) return;
+      if (!window.confirm(t("removePointConfirm"))) return;
       await deletePointAt(sid, idx);
       setPoints((prev) => prev.filter((_, i) => i !== idx));
     });
@@ -202,7 +198,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
   function markPoint() {
     if (!sessionId) return;
     if (!navigator.geolocation) {
-      setError("Geolocation is not available on this device/browser.");
+      setError(t("geolocationUnavailable"));
       return;
     }
     setCapturing(true);
@@ -245,9 +241,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
     if (finished.includes(plotId)) {
       router.refresh();
     } else {
-      setQueuedMessage(
-        "Saved on this device — will finish syncing once you're back online.",
-      );
+      setQueuedMessage(t("queuedOfflineMessage"));
     }
   }
 
@@ -255,8 +249,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
     <div className="flex flex-col gap-3">
       {mapError ? (
         <div className="flex h-[65vh] min-h-[400px] w-full items-center justify-center rounded border border-border bg-card p-4 text-center text-sm text-card-foreground">
-          {mapError} You can still mark points below — they&rsquo;ll save without a map
-          preview.
+          {t("mapErrorWithFallback", { mapError })}
         </div>
       ) : (
         <div className="relative h-[65vh] min-h-[400px] w-full">
@@ -267,21 +260,25 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
               onClick={toggleStyle}
               className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow"
             >
-              {baseStyle === "satellite" ? "Streets" : "Satellite"}
+              {baseStyle === "satellite" ? t("streets") : t("satellite")}
             </button>
             <button
               type="button"
               onClick={recenter}
               className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow"
             >
-              Recenter on me
+              {t("recenterOnMe")}
             </button>
           </div>
           {stats && (
             <div className="absolute bottom-2 left-2 rounded bg-card px-2 py-1 text-xs text-card-foreground shadow">
               {points.length < 3
-                ? `${stats.distance.toFixed(1)} m walked so far`
-                : `${stats.distance.toFixed(1)} m perimeter • ${stats.area!.decimal.toFixed(2)} decimal (${stats.area!.sqMeters.toFixed(0)} m²)`}
+                ? t("walkedSoFar", { distance: stats.distance.toFixed(1) })
+                : t("perimeterStats", {
+                    distance: stats.distance.toFixed(1),
+                    decimal: stats.area!.decimal.toFixed(2),
+                    sqMeters: stats.area!.sqMeters.toFixed(0),
+                  })}
             </div>
           )}
         </div>
@@ -289,21 +286,16 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
       {tileWarning && (
         <p className="rounded bg-amber-50 px-2 py-1 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-300">{tileWarning}</p>
       )}
-      <p className="text-xs text-muted-foreground">
-        The blue dot is your current GPS position — that&rsquo;s the exact point &ldquo;Mark
-        point&rdquo; will record. Tap a marked point on the map to remove just that one.
-      </p>
+      <p className="text-xs text-muted-foreground">{t("gpsDotHelp")}</p>
       {!online && (
         <p className="rounded bg-amber-50 px-2 py-1 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-          Offline — points are saved on this device and will sync automatically.
+          {t("offlineBanner")}
         </p>
       )}
       {pending > 0 && (
-        <p className="text-sm text-muted-foreground">{pending} point(s) waiting to sync.</p>
+        <p className="text-sm text-muted-foreground">{t("pendingSync", { count: pending })}</p>
       )}
-      <p className="text-sm text-muted-foreground">
-        Walk the boundary of the plot. Tap &ldquo;Mark point&rdquo; at each corner as you go.
-      </p>
+      <p className="text-sm text-muted-foreground">{t("walkInstructions")}</p>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
@@ -311,7 +303,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
           disabled={capturing || !sessionId}
           className="rounded bg-black px-3 py-2 text-white disabled:opacity-50"
         >
-          {capturing ? "Getting location..." : "Mark point"}
+          {capturing ? t("gettingLocation") : t("markPoint")}
         </button>
         <button
           type="button"
@@ -319,7 +311,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
           disabled={points.length === 0}
           className="rounded border px-3 py-2 disabled:opacity-50"
         >
-          Undo last
+          {t("undoLast")}
         </button>
         <button
           type="button"
@@ -327,7 +319,7 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
           disabled={points.length < 3 || saving}
           className="rounded bg-green-600 px-3 py-2 text-white disabled:opacity-50"
         >
-          {saving ? "Saving..." : `Finish (${points.length} points)`}
+          {saving ? t("saving") : t("finish", { count: points.length })}
         </button>
       </div>
       {queuedMessage && <p className="text-sm text-amber-700">{queuedMessage}</p>}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useTranslations } from "next-intl";
 import { uploadDocument } from "@/app/actions/documents";
 import { Button } from "@/components/ui/button";
 import { encryptBytes, toPgBytea } from "@/lib/crypto/encryption";
@@ -12,6 +13,7 @@ export default function DocumentUploader({ plotId }: { plotId: string }) {
     undefined,
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const t = useTranslations("DocumentUploader");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const dek = getSessionDEK();
@@ -45,8 +47,10 @@ export default function DocumentUploader({ plotId }: { plotId: string }) {
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
       <Button type="submit" size="sm" disabled={pending} className="self-start">
         {pending
-          ? `Uploading${selectedFile ? ` ${(selectedFile.size / 1024 / 1024).toFixed(1)} MB` : ""}...`
-          : "Upload document"}
+          ? selectedFile
+            ? t("uploadingWithSize", { size: (selectedFile.size / 1024 / 1024).toFixed(1) })
+            : t("uploading")
+          : t("uploadDocument")}
       </Button>
     </form>
   );

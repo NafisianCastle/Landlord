@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,13 +38,14 @@ export default async function DashboardPage() {
   ]);
 
   const plotCount = stats?.plot_count ?? 0;
+  const t = await getTranslations("DashboardPage");
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="truncate text-xl font-semibold">Welcome, {user?.email}</h1>
+        <h1 className="truncate text-xl font-semibold">{t("welcome", { email: user?.email ?? "" })}</h1>
         <Button asChild size="sm">
-          <Link href="/plots/new">Add plot</Link>
+          <Link href="/plots/new">{t("addPlot")}</Link>
         </Button>
       </div>
 
@@ -52,7 +54,7 @@ export default async function DashboardPage() {
           role="alert"
           className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive"
         >
-          Couldn&rsquo;t load your stats — figures below may be incomplete. Try refreshing.
+          {t("statsLoadError")}
         </p>
       )}
 
@@ -72,7 +74,7 @@ export default async function DashboardPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">Recent plots</CardTitle>
+              <CardTitle className="text-sm">{t("recentPlots")}</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               <RecentPlots
@@ -89,7 +91,7 @@ export default async function DashboardPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">By district</CardTitle>
+              <CardTitle className="text-sm">{t("byDistrict")}</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               <LocationBreakdown

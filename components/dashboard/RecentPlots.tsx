@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface RecentPlot {
   id: string;
@@ -9,8 +12,10 @@ interface RecentPlot {
 }
 
 export default function RecentPlots({ plots }: { plots: RecentPlot[] }) {
+  const t = useTranslations("RecentPlots");
+
   if (plots.length === 0) {
-    return <p className="text-sm text-muted-foreground">No plots yet.</p>;
+    return <p className="text-sm text-muted-foreground">{t("noPlots")}</p>;
   }
 
   return (
@@ -23,8 +28,10 @@ export default function RecentPlots({ plots }: { plots: RecentPlot[] }) {
           >
             <span className="text-sm font-medium">{plot.name}</span>
             <span className="text-xs text-muted-foreground">
-              {[plot.village, plot.district].filter(Boolean).join(", ") || "No location set"}
-              {plot.areaSqMeters ? ` · ${plot.areaSqMeters.toFixed(0)} m²` : " · boundary not walked yet"}
+              {[plot.village, plot.district].filter(Boolean).join(", ") || t("noLocationSet")}
+              {plot.areaSqMeters
+                ? ` · ${t("areaValue", { area: plot.areaSqMeters.toFixed(0) })}`
+                : ` · ${t("boundaryNotWalked")}`}
             </span>
           </Link>
         </li>

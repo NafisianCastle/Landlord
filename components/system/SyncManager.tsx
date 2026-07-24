@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { syncPending } from "@/lib/offline/syncQueue";
 
 // Mounted once in the protected layout so a walk started earlier — possibly
@@ -10,6 +11,7 @@ import { syncPending } from "@/lib/offline/syncQueue";
 export default function SyncManager() {
   const router = useRouter();
   const [syncError, setSyncError] = useState(false);
+  const t = useTranslations("SyncManager");
 
   useEffect(() => {
     const trySync = async () => {
@@ -39,7 +41,7 @@ export default function SyncManager() {
       role="alert"
       className="sticky top-0 z-50 bg-destructive/10 px-4 py-2 text-center text-sm text-destructive"
     >
-      Some changes couldn&rsquo;t sync — will retry automatically.
+      {t("syncFailed")}
     </div>
   );
 }

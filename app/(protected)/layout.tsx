@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/actions/auth";
 import { hasActiveAccess } from "@/lib/access";
@@ -7,6 +8,7 @@ import SyncManager from "@/components/system/SyncManager";
 import HeaderNav from "@/components/system/HeaderNav";
 import BottomNav from "@/components/system/BottomNav";
 import ThemeToggle from "@/components/system/ThemeToggle";
+import LocaleSwitcher from "@/components/system/LocaleSwitcher";
 import Logo from "@/components/system/Logo";
 import { Button } from "@/components/ui/button";
 
@@ -28,6 +30,8 @@ export default async function ProtectedLayout({
     redirect("/paywall");
   }
 
+  const t = await getTranslations("ProtectedLayout");
+
   return (
     <div className="min-h-screen">
       <SyncManager />
@@ -40,11 +44,12 @@ export default async function ProtectedLayout({
           <HeaderNav />
         </div>
         <div className="flex items-center gap-3">
+          <LocaleSwitcher />
           <ThemeToggle />
           <form action={signOut}>
             <Button type="submit" variant="ghost" size="sm">
               <LogOut className="size-4" />
-              Log out
+              {t("logOut")}
             </Button>
           </form>
         </div>

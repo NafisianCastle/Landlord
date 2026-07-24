@@ -1,0 +1,310 @@
+{
+  "Nav": {
+    "dashboard": "Dashboard",
+    "plots": "Plots",
+    "profile": "Profile"
+  },
+  "ThemeToggle": {
+    "toggleAriaLabel": "Toggle light/dark mode",
+    "dark": "Dark",
+    "light": "Light"
+  },
+  "LocaleSwitcher": {
+    "label": "Language"
+  },
+  "ProtectedLayout": {
+    "logOut": "Log out"
+  },
+  "LoginPage": {
+    "title": "Log in",
+    "email": "Email",
+    "password": "Password",
+    "loggingIn": "Logging in...",
+    "logIn": "Log in",
+    "noAccount": "No account?",
+    "signUp": "Sign up"
+  },
+  "SignupPage": {
+    "title": "Sign up",
+    "subtitle": "14-day free trial, no card required.",
+    "fullName": "Full name",
+    "email": "Email",
+    "password": "Password",
+    "successMessage": "Account created. Check your email to confirm before logging in.",
+    "creatingAccount": "Creating account...",
+    "createAccount": "Create account",
+    "haveAccount": "Already have an account?",
+    "logIn": "Log in"
+  },
+  "AuthActions": {
+    "passwordTooShort": "Password must be at least 10 characters.",
+    "notAuthenticated": "Not authenticated.",
+    "newPasswordTooShort": "New password must be at least 10 characters.",
+    "passwordsDoNotMatch": "New passwords do not match.",
+    "currentPasswordIncorrect": "Current password is incorrect."
+  },
+  "PaywallPage": {
+    "trialEnded": "Your free trial has ended",
+    "pitch": "Pay once, use Landlord for life — no renewals, no subscription.",
+    "price": "BDT {amount}",
+    "status": {
+      "failed": "Payment failed — please try again.",
+      "cancelled": "Payment was cancelled.",
+      "error": "Something went wrong starting the payment. Please try again."
+    }
+  },
+  "DashboardPage": {
+    "welcome": "Welcome, {email}",
+    "addPlot": "Add plot",
+    "statsLoadError": "Couldn't load your stats — figures below may be incomplete. Try refreshing.",
+    "recentPlots": "Recent plots",
+    "byDistrict": "By district"
+  },
+  "LocationBreakdown": {
+    "noPlots": "No plots yet.",
+    "summary": "{count, plural, =1 {# plot} other {# plots}} · {area} decimal"
+  },
+  "NeedsAttention": {
+    "missingBoundary": "{count, plural, =1 {# plot} other {# plots}} missing a boundary"
+  },
+  "RecentPlots": {
+    "noPlots": "No plots yet.",
+    "noLocationSet": "No location set",
+    "areaValue": "{area} m²",
+    "boundaryNotWalked": "boundary not walked yet"
+  },
+  "StatsCards": {
+    "totalPlots": "Total plots",
+    "totalArea": "Total area",
+    "decimalValue": "{value} decimal",
+    "areaSub": "{bigha} bigha · {acre} acre",
+    "totalPurchasePrice": "Total purchase price",
+    "totalCurrentValue": "Total current value",
+    "documents": "Documents"
+  },
+  "WelcomeCard": {
+    "title": "Add your first plot",
+    "subtitle": "Walk or draw a boundary to see area, value, and location stats here.",
+    "addPlot": "Add plot"
+  },
+  "PlotsPage": {
+    "title": "Your plots",
+    "addPlot": "Add plot",
+    "loadError": "Couldn't load your plots — {message}. Try refreshing the page.",
+    "noLocationSet": "No location set",
+    "areaValue": "{area} m²",
+    "boundaryNotWalked": "boundary not walked yet",
+    "noPlotsYet": "No plots yet. Add your first one."
+  },
+  "PlotsMapClient": {
+    "loadingMap": "Loading map…",
+    "noBoundaries": "No walked boundaries yet — plots with a drawn boundary appear here."
+  },
+  "PlotMetadataForm": {
+    "plotName": "Plot name",
+    "plotNamePlaceholder": "e.g. Behind grandfather's house",
+    "village": "Village",
+    "upazila": "Upazila",
+    "district": "District",
+    "division": "Division",
+    "selectDivision": "Select division",
+    "selectDistrict": "Select district",
+    "selectUpazila": "Select upazila",
+    "dolilArea": "Plot measurement (as per dolil)",
+    "dolilAreaHint": "Area written in the deed document.",
+    "actualArea": "Plot measurement (actual)",
+    "actualAreaHint": "Real/verified area — may differ from dolil or GPS.",
+    "mutationNumber": "Mutation number",
+    "purchasePrice": "Purchase price (BDT)",
+    "purchaseDate": "Purchase date",
+    "currentEstimatedValue": "Current estimated value (BDT)",
+    "notes": "Notes",
+    "notesLockedPlaceholder": "Unlock encryption in Profile to view/edit",
+    "locked": "Locked",
+    "sensitiveLockedNotice": "Village, mutation number, prices, and notes are encrypted. Unlock encryption in Profile to view or edit them.",
+    "decryptError": "Couldn't decrypt with the current session key.",
+    "willEncryptNotice": "Village, mutation number, prices, dates, and notes will be saved encrypted.",
+    "saving": "Saving..."
+  },
+  "NewPlotPage": {
+    "title": "Add a plot",
+    "plotDetails": "Plot details",
+    "createPlot": "Create plot"
+  },
+  "PlotDetailPage": {
+    "loadError": "Couldn't load this plot — {message}. Try refreshing the page.",
+    "navigateHere": "Navigate here",
+    "areaFromGps": "Area (from GPS boundary)",
+    "unitDecimal": "{value} decimal",
+    "unitBigha": "{value} bigha",
+    "unitKatha": "{value} katha",
+    "unitKani": "{value} kani",
+    "unitGonda": "{value} gonda",
+    "unitAcre": "{value} acre",
+    "unitSqFt": "{value} sq ft",
+    "unitSqKm": "{value} sq km",
+    "regionalEst": "(regional est.)",
+    "gpsDerivedNotice": "GPS-derived — walking/manual boundary drawing can introduce error. See dolil and actual measurements below for cross-check.",
+    "dolilVsActual": "Dolil vs. actual measurement",
+    "dolilLabel": "(dolil)",
+    "actualLabel": "(actual)",
+    "details": "Details",
+    "saveChanges": "Save changes",
+    "documents": "Documents",
+    "noDocumentsYet": "No documents yet."
+  },
+  "PlotBoundarySection": {
+    "walkWithGps": "Walk with GPS",
+    "drawOnMap": "Draw on map",
+    "redrawBoundary": "Redraw boundary"
+  },
+  "DeletePlotButton": {
+    "confirmDelete": "Delete \"{plotName}\"? This can't be undone.",
+    "deleting": "Deleting...",
+    "deletePlot": "Delete plot"
+  },
+  "PlotActions": {
+    "plotNameRequired": "Plot name is required",
+    "trialEnded": "Your trial has ended — please upgrade to continue.",
+    "needThreePoints": "Need at least 3 points to form a boundary"
+  },
+  "BoundaryWalker": {
+    "webglError": "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
+    "imageryUnavailable": "Imagery not available at this zoom level here — zoom out a bit.",
+    "removePointConfirm": "Remove this point from the boundary?",
+    "geolocationUnavailable": "Geolocation is not available on this device/browser.",
+    "queuedOfflineMessage": "Saved on this device — will finish syncing once you're back online.",
+    "mapErrorWithFallback": "{mapError} You can still mark points below — they'll save without a map preview.",
+    "streets": "Streets",
+    "satellite": "Satellite",
+    "recenterOnMe": "Recenter on me",
+    "walkedSoFar": "{distance} m walked so far",
+    "perimeterStats": "{distance} m perimeter • {decimal} decimal ({sqMeters} m²)",
+    "gpsDotHelp": "The blue dot is your current GPS position — that's the exact point \"Mark point\" will record. Tap a marked point on the map to remove just that one.",
+    "offlineBanner": "Offline — points are saved on this device and will sync automatically.",
+    "pendingSync": "{count} point(s) waiting to sync.",
+    "walkInstructions": "Walk the boundary of the plot. Tap \"Mark point\" at each corner as you go.",
+    "gettingLocation": "Getting location...",
+    "markPoint": "Mark point",
+    "undoLast": "Undo last",
+    "saving": "Saving...",
+    "finish": "Finish ({count} points)"
+  },
+  "ManualBoundaryDrawer": {
+    "webglError": "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
+    "locationError": "Couldn't get your location — check location permission.",
+    "clearAllConfirm": "Clear all points and start over?",
+    "searchPlaceholder": "Search a place to navigate there...",
+    "searching": "Searching...",
+    "streets": "Streets",
+    "satellite": "Satellite",
+    "returnToMyLocation": "Return to my location",
+    "perimeterStats": "{distance} m perimeter • {decimal} decimal ({sqMeters} m²)",
+    "tapInstructions": "Tap the map to drop a corner (4–6 for most plots). Drag a point to reposition it, double-tap a point to remove it.",
+    "undoLast": "Undo last",
+    "clearAll": "Clear all",
+    "saving": "Saving...",
+    "saveBoundary": "Save boundary ({count} points)"
+  },
+  "PlotMap": {
+    "webglError": "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
+    "imageryUnavailable": "Imagery not available at this zoom level here — zoom out a bit.",
+    "areaDownloadedLabel": "Area downloaded {date}",
+    "downloadFailed": "Download failed — check your connection and try again.",
+    "downloadingTiles": "Downloading {done}/{total} tiles…",
+    "cancel": "Cancel",
+    "streets": "Streets",
+    "satellite": "Satellite",
+    "downloadOffline": "Download this view offline",
+    "offlineDownloadHint": "Offline download only works on the satellite view for now — switch to Satellite to download this area.",
+    "downloadedForOffline": "Downloaded for offline use",
+    "areaSummary": "{label} ({mb} MB, {tiles} tiles)",
+    "delete": "Delete"
+  },
+  "DocumentRow": {
+    "confirmDelete": "Delete \"{fileName}\"? This can't be undone.",
+    "deleteFailed": "Couldn't delete this document. Try again.",
+    "delete": "Delete"
+  },
+  "DocumentUploader": {
+    "uploadingWithSize": "Uploading {size} MB...",
+    "uploading": "Uploading...",
+    "uploadDocument": "Upload document"
+  },
+  "PdfPreviewModal": {
+    "unlockEncryption": "Unlock encryption in Profile to preview this document.",
+    "couldntLoad": "Couldn't load document",
+    "decryptError": "Couldn't decrypt with the current session key.",
+    "preview": "Preview",
+    "close": "Close",
+    "loadingDocument": "Loading document...",
+    "loadingPdf": "Loading PDF...",
+    "prev": "Prev",
+    "pageOf": "Page {page} of {total}",
+    "next": "Next"
+  },
+  "DocumentActions": {
+    "notSignedIn": "Not signed in",
+    "trialEnded": "Your trial has ended — please upgrade to continue.",
+    "choosePdf": "Choose a PDF file",
+    "fileTooLarge": "File is too large — max 20 MB.",
+    "onlyPdf": "Only PDF files are supported"
+  },
+  "ProfilePage": {
+    "title": "Profile",
+    "accountDetails": "Account details",
+    "changePassword": "Change password",
+    "encryptedPlotData": "Encrypted plot data"
+  },
+  "ProfileForm": {
+    "email": "Email",
+    "fullName": "Full name",
+    "namePlaceholder": "Your name",
+    "profileUpdated": "Profile updated.",
+    "saving": "Saving...",
+    "saveChanges": "Save changes"
+  },
+  "ChangePasswordForm": {
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "passwordChanged": "Password changed.",
+    "updating": "Updating...",
+    "changePassword": "Change password"
+  },
+  "EncryptionSettings": {
+    "passphraseTooShort": "Passphrase must be at least 8 characters.",
+    "passphraseMismatch": "Passphrases don't match.",
+    "notSetUp": "Encryption isn't set up yet.",
+    "wrongPassphrase": "Wrong passphrase.",
+    "saveRecoveryCode": "Save your recovery code",
+    "recoveryCodeHint": "If you forget your passphrase, this is the only other way to recover encrypted plot data. Landly cannot reset it for you.",
+    "savedSomewhereSafe": "I've saved this somewhere safe",
+    "done": "Done",
+    "unlockedForSession": "Unlocked for this session. Sensitive plot fields (mutation number, prices, dates, notes, village) are encrypted before leaving your device.",
+    "lock": "Lock",
+    "lockedForSession": "Encryption is enabled but locked for this session. Enter your passphrase to view or edit sensitive plot fields.",
+    "passphrase": "Passphrase",
+    "unlocking": "Unlocking...",
+    "unlock": "Unlock",
+    "setupExplanation": "Encrypt sensitive plot fields (mutation number, purchase price, dates, notes, village) client-side, so only you can read them — not even Landly. Boundary/map data stays unencrypted (needed for area calculation and map rendering). This passphrase is separate from your login password, and lost passphrase + lost recovery code means that data is gone for good.",
+    "encryptionPassphrase": "Encryption passphrase",
+    "confirmPassphrase": "Confirm passphrase",
+    "settingUp": "Setting up...",
+    "enableEncryption": "Enable encryption"
+  },
+  "MigratePlotsToEncrypted": {
+    "confirmMigrate": "Encrypt all existing plots now? This clears the plaintext copy of each field — only recoverable by unlocking with your passphrase or recovery code.",
+    "encryptedCount": "Encrypted {count, plural, =1 {# existing plot} other {# existing plots}}. New plots encrypt automatically while unlocked.",
+    "migrationExplanation": "Plots created before you enabled encryption still have plaintext sensitive fields. This re-saves each one encrypted and clears the plaintext copy — reversible only by unlocking with your passphrase or recovery code.",
+    "encrypting": "Encrypting...",
+    "encryptExistingPlots": "Encrypt existing plots"
+  },
+  "PayButton": {
+    "redirecting": "Redirecting to payment...",
+    "payWith": "Pay with bKash / card / bank"
+  },
+  "SyncManager": {
+    "syncFailed": "Some changes couldn't sync — will retry automatically."
+  }
+}

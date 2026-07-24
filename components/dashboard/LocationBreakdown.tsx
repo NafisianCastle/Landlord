@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { convertArea } from "@/lib/units";
 
 interface DistrictStat {
@@ -7,8 +10,10 @@ interface DistrictStat {
 }
 
 export default function LocationBreakdown({ districts }: { districts: DistrictStat[] }) {
+  const t = useTranslations("LocationBreakdown");
+
   if (districts.length === 0) {
-    return <p className="text-sm text-muted-foreground">No plots yet.</p>;
+    return <p className="text-sm text-muted-foreground">{t("noPlots")}</p>;
   }
 
   return (
@@ -17,8 +22,10 @@ export default function LocationBreakdown({ districts }: { districts: DistrictSt
         <li key={d.district} className="flex items-center justify-between px-3 py-2 text-sm">
           <span>{d.district}</span>
           <span className="text-muted-foreground">
-            {d.plotCount} plot{d.plotCount === 1 ? "" : "s"} ·{" "}
-            {convertArea(d.totalAreaSqMeters).decimal.toFixed(2)} decimal
+            {t("summary", {
+              count: d.plotCount,
+              area: convertArea(d.totalAreaSqMeters).decimal.toFixed(2),
+            })}
           </span>
         </li>
       ))}

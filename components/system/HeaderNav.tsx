@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS } from "@/components/system/nav-items";
 
 export default function HeaderNav() {
   const pathname = usePathname();
+  const t = useTranslations("Nav");
 
   return (
     <nav className="hidden items-center gap-6 md:flex">
@@ -21,7 +23,7 @@ export default function HeaderNav() {
               active ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground",
             )}
           >
-            {item.label}
+            {t(item.key)}
           </Link>
         );
       })}

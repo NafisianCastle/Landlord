@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import {
   generateDEK,
@@ -38,6 +39,7 @@ export default function EncryptionSettings({
   const [recoverySaved, setRecoverySaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const t = useTranslations("EncryptionSettings");
 
   useEffect(() => onSessionChange(() => setUnlocked(getSessionDEK() !== null)), []);
 
@@ -45,11 +47,11 @@ export default function EncryptionSettings({
     e.preventDefault();
     setError(null);
     if (passphrase.length < 8) {
-      setError("Passphrase must be at least 8 characters.");
+      setError(t("passphraseTooShort"));
       return;
     }
     if (passphrase !== confirmPassphrase) {
-      setError("Passphrases don't match.");
+      setError(t("passphraseMismatch"));
       return;
     }
     setBusy(true);
@@ -92,7 +94,7 @@ export default function EncryptionSettings({
     e.preventDefault();
     setError(null);
     if (!profile.dekSalt || !profile.dekWrappedByPassphrase || !profile.dekWrappedByPassphraseIv) {
-      setError("Encryption isn't set up yet.");
+      setError(t("notSetUp"));
       return;
     }
     setBusy(true);
@@ -106,7 +108,7 @@ export default function EncryptionSettings({
       setSessionDEK(dek);
       setPassphrase("");
     } catch {
-      setError("Wrong passphrase.");
+      setError(t("wrongPassphrase"));
     } finally {
       setBusy(false);
     }
@@ -115,11 +117,8 @@ export default function EncryptionSettings({
   if (recoveryCode) {
     return (
       <div className="flex flex-col gap-3 rounded-lg border border-border p-4">
-        <p className="text-sm font-medium">Save your recovery code</p>
-        <p className="text-sm text-muted-foreground">
-          If you forget your passphrase, this is the only other way to recover encrypted plot
-          data. Landly cannot reset it for you.
-        </p>
+        <p className="text-sm font-medium">{t("saveRecoveryCode")}</p>
+        <p className="text-sm text-muted-foreground">{t("recoveryCodeHint")}</p>
         <code className="rounded bg-muted px-3 py-2 text-sm tracking-wider">{recoveryCode}</code>
         <label className="flex items-center gap-2 text-sm">
           <input
@@ -127,7 +126,7 @@ export default function EncryptionSettings({
             checked={recoverySaved}
             onChange={(e) => setRecoverySaved(e.target.checked)}
           />
-          I&apos;ve saved this somewhere safe
+          {t("savedSomewhereSafe")}
         </label>
         <Button
           type="button"
@@ -135,7 +134,7 @@ export default function EncryptionSettings({
           onClick={() => setRecoveryCode(null)}
           className="w-fit"
         >
-          Done
+          {t("done")}
         </Button>
       </div>
     );
@@ -145,12 +144,9 @@ export default function EncryptionSettings({
     return (
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Unlocked for this session. Sensitive plot fields (mutation number, prices, dates,
-            notes, village) are encrypted before leaving your device.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("unlockedForSession")}</p>
           <Button type="button" variant="outline" size="sm" onClick={lockSession}>
-            Lock
+            {t("lock")}
           </Button>
         </div>
         <MigratePlotsToEncrypted userId={userId} />
@@ -161,12 +157,9 @@ export default function EncryptionSettings({
   if (enabled && !unlocked) {
     return (
       <form onSubmit={handleUnlock} className="flex flex-col gap-3">
-        <p className="text-sm text-muted-foreground">
-          Encryption is enabled but locked for this session. Enter your passphrase to view or
-          edit sensitive plot fields.
-        </p>
+        <p className="text-sm text-muted-foreground">{t("lockedForSession")}</p>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="unlockPassphrase">Passphrase</Label>
+          <Label htmlFor="unlockPassphrase">{t("passphrase")}</Label>
           <Input
             id="unlockPassphrase"
             type="password"
@@ -177,7 +170,7 @@ export default function EncryptionSettings({
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <Button type="submit" disabled={busy} className="w-fit">
-          {busy ? "Unlocking..." : "Unlock"}
+          {busy ? t("unlocking") : t("unlock")}
         </Button>
       </form>
     );
@@ -185,15 +178,9 @@ export default function EncryptionSettings({
 
   return (
     <form onSubmit={handleSetup} className="flex flex-col gap-4">
-      <p className="text-sm text-muted-foreground">
-        Encrypt sensitive plot fields (mutation number, purchase price, dates, notes, village)
-        client-side, so only you can read them — not even Landly. Boundary/map data stays
-        unencrypted (needed for area calculation and map rendering). This passphrase is separate
-        from your login password, and lost passphrase + lost recovery code means that data is
-        gone for good.
-      </p>
+      <p className="text-sm text-muted-foreground">{t("setupExplanation")}</p>
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="newPassphrase">Encryption passphrase</Label>
+        <Label htmlFor="newPassphrase">{t("encryptionPassphrase")}</Label>
         <Input
           id="newPassphrase"
           type="password"
@@ -204,7 +191,7 @@ export default function EncryptionSettings({
         />
       </div>
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="confirmNewPassphrase">Confirm passphrase</Label>
+        <Label htmlFor="confirmNewPassphrase">{t("confirmPassphrase")}</Label>
         <Input
           id="confirmNewPassphrase"
           type="password"
@@ -216,7 +203,7 @@ export default function EncryptionSettings({
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
       <Button type="submit" disabled={busy} className="w-fit">
-        {busy ? "Setting up..." : "Enable encryption"}
+        {busy ? t("settingUp") : t("enableEncryption")}
       </Button>
     </form>
   );

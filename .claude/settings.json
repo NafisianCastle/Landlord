@@ -36,7 +36,12 @@
       "Bash(python3 -c ' *)",
       "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")",
       "Bash(npm view *)",
-      "Bash(npm test *)"
+      "Bash(npm test *)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "Bash(curl -s http://localhost:3911/login -H \"Accept-Language: bn\" -o /tmp/bn_login.html)",
+      "Bash(curl -s http://localhost:3911/login -H \"Accept-Language: en\" -o /tmp/en_login.html)",
+      "Bash(npx next *)",
+      "WebSearch"
     ],
     "additionalDirectories": [
       "/run/media/nafis/Projects/landly/components"

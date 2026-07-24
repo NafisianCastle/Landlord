@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithIntl as render } from "@/test/i18n";
 import PdfPreviewModal from "./PdfPreviewModal";
 
 const getDocumentPreviewUrlMock = vi.fn();

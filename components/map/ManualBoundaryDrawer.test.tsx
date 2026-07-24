@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithIntl as render } from "@/test/i18n";
 import ManualBoundaryDrawer from "./ManualBoundaryDrawer";
 
 const { FakeMap, fakeMapInstances } = vi.hoisted(() => {

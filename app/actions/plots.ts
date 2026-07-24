@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
 import type { LatLng } from "@/lib/geo";
@@ -63,7 +64,8 @@ export async function createPlot(_prevState: unknown, formData: FormData) {
 
   const supabase = await createClient();
   const name = String(formData.get("name") ?? "").trim();
-  if (!name) return { error: "Plot name is required" };
+  const t = await getTranslations("PlotActions");
+  if (!name) return { error: t("plotNameRequired") };
 
   const { data, error } = await supabase
     .from("land_plots")
@@ -91,7 +93,8 @@ export async function updatePlotMetadata(
 ) {
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
-  if (!auth.hasAccess) return { error: "Your trial has ended — please upgrade to continue." };
+  const t = await getTranslations("PlotActions");
+  if (!auth.hasAccess) return { error: t("trialEnded") };
 
   const supabase = await createClient();
 
@@ -132,10 +135,11 @@ export async function deletePlot(plotId: string) {
 export async function savePlotBoundary(plotId: string, points: LatLng[]) {
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
-  if (!auth.hasAccess) return { error: "Your trial has ended — please upgrade to continue." };
+  const t = await getTranslations("PlotActions");
+  if (!auth.hasAccess) return { error: t("trialEnded") };
 
   if (points.length < 3) {
-    return { error: "Need at least 3 points to form a boundary" };
+    return { error: t("needThreePoints") };
   }
 
   const supabase = await createClient();

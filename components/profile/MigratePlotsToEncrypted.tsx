@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { encryptJSON, toPgBytea } from "@/lib/crypto/encryption";
 import { getSessionDEK } from "@/lib/crypto/session";
@@ -31,16 +32,12 @@ export default function MigratePlotsToEncrypted({ userId }: { userId: string }) 
   const [status, setStatus] = useState<
     { state: "idle" } | { state: "running" } | { state: "done"; count: number } | { state: "error"; message: string }
   >({ state: "idle" });
+  const t = useTranslations("MigratePlotsToEncrypted");
 
   async function run() {
     const dek = getSessionDEK();
     if (!dek) return;
-    if (
-      !window.confirm(
-        "Encrypt all existing plots now? This clears the plaintext copy of each field — only recoverable by unlocking with your passphrase or recovery code.",
-      )
-    )
-      return;
+    if (!window.confirm(t("confirmMigrate"))) return;
     setStatus({ state: "running" });
 
     const supabase = createClient();
@@ -97,19 +94,14 @@ export default function MigratePlotsToEncrypted({ userId }: { userId: string }) 
   if (status.state === "done") {
     return (
       <p className="text-sm text-muted-foreground">
-        Encrypted {status.count} existing plot{status.count === 1 ? "" : "s"}. New plots encrypt
-        automatically while unlocked.
+        {t("encryptedCount", { count: status.count })}
       </p>
     );
   }
 
   return (
     <div className="flex flex-col gap-2 border-t border-border pt-3">
-      <p className="text-sm text-muted-foreground">
-        Plots created before you enabled encryption still have plaintext sensitive fields. This
-        re-saves each one encrypted and clears the plaintext copy — reversible only by unlocking
-        with your passphrase or recovery code.
-      </p>
+      <p className="text-sm text-muted-foreground">{t("migrationExplanation")}</p>
       {status.state === "error" && <p className="text-sm text-destructive">{status.message}</p>}
       <Button
         type="button"
@@ -119,7 +111,7 @@ export default function MigratePlotsToEncrypted({ userId }: { userId: string }) 
         disabled={status.state === "running"}
         onClick={run}
       >
-        {status.state === "running" ? "Encrypting..." : "Encrypt existing plots"}
+        {status.state === "running" ? t("encrypting") : t("encryptExistingPlots")}
       </Button>
     </div>
   );

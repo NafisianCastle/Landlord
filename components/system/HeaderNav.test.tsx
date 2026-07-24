@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithIntl as render } from "@/test/i18n";
 import HeaderNav from "./HeaderNav";
 
 const usePathnameMock = vi.fn();
