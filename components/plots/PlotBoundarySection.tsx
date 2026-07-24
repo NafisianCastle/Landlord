@@ -2,10 +2,14 @@
 
 import { useState } from "react";
 import type { Polygon } from "geojson";
-import PlotMap from "@/components/map/PlotMap";
-import BoundaryWalker from "@/components/map/BoundaryWalker";
-import ManualBoundaryDrawer from "@/components/map/ManualBoundaryDrawer";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
+
+const PlotMap = dynamic(() => import("@/components/map/PlotMap"), { ssr: false });
+const BoundaryWalker = dynamic(() => import("@/components/map/BoundaryWalker"), { ssr: false });
+const ManualBoundaryDrawer = dynamic(() => import("@/components/map/ManualBoundaryDrawer"), {
+  ssr: false,
+});
 
 interface PlotBoundarySectionProps {
   plotId: string;

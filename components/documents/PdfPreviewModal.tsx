@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Document, Page } from "react-pdf";
+import "react-pdf/dist/Page/TextLayer.css";
+import "react-pdf/dist/Page/AnnotationLayer.css";
 import "@/lib/pdfWorker";
 import { getDocumentPreviewUrl } from "@/app/actions/documents";
 import { decryptBytes, fromPgBytea } from "@/lib/crypto/encryption";
