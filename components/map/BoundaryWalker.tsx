@@ -337,6 +337,10 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
 }
 
 function addWalkLayers(map: maplibregl.Map, points: LatLng[]) {
+  for (const id of ["walk-fill", "walk-line", "walk-points"]) {
+    if (map.getLayer(id)) map.removeLayer(id);
+  }
+  if (map.getSource("walk")) map.removeSource("walk");
   map.addSource("walk", { type: "geojson", data: walkPreview(points) });
   map.addLayer({
     id: "walk-fill",

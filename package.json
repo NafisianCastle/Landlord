@@ -13,6 +13,10 @@
     "test:coverage": "vitest run --coverage",
     "postinstall": "node scripts/copy-pdf-worker.mjs"
   },
+  "overrides": {
+    "postcss": "^8.5.23",
+    "sharp": "^0.35.3"
+  },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.12",
     "@radix-ui/react-slot": "^1.3.1",

@@ -297,6 +297,9 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
 }
 
 function addPlotLayers(map: maplibregl.Map, plots: PlotMapFeature[]) {
+  if (map.getLayer("plots-fill")) map.removeLayer("plots-fill");
+  if (map.getLayer("plots-outline")) map.removeLayer("plots-outline");
+  if (map.getSource("plots")) map.removeSource("plots");
   map.addSource("plots", { type: "geojson", data: featureCollection(plots) });
   map.addLayer({
     id: "plots-fill",
