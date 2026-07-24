@@ -20,7 +20,11 @@
       "Skill(run:*)",
       "Bash(node -e \"console.log\\(require.resolve\\('playwright'\\)\\)\")",
       "Bash(npm init *)",
-      "Bash(gh repo *)"
+      "Bash(gh repo *)",
+      "Bash(git fetch *)",
+      "Bash(git stash *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ],
     "additionalDirectories": [
       "/run/media/nafis/Projects/landly/components"
