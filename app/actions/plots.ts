@@ -46,6 +46,15 @@ function sensitiveFieldsFromForm(formData: FormData) {
   };
 }
 
+function areaFieldsFromForm(formData: FormData) {
+  return {
+    dolil_area: formData.get("dolilArea") ? Number(formData.get("dolilArea")) : null,
+    dolil_area_unit: String(formData.get("dolilAreaUnit") ?? "") || null,
+    actual_area: formData.get("actualArea") ? Number(formData.get("actualArea")) : null,
+    actual_area_unit: String(formData.get("actualAreaUnit") ?? "") || null,
+  };
+}
+
 export async function createPlot(_prevState: unknown, formData: FormData) {
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
@@ -64,6 +73,7 @@ export async function createPlot(_prevState: unknown, formData: FormData) {
       upazila: String(formData.get("upazila") ?? "") || null,
       district: String(formData.get("district") ?? "") || null,
       division: String(formData.get("division") ?? "") || null,
+      ...areaFieldsFromForm(formData),
       ...sensitiveFieldsFromForm(formData),
     })
     .select("id")
@@ -92,6 +102,7 @@ export async function updatePlotMetadata(
       upazila: String(formData.get("upazila") ?? "") || null,
       district: String(formData.get("district") ?? "") || null,
       division: String(formData.get("division") ?? "") || null,
+      ...areaFieldsFromForm(formData),
       ...sensitiveFieldsFromForm(formData),
     })
     .eq("id", plotId);
