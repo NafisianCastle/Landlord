@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const admin = createAdminClient();
   const { data: txn } = await admin
     .from("payment_transactions")
-    .select("user_id, amount")
+    .select("user_id, amount, status")
     .eq("tran_id", tranId)
     .single();
 
@@ -27,12 +27,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "unknown transaction" }, { status: 404 });
   }
 
+  // Already resolved — treat as a no-op so a duplicate/replayed IPN can't
+  // flip a completed transaction back to failed or re-run the upsert below.
+  if (txn.status !== "pending") {
+    return NextResponse.json({ received: true });
+  }
+
   const validation = await validateSslcommerzPayment(valId);
   const isValid = validation.status === "VALID" || validation.status === "VALIDATED";
   const amountMatches = Number(validation.amount) >= Number(txn.amount) - 0.01;
-  const succeeded = isValid && amountMatches;
+  // val_id is bound to the specific tran_id it validated — without this a
+  // val_id from one real payment could be replayed against any other
+  // account's pending tran_id to fabricate a paid subscription for them too.
+  const tranIdMatches = String(validation.tran_id ?? "") === tranId;
+  const succeeded = isValid && amountMatches && tranIdMatches;
 
-  await admin
+  const { error: updateError } = await admin
     .from("payment_transactions")
     .update({
       val_id: valId,
@@ -41,7 +51,15 @@ export async function POST(request: Request) {
       status: succeeded ? "completed" : "failed",
       raw_ipn_payload: payload,
     })
-    .eq("tran_id", tranId);
+    .eq("tran_id", tranId)
+    .eq("status", "pending");
+
+  // val_id is unique across transactions (migration 0011) — a conflict here
+  // means this val_id was already consumed by a different tran_id, so refuse
+  // to grant access even though SSLCommerz reported it as valid.
+  if (updateError) {
+    return NextResponse.json({ error: "val_id already used" }, { status: 409 });
+  }
 
   if (succeeded) {
     await admin.from("subscriptions").upsert(

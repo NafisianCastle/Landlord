@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getUserWithAccess } from "@/lib/access";
 import type { LatLng } from "@/lib/geo";
 import { pointsToPolygon } from "@/lib/geo";
 
@@ -46,12 +47,12 @@ function sensitiveFieldsFromForm(formData: FormData) {
 }
 
 export async function createPlot(_prevState: unknown, formData: FormData) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const auth = await getUserWithAccess();
+  if (!auth) redirect("/login");
+  if (!auth.hasAccess) redirect("/paywall");
+  const { user } = auth;
 
+  const supabase = await createClient();
   const name = String(formData.get("name") ?? "").trim();
   if (!name) return { error: "Plot name is required" };
 
@@ -78,6 +79,10 @@ export async function updatePlotMetadata(
   _prevState: unknown,
   formData: FormData,
 ) {
+  const auth = await getUserWithAccess();
+  if (!auth) redirect("/login");
+  if (!auth.hasAccess) return { error: "Your trial has ended — please upgrade to continue." };
+
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -98,6 +103,10 @@ export async function updatePlotMetadata(
 }
 
 export async function deletePlot(plotId: string) {
+  const auth = await getUserWithAccess();
+  if (!auth) redirect("/login");
+  if (!auth.hasAccess) redirect("/paywall");
+
   const supabase = await createClient();
   await supabase.from("land_plots").delete().eq("id", plotId);
   redirect("/plots");
@@ -109,6 +118,10 @@ export async function deletePlot(plotId: string) {
  * retry — full-replace by plot_id, single writer per plot).
  */
 export async function savePlotBoundary(plotId: string, points: LatLng[]) {
+  const auth = await getUserWithAccess();
+  if (!auth) redirect("/login");
+  if (!auth.hasAccess) return { error: "Your trial has ended — please upgrade to continue." };
+
   if (points.length < 3) {
     return { error: "Need at least 3 points to form a boundary" };
   }

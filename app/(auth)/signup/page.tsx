@@ -42,7 +42,7 @@ export default function SignupPage() {
                 name="password"
                 type="password"
                 required
-                minLength={6}
+                minLength={10}
                 aria-invalid={!!state?.error}
                 className={state?.error ? "border-destructive" : undefined}
               />
