@@ -10,6 +10,7 @@ describe("StatsCards", () => {
         totalAreaSqMeters={404.686}
         totalPurchasePrice={100000}
         totalCurrentValue={150000}
+        documentCount={3}
       />,
     );
     expect(screen.getByText("5")).toBeInTheDocument();
@@ -24,6 +25,7 @@ describe("StatsCards", () => {
         totalAreaSqMeters={0}
         totalPurchasePrice={100000}
         totalCurrentValue={150000}
+        documentCount={3}
       />,
     );
     expect(screen.getByText(/\+.*\(\+50\.0%\)/)).toBeInTheDocument();
@@ -36,6 +38,7 @@ describe("StatsCards", () => {
         totalAreaSqMeters={0}
         totalPurchasePrice={100000}
         totalCurrentValue={80000}
+        documentCount={0}
       />,
     );
     expect(screen.getByText(/\(-20\.0%\)/)).toBeInTheDocument();
@@ -48,6 +51,7 @@ describe("StatsCards", () => {
         totalAreaSqMeters={0}
         totalPurchasePrice={0}
         totalCurrentValue={5000}
+        documentCount={0}
       />,
     );
     expect(screen.queryByText(/%\)/)).not.toBeInTheDocument();
@@ -55,9 +59,15 @@ describe("StatsCards", () => {
 
   it("renders zero values without crashing", () => {
     render(
-      <StatsCards plotCount={0} totalAreaSqMeters={0} totalPurchasePrice={0} totalCurrentValue={0} />,
+      <StatsCards
+        plotCount={0}
+        totalAreaSqMeters={0}
+        totalPurchasePrice={0}
+        totalCurrentValue={0}
+        documentCount={0}
+      />,
     );
-    expect(screen.getByText("0")).toBeInTheDocument();
+    expect(screen.getAllByText("0")).toHaveLength(2);
     expect(screen.getByText("0.00 decimal")).toBeInTheDocument();
   });
 });

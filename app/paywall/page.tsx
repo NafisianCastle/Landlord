@@ -5,6 +5,7 @@ import { LIFETIME_PRICE_BDT } from "@/lib/sslcommerz";
 import { Card, CardContent } from "@/components/ui/card";
 import ThemeToggle from "@/components/system/ThemeToggle";
 import PayButton from "@/components/payments/PayButton";
+import Logo from "@/components/system/Logo";
 
 const STATUS_MESSAGES: Record<string, string> = {
   failed: "Payment failed — please try again.",
@@ -29,7 +30,8 @@ export default async function PaywallPage({
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-sm flex-col gap-4 p-6">
-      <div className="flex justify-end pt-2">
+      <div className="flex items-center justify-between pt-2">
+        <Logo className="size-8 rounded-lg" />
         <ThemeToggle />
       </div>
       <div className="flex flex-1 flex-col justify-center gap-4">

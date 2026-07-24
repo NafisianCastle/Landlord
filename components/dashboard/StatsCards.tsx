@@ -6,6 +6,7 @@ interface StatsCardsProps {
   totalAreaSqMeters: number;
   totalPurchasePrice: number;
   totalCurrentValue: number;
+  documentCount: number;
 }
 
 const bdt = new Intl.NumberFormat("en-BD", {
@@ -19,6 +20,7 @@ export default function StatsCards({
   totalAreaSqMeters,
   totalPurchasePrice,
   totalCurrentValue,
+  documentCount,
 }: StatsCardsProps) {
   const area = convertArea(totalAreaSqMeters);
   const delta = totalCurrentValue - totalPurchasePrice;
@@ -40,10 +42,11 @@ export default function StatsCards({
           ? `${delta >= 0 ? "+" : ""}${bdt.format(delta)} (${deltaPct >= 0 ? "+" : ""}${deltaPct.toFixed(1)}%)`
           : undefined,
     },
+    { label: "Documents", value: String(documentCount) },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
       {cards.map((card) => (
         <Card key={card.label}>
           <CardContent className="p-3">

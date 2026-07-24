@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Logo from "@/components/system/Logo";
 
 export default function SignupPage() {
   const [state, formAction, pending] = useActionState(signUp, undefined);
 
   return (
     <div className="mx-auto flex w-full max-w-sm flex-col gap-4 p-6">
+      <Logo className="mx-auto size-12 rounded-xl" />
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Sign up</CardTitle>
