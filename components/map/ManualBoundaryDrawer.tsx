@@ -329,6 +329,10 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
 }
 
 function addDrawLayers(map: maplibregl.Map, points: LatLng[]) {
+  for (const id of ["draw-fill", "draw-line", "draw-points-halo", "draw-points"]) {
+    if (map.getLayer(id)) map.removeLayer(id);
+  }
+  if (map.getSource("draw")) map.removeSource("draw");
   map.addSource("draw", { type: "geojson", data: drawPreview(points) });
   map.addLayer({
     id: "draw-fill",
