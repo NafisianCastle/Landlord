@@ -35,7 +35,8 @@
       "Bash(npm audit *)",
       "Bash(python3 -c ' *)",
       "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")",
-      "Bash(npm view *)"
+      "Bash(npm view *)",
+      "Bash(npm test *)"
     ],
     "additionalDirectories": [
       "/run/media/nafis/Projects/landly/components"

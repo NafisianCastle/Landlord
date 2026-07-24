@@ -14,7 +14,7 @@ const storageFromMock = vi.fn(() => ({
 
 let selectSingleResult: { data?: unknown; error?: unknown } = { data: null, error: null };
 let insertResult: { error: unknown } = { error: null };
-let deleteResultThen: unknown = undefined;
+let deleteResultThen: unknown = { error: null };
 const getUserMock = vi.fn();
 
 function makeTableChain() {
@@ -57,7 +57,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   selectSingleResult = { data: null, error: null };
   insertResult = { error: null };
-  deleteResultThen = undefined;
+  deleteResultThen = { error: null };
   uploadMock.mockResolvedValue({ error: null });
   removeMock.mockResolvedValue({ error: null });
 });
@@ -167,38 +167,44 @@ describe("uploadDocument", () => {
 });
 
 describe("deleteDocument", () => {
-  it("no-ops when there is no authenticated user", async () => {
+  it("throws when there is no authenticated user", async () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     const { deleteDocument } = await import("./documents");
-    await deleteDocument("p1", "d1", "u1/p1/x.pdf");
+    await expect(deleteDocument("p1", "d1", "u1/p1/x.pdf")).rejects.toThrow("Not signed in");
     expect(removeMock).not.toHaveBeenCalled();
   });
 
-  it("no-ops when the document is not found", async () => {
+  it("throws when the document is not found", async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: "u1" } } });
     selectSingleResult = { data: null, error: null };
     const { deleteDocument } = await import("./documents");
-    await deleteDocument("p1", "d1", "u1/p1/x.pdf");
+    await expect(deleteDocument("p1", "d1", "u1/p1/x.pdf")).rejects.toThrow(
+      "Document not found",
+    );
     expect(removeMock).not.toHaveBeenCalled();
   });
 
-  it("no-ops when the document belongs to a different user", async () => {
+  it("throws when the document belongs to a different user", async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: "u1" } } });
     selectSingleResult = {
       data: { id: "d1", user_id: "someone-else", storage_path: "u1/p1/x.pdf" },
     };
     const { deleteDocument } = await import("./documents");
-    await deleteDocument("p1", "d1", "u1/p1/x.pdf");
+    await expect(deleteDocument("p1", "d1", "u1/p1/x.pdf")).rejects.toThrow(
+      "Document not found",
+    );
     expect(removeMock).not.toHaveBeenCalled();
   });
 
-  it("no-ops when the storage path does not match (tampered client call)", async () => {
+  it("throws when the storage path does not match (tampered client call)", async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: "u1" } } });
     selectSingleResult = {
       data: { id: "d1", user_id: "u1", storage_path: "u1/p1/other.pdf" },
     };
     const { deleteDocument } = await import("./documents");
-    await deleteDocument("p1", "d1", "u1/p1/x.pdf");
+    await expect(deleteDocument("p1", "d1", "u1/p1/x.pdf")).rejects.toThrow(
+      "Document not found",
+    );
     expect(removeMock).not.toHaveBeenCalled();
   });
 

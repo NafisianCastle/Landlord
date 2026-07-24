@@ -9,7 +9,10 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: stats }, { data: byDistrict }] = await Promise.all([
+  const [
+    { data: stats, error: statsError },
+    { data: byDistrict, error: districtError },
+  ] = await Promise.all([
     supabase.from("plot_stats").select("*").single(),
     supabase.from("plot_stats_by_district").select("*"),
   ]);
@@ -17,6 +20,15 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
       <h1 className="truncate text-xl font-semibold">Welcome, {user?.email}</h1>
+
+      {(statsError || districtError) && (
+        <p
+          role="alert"
+          className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive"
+        >
+          Couldn&rsquo;t load your stats — figures below may be incomplete. Try refreshing.
+        </p>
+      )}
 
       <StatsCards
         plotCount={stats?.plot_count ?? 0}

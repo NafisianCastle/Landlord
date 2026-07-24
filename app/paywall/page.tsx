@@ -2,9 +2,9 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { hasActiveAccess } from "@/lib/access";
 import { LIFETIME_PRICE_BDT } from "@/lib/sslcommerz";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import ThemeToggle from "@/components/system/ThemeToggle";
+import PayButton from "@/components/payments/PayButton";
 
 const STATUS_MESSAGES: Record<string, string> = {
   failed: "Payment failed — please try again.",
@@ -46,9 +46,7 @@ export default async function PaywallPage({
             <p className="text-sm text-destructive">{STATUS_MESSAGES[status]}</p>
           )}
           <form action="/api/payments/sslcommerz/init" method="POST">
-            <Button type="submit" className="w-full">
-              Pay with bKash / card / bank
-            </Button>
+            <PayButton />
           </form>
         </CardContent>
         </Card>

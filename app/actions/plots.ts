@@ -119,7 +119,8 @@ export async function deletePlot(plotId: string) {
   if (!auth.hasAccess) redirect("/paywall");
 
   const supabase = await createClient();
-  await supabase.from("land_plots").delete().eq("id", plotId);
+  const { error } = await supabase.from("land_plots").delete().eq("id", plotId);
+  if (error) return { error: error.message };
   redirect("/plots");
 }
 

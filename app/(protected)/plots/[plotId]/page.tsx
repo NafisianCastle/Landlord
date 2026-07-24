@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Polygon } from "geojson";
 import { createClient } from "@/lib/supabase/server";
-import { updatePlotMetadata, deletePlot } from "@/app/actions/plots";
+import { updatePlotMetadata } from "@/app/actions/plots";
 import { convertArea } from "@/lib/units";
 import { polygonCentroid, googleMapsDirectionsUrl } from "@/lib/geo";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import PlotMetadataForm from "@/components/plots/PlotMetadataForm";
 import PlotBoundarySection from "@/components/plots/PlotBoundarySection";
 import DocumentUploader from "@/components/documents/DocumentUploader";
 import DocumentRow from "@/components/documents/DocumentRow";
+import DeletePlotButton from "@/components/plots/DeletePlotButton";
 
 export default async function PlotDetailPage({
   params,
@@ -169,11 +170,7 @@ export default async function PlotDetailPage({
         <DocumentUploader plotId={plot.id} />
       </div>
 
-      <form action={deletePlot.bind(null, plot.id)}>
-        <Button type="submit" variant="destructive" size="sm">
-          Delete plot
-        </Button>
-      </form>
+      <DeletePlotButton plotId={plot.id} plotName={plot.name} />
     </div>
   );
 }

@@ -140,7 +140,7 @@ describe("syncQueue", () => {
       await recordPoint("s1", "p1", 0, 0, 0, null);
       vi.clearAllMocks();
       const result = await syncPending();
-      expect(result).toEqual({ finished: [] });
+      expect(result).toEqual({ finished: [], hadError: false });
       expect(getUserMock).not.toHaveBeenCalled();
     });
 
@@ -149,7 +149,7 @@ describe("syncQueue", () => {
       const { syncPending, recordPoint } = await import("./syncQueue");
       await recordPoint("s1", "p1", 0, 0, 0, null);
       const result = await syncPending();
-      expect(result).toEqual({ finished: [] });
+      expect(result).toEqual({ finished: [], hadError: false });
       expect(upsertMock).not.toHaveBeenCalled();
     });
 

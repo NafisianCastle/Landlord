@@ -118,15 +118,16 @@ export async function finishSession(plotId: string, sessionId: string) {
  * calling the upsert_plot_boundary RPC with its locally-held points. Safe to
  * call repeatedly — a no-op when offline or nothing is pending.
  */
-export async function syncPending(): Promise<{ finished: string[] }> {
+export async function syncPending(): Promise<{ finished: string[]; hadError: boolean }> {
   const finished: string[] = [];
-  if (typeof navigator !== "undefined" && !navigator.onLine) return { finished };
+  let hadError = false;
+  if (typeof navigator !== "undefined" && !navigator.onLine) return { finished, hadError };
 
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { finished };
+  if (!user) return { finished, hadError };
 
   const unsynced = await db.walkPoints.where("synced").equals(0).toArray();
   const bySession = new Map<string, WalkPoint[]>();
@@ -153,6 +154,8 @@ export async function syncPending(): Promise<{ finished: string[] }> {
     if (!error) {
       const ids = points.map((p) => p.id).filter((id): id is number => id !== undefined);
       await db.walkPoints.bulkUpdate(ids.map((id) => ({ key: id, changes: { synced: 1 } })));
+    } else {
+      hadError = true;
     }
   }
 
@@ -175,9 +178,11 @@ export async function syncPending(): Promise<{ finished: string[] }> {
     if (!result?.error) {
       await db.walkSessions.update(session.id, { status: "done" });
       finished.push(session.plotId);
+    } else {
+      hadError = true;
     }
   }
 
   notify();
-  return { finished };
+  return { finished, hadError };
 }

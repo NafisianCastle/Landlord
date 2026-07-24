@@ -69,7 +69,7 @@ export async function deleteDocument(plotId: string, documentId: string, storage
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return;
+  if (!user) throw new Error("Not signed in");
 
   // Belt-and-suspenders on top of RLS: confirm this row is both the document
   // asked for and actually owned by the caller before touching storage.
@@ -79,10 +79,16 @@ export async function deleteDocument(plotId: string, documentId: string, storage
     .eq("id", documentId)
     .eq("plot_id", plotId)
     .single();
-  if (!doc || doc.user_id !== user.id || doc.storage_path !== storagePath) return;
+  if (!doc || doc.user_id !== user.id || doc.storage_path !== storagePath) {
+    throw new Error("Document not found");
+  }
 
-  await supabase.storage.from(BUCKET).remove([storagePath]);
-  await supabase.from("plot_documents").delete().eq("id", documentId);
+  const { error: storageError } = await supabase.storage.from(BUCKET).remove([storagePath]);
+  if (storageError) throw new Error(storageError.message);
+
+  const { error: dbError } = await supabase.from("plot_documents").delete().eq("id", documentId);
+  if (dbError) throw new Error(dbError.message);
+
   revalidatePath(`/plots/${plotId}`);
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { syncPending } from "@/lib/offline/syncQueue";
 
@@ -9,11 +9,17 @@ import { syncPending } from "@/lib/offline/syncQueue";
 // returns, without needing BoundaryWalker itself to be mounted.
 export default function SyncManager() {
   const router = useRouter();
+  const [syncError, setSyncError] = useState(false);
 
   useEffect(() => {
     const trySync = async () => {
-      const { finished } = await syncPending();
-      if (finished.length > 0) router.refresh();
+      try {
+        const { finished, hadError } = await syncPending();
+        setSyncError(hadError);
+        if (finished.length > 0) router.refresh();
+      } catch {
+        setSyncError(true);
+      }
     };
 
     void trySync();
@@ -26,5 +32,14 @@ export default function SyncManager() {
     };
   }, [router]);
 
-  return null;
+  if (!syncError) return null;
+
+  return (
+    <div
+      role="alert"
+      className="sticky top-0 z-50 bg-destructive/10 px-4 py-2 text-center text-sm text-destructive"
+    >
+      Some changes couldn&rsquo;t sync — will retry automatically.
+    </div>
+  );
 }
