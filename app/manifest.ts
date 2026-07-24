@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Landlord",
     short_name: "Landlord",
-    description: "Plot boundary mapping and land management",
+    description: "Land plot mapping and management with boundaries, documents, and offline sync",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Landlord",
-  description: "Plot boundary mapping and land management",
+  description: "Map, track, and manage land plots with boundaries, documents, and offline sync",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

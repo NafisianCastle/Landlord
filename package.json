@@ -1,5 +1,6 @@
 {
   "name": "landlord",
+  "description": "Land plot mapping and management app with boundary capture, documents, and offline sync",
   "version": "0.1.0",
   "private": true,
   "scripts": {

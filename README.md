@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Landlord
 
-## Getting Started
+Landlord is a land-plot management web app for recording plot boundaries, tracking land inventory, storing supporting documents, and managing ownership metadata in one place.
 
-First, run the development server:
+## What this app does
+
+- Map and manage land plots from a dashboard
+- Walk plot boundaries on a map and save the resulting GeoJSON boundary
+- Store plot documents such as PDFs with optional client-side encryption
+- Track area, purchase value, current value, and location-based summaries
+- Support offline-first behavior with local persistence and sync queueing
+- Offer paywall access with SSLCommerz payment integration
+
+## Tech stack
+
+- Next.js 16 with App Router
+- React 19
+- Supabase for auth, database, storage, and server-side data access
+- MapLibre GL for map and boundary visualization
+- Dexie for offline local storage
+- Tailwind CSS and shadcn-style UI primitives
+
+## Project structure
+
+- `app/` – route handlers, pages, and protected UI flows
+- `components/` – UI and feature components
+- `lib/` – map, crypto, offline, payment, and Supabase helpers
+- `supabase/migrations/` – database schema and migrations
+
+## Local development
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Open http://localhost:3000
+
+## Environment variables
+
+This project expects Supabase and payment-related environment variables to be configured before running locally or deploying.
+
+Typical variables include:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+SSL_COMMERZ_STORE_ID=
+SSL_COMMERZ_STORE_PASSWORD=
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The app is designed to deploy on a modern Node.js hosting platform such as Vercel, with Supabase backend resources configured separately.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Notes
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The repository name is `Landlord`, and the product is positioned as a practical land-plot and parcel management workflow with map-first data capture and secure document handling.
