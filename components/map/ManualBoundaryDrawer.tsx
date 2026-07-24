@@ -130,6 +130,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
       map.remove();
       mapRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -145,16 +146,12 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
   }, [points]);
 
   useEffect(() => {
+    if (searchQuery.trim().length < 3) return;
     searchAbortRef.current?.abort();
-    if (searchQuery.trim().length < 3) {
-      setSearchResults([]);
-      setSearching(false);
-      return;
-    }
     const controller = new AbortController();
     searchAbortRef.current = controller;
-    setSearching(true);
     const timer = setTimeout(async () => {
+      setSearching(true);
       try {
         const results = await searchPlaces(searchQuery, controller.signal);
         setSearchResults(results);
@@ -241,7 +238,15 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSearchQuery(value);
+                if (value.trim().length < 3) {
+                  searchAbortRef.current?.abort();
+                  setSearchResults([]);
+                  setSearching(false);
+                }
+              }}
               placeholder="Search a place to navigate there..."
               className="w-full rounded bg-card px-2 py-2 text-sm text-card-foreground shadow outline-none"
             />
