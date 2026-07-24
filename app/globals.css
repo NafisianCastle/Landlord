@@ -1,7 +1,4 @@
 @import "tailwindcss";
-@import "maplibre-gl/dist/maplibre-gl.css";
-@import "react-pdf/dist/Page/TextLayer.css";
-@import "react-pdf/dist/Page/AnnotationLayer.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 

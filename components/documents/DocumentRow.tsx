@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import PdfPreviewModal from "./PdfPreviewModal";
+import dynamic from "next/dynamic";
 import { deleteDocument } from "@/app/actions/documents";
 import { Button } from "@/components/ui/button";
+
+const PdfPreviewModal = dynamic(() => import("./PdfPreviewModal"), { ssr: false });
 
 interface DocumentRowProps {
   plotId: string;

@@ -18,11 +18,14 @@ export default async function PlotDetailPage({
 }) {
   const { plotId } = await params;
   const supabase = await createClient();
-  const { data: plot, error } = await supabase
-    .from("land_plots")
-    .select("*")
-    .eq("id", plotId)
-    .single();
+  const [{ data: plot, error }, { data: documents }] = await Promise.all([
+    supabase.from("land_plots").select("*").eq("id", plotId).single(),
+    supabase
+      .from("plot_documents")
+      .select("id, file_name, storage_path, is_encrypted, encryption_iv")
+      .eq("plot_id", plotId)
+      .order("uploaded_at", { ascending: false }),
+  ]);
 
   if (error && error.code !== "PGRST116") {
     return (
@@ -35,12 +38,6 @@ export default async function PlotDetailPage({
   }
 
   if (!plot) notFound();
-
-  const { data: documents } = await supabase
-    .from("plot_documents")
-    .select("id, file_name, storage_path, is_encrypted, encryption_iv")
-    .eq("plot_id", plotId)
-    .order("uploaded_at", { ascending: false });
 
   const boundary = plot.boundary_geojson as Polygon | null;
   const conversions = plot.area_sq_meters ? convertArea(plot.area_sq_meters) : null;
