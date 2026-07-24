@@ -8,6 +8,7 @@ import { styleFor, type BaseStyle } from "@/lib/mapStyles";
 import { type LatLng, closedPerimeterMeters, polygonAreaSqMeters } from "@/lib/geo";
 import { convertArea } from "@/lib/units";
 import { savePlotBoundary } from "@/app/actions/plots";
+import { searchPlaces, type GeocodeResult } from "@/lib/geocode";
 
 /**
  * GPS drift can put a walked corner meters off. This mode lets the user drop
@@ -25,6 +26,11 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [baseStyle, setBaseStyle] = useState<BaseStyle>("streets");
   const [mapError, setMapError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<GeocodeResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const searchAbortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -137,6 +143,52 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
     else map.once("load", apply);
   }, [points]);
 
+  useEffect(() => {
+    searchAbortRef.current?.abort();
+    if (searchQuery.trim().length < 3) {
+      setSearchResults([]);
+      setSearching(false);
+      return;
+    }
+    const controller = new AbortController();
+    searchAbortRef.current = controller;
+    setSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const results = await searchPlaces(searchQuery, controller.signal);
+        setSearchResults(results);
+      } catch {
+        /* aborted or network hiccup — leave prior results */
+      } finally {
+        setSearching(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  function goToPlace(result: GeocodeResult) {
+    mapRef.current?.flyTo({ center: [result.center.lng, result.center.lat], zoom: 17 });
+    setSearchQuery(result.label);
+    setSearchResults([]);
+  }
+
+  function locateMe() {
+    const map = mapRef.current;
+    if (!map || !navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        map.flyTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 17 });
+        setLocating(false);
+      },
+      () => {
+        setError("Couldn't get your location — check location permission.");
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, maximumAge: 60000, timeout: 10000 },
+    );
+  }
+
   const stats = useMemo(() => {
     if (points.length < 3) return null;
     return {
@@ -184,6 +236,31 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
       ) : (
         <div className="relative h-[65vh] min-h-[400px] w-full">
           <div ref={containerRef} className="h-full w-full rounded" />
+          <div className="absolute left-2 top-2 w-56 max-w-[calc(100%-4.5rem)]">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search a place to navigate there..."
+              className="w-full rounded bg-white px-2 py-1 text-xs shadow outline-none"
+            />
+            {(searching || searchResults.length > 0) && (
+              <ul className="mt-1 max-h-48 overflow-y-auto rounded bg-white text-xs shadow">
+                {searching && <li className="px-2 py-1 text-neutral-500">Searching...</li>}
+                {searchResults.map((r, i) => (
+                  <li key={i}>
+                    <button
+                      type="button"
+                      onClick={() => goToPlace(r)}
+                      className="block w-full px-2 py-1 text-left hover:bg-neutral-100"
+                    >
+                      {r.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <div className="absolute right-2 top-2 flex flex-col items-end gap-1">
             <button
               type="button"
@@ -193,6 +270,16 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
               {baseStyle === "satellite" ? "Streets" : "Satellite"}
             </button>
           </div>
+          <button
+            type="button"
+            onClick={locateMe}
+            disabled={locating}
+            title="Return to my location"
+            aria-label="Return to my location"
+            className="absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-white text-lg shadow disabled:opacity-50"
+          >
+            {locating ? "…" : "📍"}
+          </button>
           {stats && (
             <div className="absolute bottom-2 left-2 rounded bg-white px-2 py-1 text-xs shadow">
               {`${stats.distance.toFixed(1)} m perimeter • ${stats.area.decimal.toFixed(2)} decimal (${stats.area.sqMeters.toFixed(0)} m²)`}
