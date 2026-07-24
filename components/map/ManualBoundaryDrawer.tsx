@@ -145,6 +145,13 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
     else map.once("load", apply);
   }, [points]);
 
+  const queryTooShort = searchQuery.trim().length < 3;
+
+  function handleSearchChange(value: string) {
+    setSearchQuery(value);
+    setSearching(value.trim().length >= 3);
+  }
+
   useEffect(() => {
     if (searchQuery.trim().length < 3) return;
     searchAbortRef.current?.abort();
@@ -162,7 +169,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
       }
     }, 300);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, queryTooShort]);
 
   function goToPlace(result: GeocodeResult) {
     mapRef.current?.flyTo({ center: [result.center.lng, result.center.lat], zoom: 17 });
@@ -250,7 +257,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
               placeholder="Search a place to navigate there..."
               className="w-full rounded bg-card px-2 py-2 text-sm text-card-foreground shadow outline-none"
             />
-            {(searching || searchResults.length > 0) && (
+            {!queryTooShort && (searching || searchResults.length > 0) && (
               <ul className="mt-1 max-h-48 overflow-y-auto rounded bg-card text-sm text-card-foreground shadow">
                 {searching && <li className="px-2 py-2 text-muted-foreground">Searching...</li>}
                 {searchResults.map((r, i) => (
