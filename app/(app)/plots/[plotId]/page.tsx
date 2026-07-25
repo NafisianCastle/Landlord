@@ -14,6 +14,7 @@ import DocumentRow from "@/components/documents/DocumentRow";
 import DeletePlotButton from "@/components/plots/DeletePlotButton";
 import GuestPlotDetail from "@/components/plots/GuestPlotDetail";
 import PlotCollaborators from "@/components/plots/PlotCollaborators";
+import PlotAuditLog from "@/components/plots/PlotAuditLog";
 
 export default async function PlotDetailPage({
   params,
@@ -192,6 +193,8 @@ export default async function PlotDetailPage({
         isOwner={plot.user_id === user.id}
         collaborators={collaborators ?? []}
       />
+
+      <PlotAuditLog plotId={plot.id} isOwner={plot.user_id === user.id} />
 
       {plot.user_id === user.id && (
         <DeletePlotButton plotId={plot.id} plotName={plot.name} />

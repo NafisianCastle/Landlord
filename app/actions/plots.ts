@@ -271,6 +271,13 @@ export async function inviteCollaborator(
     return { error: error.message };
   }
 
+  const { error: logError } = await supabase.rpc("log_plot_collaborator_audit", {
+    p_plot_id: plotId,
+    p_action: "collaborator_invited",
+    p_detail: { email, role },
+  });
+  if (logError) console.error("log_plot_collaborator_audit failed:", logError.message);
+
   revalidatePath(`/plots/${plotId}`);
   return { success: true };
 }
@@ -280,11 +287,24 @@ export async function removeCollaborator(plotId: string, collaboratorId: string)
   if (!auth) redirect("/login");
 
   const supabase = await createClient();
+  const { data: collaborator } = await supabase
+    .from("plot_collaborators")
+    .select("invited_email")
+    .eq("id", collaboratorId)
+    .single();
+
   const { error } = await supabase
     .from("plot_collaborators")
     .delete()
     .eq("id", collaboratorId);
   if (error) return { error: error.message };
+
+  const { error: logError } = await supabase.rpc("log_plot_collaborator_audit", {
+    p_plot_id: plotId,
+    p_action: "collaborator_removed",
+    p_detail: { email: collaborator?.invited_email ?? null },
+  });
+  if (logError) console.error("log_plot_collaborator_audit failed:", logError.message);
 
   revalidatePath(`/plots/${plotId}`);
   return { success: true };

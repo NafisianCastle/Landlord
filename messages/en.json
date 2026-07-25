@@ -335,6 +335,19 @@
     "sharedByOwner": "Shared with you by the plot owner.",
     "sharedAsRole": "Your role: {role}"
   },
+  "PlotAuditLog": {
+    "title": "History",
+    "unknownActor": "Someone",
+    "noHistoryYet": "No history yet.",
+    "action": {
+      "created": "created this plot",
+      "metadata_updated": "edited the details",
+      "boundary_updated": "updated the boundary",
+      "deleted": "deleted this plot",
+      "collaborator_invited": "invited a collaborator",
+      "collaborator_removed": "removed a collaborator"
+    }
+  },
   "ErrorPage": {
     "title": "Something went wrong",
     "subtitle": "An unexpected error occurred. It's been reported — please try again.",

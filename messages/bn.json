@@ -335,6 +335,19 @@
     "sharedByOwner": "প্লটের মালিক আপনার সাথে এটি শেয়ার করেছেন।",
     "sharedAsRole": "আপনার ভূমিকা: {role}"
   },
+  "PlotAuditLog": {
+    "title": "ইতিহাস",
+    "unknownActor": "কেউ একজন",
+    "noHistoryYet": "এখনো কোনো ইতিহাস নেই।",
+    "action": {
+      "created": "এই প্লট তৈরি করেছেন",
+      "metadata_updated": "বিবরণ সম্পাদনা করেছেন",
+      "boundary_updated": "সীমানা হালনাগাদ করেছেন",
+      "deleted": "এই প্লট মুছে ফেলেছেন",
+      "collaborator_invited": "একজন সহযোগীকে আমন্ত্রণ করেছেন",
+      "collaborator_removed": "একজন সহযোগীকে সরিয়েছেন"
+    }
+  },
   "ErrorPage": {
     "title": "কিছু একটা সমস্যা হয়েছে",
     "subtitle": "একটি অপ্রত্যাশিত ত্রুটি ঘটেছে। এটি রিপোর্ট করা হয়েছে — আবার চেষ্টা করুন।",
