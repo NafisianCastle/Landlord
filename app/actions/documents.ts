@@ -73,15 +73,19 @@ export async function deleteDocument(plotId: string, documentId: string, storage
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Not signed in");
 
-  // Belt-and-suspenders on top of RLS: confirm this row is both the document
-  // asked for and actually owned by the caller before touching storage.
+  // Belt-and-suspenders on top of RLS: confirm this row is the document
+  // asked for. Ownership/collaborator-editor access itself is enforced by
+  // RLS on both this table and the storage delete below (plot_documents and
+  // storage.objects policies, see 0015_plot_collaborators.sql) — not a match
+  // against this row's own user_id, since a plot's documents may have been
+  // uploaded by any of its editor-collaborators, not just its owner.
   const { data: doc } = await supabase
     .from("plot_documents")
-    .select("id, user_id, storage_path")
+    .select("id, storage_path")
     .eq("id", documentId)
     .eq("plot_id", plotId)
     .single();
-  if (!doc || doc.user_id !== user.id || doc.storage_path !== storagePath) {
+  if (!doc || doc.storage_path !== storagePath) {
     throw new Error("Document not found");
   }
 

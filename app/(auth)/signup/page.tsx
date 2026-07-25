@@ -57,6 +57,20 @@ export default function SignupPage() {
                 {t("successMessage")}
               </p>
             )}
+            <p className="text-xs text-muted-foreground">
+              {t.rich("agreeToTerms", {
+                terms: (chunks) => (
+                  <Link href="/terms" className="underline">
+                    {chunks}
+                  </Link>
+                ),
+                privacy: (chunks) => (
+                  <Link href="/privacy" className="underline">
+                    {chunks}
+                  </Link>
+                ),
+              })}
+            </p>
             <Button type="submit" disabled={pending || state?.success}>
               {pending ? t("creatingAccount") : t("createAccount")}
             </Button>

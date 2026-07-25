@@ -1,9 +1,15 @@
 import { getTranslations } from "next-intl/server";
+import { createClient } from "@/lib/supabase/server";
 import { createPlot } from "@/app/actions/plots";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PlotMetadataForm from "@/components/plots/PlotMetadataForm";
+import GuestPlotForm from "@/components/plots/GuestPlotForm";
 
 export default async function NewPlotPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const t = await getTranslations("NewPlotPage");
 
   return (
@@ -14,7 +20,11 @@ export default async function NewPlotPage() {
           <CardTitle className="text-sm">{t("plotDetails")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <PlotMetadataForm action={createPlot} submitLabel={t("createPlot")} />
+          {user ? (
+            <PlotMetadataForm action={createPlot} submitLabel={t("createPlot")} />
+          ) : (
+            <GuestPlotForm submitLabel={t("createPlot")} />
+          )}
         </CardContent>
       </Card>
     </div>

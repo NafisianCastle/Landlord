@@ -41,7 +41,8 @@
       "Bash(curl -s http://localhost:3911/login -H \"Accept-Language: bn\" -o /tmp/bn_login.html)",
       "Bash(curl -s http://localhost:3911/login -H \"Accept-Language: en\" -o /tmp/en_login.html)",
       "Bash(npx next *)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git stash *)"
     ],
     "additionalDirectories": [
       "/run/media/nafis/Projects/landly/components"

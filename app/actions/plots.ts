@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
+import type { Polygon } from "geojson";
 import type { LatLng } from "@/lib/geo";
 import { pointsToPolygon } from "@/lib/geo";
 
@@ -86,6 +87,82 @@ export async function createPlot(_prevState: unknown, formData: FormData) {
   redirect(`/plots/${data.id}`);
 }
 
+export interface GuestPlotPayload {
+  name: string;
+  upazila: string | null;
+  district: string | null;
+  division: string | null;
+  dolilArea: number | null;
+  dolilAreaUnit: string | null;
+  actualArea: number | null;
+  actualAreaUnit: string | null;
+  village: string | null;
+  mutationNumber: string | null;
+  purchasePrice: number | null;
+  purchaseDate: string | null;
+  currentEstimatedValue: number | null;
+  notes: string | null;
+  boundaryGeojson: Polygon | null;
+}
+
+/**
+ * Bulk-inserts plots created in guest mode (local Dexie storage, see
+ * lib/offline/guestPlots.ts) once the visitor has a real account — guest data
+ * never touches Supabase until this point. `boundary`/`area_sq_meters` are
+ * trigger-derived from the PostGIS `boundary` column (see migration 0004), so
+ * a walked/drawn boundary is written afterwards via the same
+ * `upsert_plot_boundary` RPC `savePlotBoundary` uses, not inserted directly.
+ */
+export async function migrateGuestPlots(plots: GuestPlotPayload[]) {
+  const auth = await getUserWithAccess();
+  if (!auth) redirect("/login");
+  if (!auth.hasAccess || plots.length === 0) return { migrated: 0 };
+
+  const supabase = await createClient();
+  let migrated = 0;
+
+  // Sequential, not Promise.all(insert-many) + bulk .select("id") — insert
+  // order isn't guaranteed to match the returned row order, and each plot's
+  // boundary must go to the row it actually belongs to.
+  for (const p of plots) {
+    const { data, error } = await supabase
+      .from("land_plots")
+      .insert({
+        user_id: auth.user.id,
+        name: p.name,
+        upazila: p.upazila,
+        district: p.district,
+        division: p.division,
+        dolil_area: p.dolilArea,
+        dolil_area_unit: p.dolilAreaUnit,
+        actual_area: p.actualArea,
+        actual_area_unit: p.actualAreaUnit,
+        village: p.village,
+        mutation_number: p.mutationNumber,
+        purchase_price: p.purchasePrice,
+        purchase_date: p.purchaseDate,
+        current_estimated_value: p.currentEstimatedValue,
+        notes: p.notes,
+      })
+      .select("id")
+      .single();
+
+    if (error || !data) continue;
+
+    if (p.boundaryGeojson) {
+      await supabase.rpc("upsert_plot_boundary", {
+        p_plot_id: data.id,
+        p_geojson: p.boundaryGeojson,
+      });
+    }
+    migrated += 1;
+  }
+
+  revalidatePath("/plots");
+  revalidatePath("/dashboard");
+  return { migrated };
+}
+
 export async function updatePlotMetadata(
   plotId: string,
   _prevState: unknown,
@@ -154,5 +231,61 @@ export async function savePlotBoundary(plotId: string, points: LatLng[]) {
 
   revalidatePath(`/plots/${plotId}`);
   revalidatePath("/plots");
+  return { success: true };
+}
+
+export async function inviteCollaborator(
+  plotId: string,
+  _prevState: unknown,
+  formData: FormData,
+) {
+  const auth = await getUserWithAccess();
+  if (!auth) redirect("/login");
+  const t = await getTranslations("PlotCollaborators");
+  if (!auth.hasAccess) return { error: t("trialEnded") };
+
+  const email = String(formData.get("email") ?? "").trim();
+  const role = String(formData.get("role") ?? "editor");
+  if (!email) return { error: t("emailRequired") };
+  if (role !== "viewer" && role !== "editor") return { error: t("invalidRole") };
+
+  const supabase = await createClient();
+  const { data: collaboratorId, error: lookupError } = await supabase.rpc(
+    "find_user_id_by_email",
+    { p_email: email },
+  );
+  if (lookupError) return { error: lookupError.message };
+  if (!collaboratorId) return { error: t("noAccountFound") };
+  if (collaboratorId === auth.user.id) return { error: t("cannotInviteSelf") };
+
+  const { error } = await supabase.from("plot_collaborators").insert({
+    plot_id: plotId,
+    user_id: collaboratorId,
+    invited_email: email,
+    role,
+    invited_by: auth.user.id,
+  });
+
+  if (error) {
+    if (error.code === "23505") return { error: t("alreadyShared") };
+    return { error: error.message };
+  }
+
+  revalidatePath(`/plots/${plotId}`);
+  return { success: true };
+}
+
+export async function removeCollaborator(plotId: string, collaboratorId: string) {
+  const auth = await getUserWithAccess();
+  if (!auth) redirect("/login");
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("plot_collaborators")
+    .delete()
+    .eq("id", collaboratorId);
+  if (error) return { error: error.message };
+
+  revalidatePath(`/plots/${plotId}`);
   return { success: true };
 }

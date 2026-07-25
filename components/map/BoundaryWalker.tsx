@@ -27,7 +27,18 @@ import {
 // the network, so a crash, tab close, or zero-signal stretch mid-walk never
 // loses a tap — the walk resumes from local storage on next visit, and
 // pending points sync out once connectivity returns.
-export default function BoundaryWalker({ plotId }: { plotId: string }) {
+export default function BoundaryWalker({
+  plotId,
+  onFinish,
+}: {
+  plotId: string;
+  /**
+   * Overridable finalize step — default uploads via the offline sync queue,
+   * which requires a signed-in Supabase session. Guest mode (no session) passes
+   * a local-only finalizer instead, since syncPending() is a no-op without a user.
+   */
+  onFinish?: (plotId: string, points: LatLng[]) => Promise<{ error?: string }>;
+}) {
   const router = useRouter();
   const t = useTranslations("BoundaryWalker");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -236,6 +247,16 @@ export default function BoundaryWalker({ plotId }: { plotId: string }) {
     setSaving(true);
     setError(null);
     setQueuedMessage(null);
+    if (onFinish) {
+      const result = await onFinish(plotId, points);
+      setSaving(false);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      router.refresh();
+      return;
+    }
     const { finished } = await finishSession(plotId, sessionId);
     setSaving(false);
     if (finished.includes(plotId)) {

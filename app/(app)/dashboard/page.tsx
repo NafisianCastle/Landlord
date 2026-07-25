@@ -8,12 +8,17 @@ import LocationBreakdown from "@/components/dashboard/LocationBreakdown";
 import RecentPlots from "@/components/dashboard/RecentPlots";
 import NeedsAttention from "@/components/dashboard/NeedsAttention";
 import WelcomeCard from "@/components/dashboard/WelcomeCard";
+import GuestDashboard from "@/components/dashboard/GuestDashboard";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (!user) {
+    return <GuestDashboard />;
+  }
 
   const [
     { data: stats, error: statsError },
@@ -27,7 +32,7 @@ export default async function DashboardPage() {
     supabase.from("plot_documents").select("id", { count: "exact", head: true }),
     supabase
       .from("land_plots")
-      .select("id, name, village, district, area_sq_meters")
+      .select("id, name, village, district, area_sq_meters, user_id")
       .order("created_at", { ascending: false })
       .limit(5),
     supabase
@@ -84,6 +89,7 @@ export default async function DashboardPage() {
                   village: p.village,
                   district: p.district,
                   areaSqMeters: p.area_sq_meters,
+                  shared: p.user_id !== user?.id,
                 }))}
               />
             </CardContent>

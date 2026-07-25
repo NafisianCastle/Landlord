@@ -3,7 +3,20 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // /api/payments is exempt because SSLCommerz's IPN webhook calls it
 // server-to-server with no browser session at all.
-const PUBLIC_PATHS = ["/login", "/signup", "/auth/callback", "/api/payments"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/signup",
+  "/auth/callback",
+  "/api/payments",
+  "/terms",
+  "/privacy",
+  "/refund",
+];
+
+// Guest mode: dashboard and plots work unauthenticated, backed by local
+// (Dexie) storage, so visitors can try the core feature before signing up.
+// Everything else (e.g. /profile) still requires a session.
+const GUEST_ALLOWED_PATHS = ["/", "/dashboard", "/plots"];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -33,7 +46,7 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isPublicPath = PUBLIC_PATHS.some(
+  const isPublicPath = [...PUBLIC_PATHS, ...GUEST_ALLOWED_PATHS].some(
     (path) =>
       request.nextUrl.pathname === path ||
       request.nextUrl.pathname.startsWith(`${path}/`),

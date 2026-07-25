@@ -1,10 +1,33 @@
 import Dexie, { type EntityTable } from "dexie";
+import type { Polygon } from "geojson";
 
 export interface WalkSession {
   id: string;
   plotId: string;
   status: "active" | "pending-finish" | "done";
   startedAt: number;
+}
+
+export interface GuestPlot {
+  id: string;
+  name: string;
+  upazila: string | null;
+  district: string | null;
+  division: string | null;
+  dolilArea: number | null;
+  dolilAreaUnit: string | null;
+  actualArea: number | null;
+  actualAreaUnit: string | null;
+  village: string | null;
+  mutationNumber: string | null;
+  purchasePrice: number | null;
+  purchaseDate: string | null;
+  currentEstimatedValue: number | null;
+  notes: string | null;
+  boundaryGeojson: Polygon | null;
+  areaSqMeters: number | null;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface WalkPoint {
@@ -37,6 +60,7 @@ const db = new Dexie("landlord") as Dexie & {
   walkSessions: EntityTable<WalkSession, "id">;
   walkPoints: EntityTable<WalkPoint, "id">;
   offlineAreas: EntityTable<OfflineArea, "id">;
+  guestPlots: EntityTable<GuestPlot, "id">;
 };
 
 db.version(1).stores({
@@ -48,6 +72,13 @@ db.version(2).stores({
   walkSessions: "id, plotId, status",
   walkPoints: "++id, sessionId, [sessionId+seq], synced",
   offlineAreas: "id, downloadedAt",
+});
+
+db.version(3).stores({
+  walkSessions: "id, plotId, status",
+  walkPoints: "++id, sessionId, [sessionId+seq], synced",
+  offlineAreas: "id, downloadedAt",
+  guestPlots: "id, createdAt",
 });
 
 export default db;

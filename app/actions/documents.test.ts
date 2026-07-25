@@ -184,11 +184,9 @@ describe("deleteDocument", () => {
     expect(removeMock).not.toHaveBeenCalled();
   });
 
-  it("throws when the document belongs to a different user", async () => {
+  it("throws when RLS returns no row for a plot the caller can't access (not owner or collaborator)", async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: "u1" } } });
-    selectSingleResult = {
-      data: { id: "d1", user_id: "someone-else", storage_path: "u1/p1/x.pdf" },
-    };
+    selectSingleResult = { data: null, error: null };
     const { deleteDocument } = await import("./documents");
     await expect(deleteDocument("p1", "d1", "u1/p1/x.pdf")).rejects.toThrow(
       "Document not found",
@@ -199,7 +197,7 @@ describe("deleteDocument", () => {
   it("throws when the storage path does not match (tampered client call)", async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: "u1" } } });
     selectSingleResult = {
-      data: { id: "d1", user_id: "u1", storage_path: "u1/p1/other.pdf" },
+      data: { id: "d1", storage_path: "u1/p1/other.pdf" },
     };
     const { deleteDocument } = await import("./documents");
     await expect(deleteDocument("p1", "d1", "u1/p1/x.pdf")).rejects.toThrow(
@@ -208,10 +206,10 @@ describe("deleteDocument", () => {
     expect(removeMock).not.toHaveBeenCalled();
   });
 
-  it("removes storage, deletes the row, and revalidates when everything matches", async () => {
+  it("removes storage, deletes the row, and revalidates when everything matches (owner or editor-collaborator — enforced by RLS, not app code)", async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: "u1" } } });
     selectSingleResult = {
-      data: { id: "d1", user_id: "u1", storage_path: "u1/p1/x.pdf" },
+      data: { id: "d1", storage_path: "u1/p1/x.pdf" },
     };
     const { deleteDocument } = await import("./documents");
     await deleteDocument("p1", "d1", "u1/p1/x.pdf");

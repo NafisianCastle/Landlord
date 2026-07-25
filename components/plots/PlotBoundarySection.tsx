@@ -5,6 +5,7 @@ import type { Polygon } from "geojson";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import type { LatLng } from "@/lib/geo";
 
 const PlotMap = dynamic(() => import("@/components/map/PlotMap"), { ssr: false });
 const BoundaryWalker = dynamic(() => import("@/components/map/BoundaryWalker"), { ssr: false });
@@ -16,6 +17,8 @@ interface PlotBoundarySectionProps {
   plotId: string;
   plotName: string;
   boundary: Polygon | null;
+  /** Overridable so guest mode (no Supabase session) can save the boundary locally instead. */
+  onSaveBoundary?: (plotId: string, points: LatLng[]) => Promise<{ error?: string }>;
 }
 
 type Mode = "gps" | "manual";
@@ -24,6 +27,7 @@ export default function PlotBoundarySection({
   plotId,
   plotName,
   boundary,
+  onSaveBoundary,
 }: PlotBoundarySectionProps) {
   const [redrawing, setRedrawing] = useState(false);
   const [mode, setMode] = useState<Mode>("gps");
@@ -51,9 +55,9 @@ export default function PlotBoundarySection({
           </Button>
         </div>
         {mode === "gps" ? (
-          <BoundaryWalker plotId={plotId} />
+          <BoundaryWalker plotId={plotId} onFinish={onSaveBoundary} />
         ) : (
-          <ManualBoundaryDrawer plotId={plotId} />
+          <ManualBoundaryDrawer plotId={plotId} onSave={onSaveBoundary} />
         )}
       </div>
     );

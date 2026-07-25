@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { hasActiveAccess } from "@/lib/access";
@@ -49,6 +50,9 @@ export default async function PaywallPage({
           <form action="/api/payments/bkash/init" method="POST">
             <PayButton />
           </form>
+          <Link href="/refund" className="text-center text-xs text-muted-foreground underline">
+            {t("refundPolicyLink")}
+          </Link>
         </CardContent>
         </Card>
       </div>

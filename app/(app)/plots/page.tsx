@@ -4,12 +4,22 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import PlotsMapClient from "./PlotsMapClient";
+import GuestPlotsList from "@/components/plots/GuestPlotsList";
+import PlotsListClient from "@/components/plots/PlotsListClient";
 
 export default async function PlotsPage() {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return <GuestPlotsList />;
+  }
+
   const { data: plots, error } = await supabase
     .from("land_plots")
-    .select("id, name, village, district, area_sq_meters, boundary_geojson")
+    .select("id, name, village, district, area_sq_meters, boundary_geojson, user_id")
     .order("created_at", { ascending: false });
 
   const mapped = (plots ?? []).map((p) => ({
@@ -19,6 +29,7 @@ export default async function PlotsPage() {
     district: p.district,
     areaSqMeters: p.area_sq_meters,
     boundary: p.boundary_geojson as Polygon | null,
+    shared: p.user_id !== user.id,
   }));
 
   const t = await getTranslations("PlotsPage");
@@ -44,25 +55,7 @@ export default async function PlotsPage() {
             )}
           />
 
-          <ul className="flex flex-col divide-y divide-border rounded-lg border border-border">
-            {mapped.map((plot) => (
-              <li key={plot.id} className="p-3">
-                <Link href={`/plots/${plot.id}`} className="flex flex-col">
-                  <span className="font-medium">{plot.name}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {[plot.village, plot.district].filter(Boolean).join(", ") ||
-                      t("noLocationSet")}
-                    {plot.areaSqMeters
-                      ? ` · ${t("areaValue", { area: plot.areaSqMeters.toFixed(0) })}`
-                      : ` · ${t("boundaryNotWalked")}`}
-                  </span>
-                </Link>
-              </li>
-            ))}
-            {mapped.length === 0 && (
-              <li className="p-3 text-sm text-muted-foreground">{t("noPlotsYet")}</li>
-            )}
-          </ul>
+          <PlotsListClient plots={mapped} />
         </>
       )}
     </div>

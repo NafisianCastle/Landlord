@@ -16,7 +16,14 @@ import { searchPlaces, type GeocodeResult } from "@/lib/geocode";
  * and drag vertices by eye against satellite/street imagery instead — no
  * device location involved, so accuracy is bounded by the imagery, not GPS.
  */
-export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
+export default function ManualBoundaryDrawer({
+  plotId,
+  onSave = savePlotBoundary,
+}: {
+  plotId: string;
+  /** Overridable so guest mode (no Supabase session) can save the boundary locally instead. */
+  onSave?: (plotId: string, points: LatLng[]) => Promise<{ error?: string }>;
+}) {
   const router = useRouter();
   const t = useTranslations("ManualBoundaryDrawer");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -221,7 +228,7 @@ export default function ManualBoundaryDrawer({ plotId }: { plotId: string }) {
   async function finish() {
     setSaving(true);
     setError(null);
-    const result = await savePlotBoundary(plotId, points);
+    const result = await onSave(plotId, points);
     setSaving(false);
     if (result.error) {
       setError(result.error);

@@ -9,6 +9,7 @@ interface RecentPlot {
   village: string | null;
   district: string | null;
   areaSqMeters: number | null;
+  shared?: boolean;
 }
 
 export default function RecentPlots({ plots }: { plots: RecentPlot[] }) {
@@ -26,7 +27,14 @@ export default function RecentPlots({ plots }: { plots: RecentPlot[] }) {
             href={`/plots/${plot.id}`}
             className="flex flex-col px-3 py-2 hover:bg-secondary"
           >
-            <span className="text-sm font-medium">{plot.name}</span>
+            <span className="flex items-center gap-2 text-sm font-medium">
+              {plot.name}
+              {plot.shared && (
+                <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-normal text-secondary-foreground">
+                  {t("sharedBadge")}
+                </span>
+              )}
+            </span>
             <span className="text-xs text-muted-foreground">
               {[plot.village, plot.district].filter(Boolean).join(", ") || t("noLocationSet")}
               {plot.areaSqMeters

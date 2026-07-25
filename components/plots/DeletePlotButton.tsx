@@ -8,9 +8,12 @@ import { Button } from "@/components/ui/button";
 export default function DeletePlotButton({
   plotId,
   plotName,
+  onDelete,
 }: {
   plotId: string;
   plotName: string;
+  /** Overridable so guest mode (no Supabase session) can delete locally instead. */
+  onDelete?: (plotId: string) => Promise<{ error?: string } | void>;
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +30,7 @@ export default function DeletePlotButton({
           if (!window.confirm(t("confirmDelete", { plotName }))) return;
           setError(null);
           startTransition(async () => {
-            const result = await deletePlot(plotId);
+            const result = await (onDelete ?? deletePlot)(plotId);
             if (result?.error) setError(result.error);
           });
         }}

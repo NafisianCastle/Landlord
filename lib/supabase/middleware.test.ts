@@ -24,7 +24,7 @@ describe("updateSession", () => {
   it("redirects to /login when there is no session and the path is private", async () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     const { updateSession } = await import("./middleware");
-    const res = await updateSession(makeRequest("/dashboard"));
+    const res = await updateSession(makeRequest("/profile"));
     expect(res.status).toBe(307);
     expect(res.headers.get("location")).toBe("https://example.com/login");
   });
@@ -33,6 +33,15 @@ describe("updateSession", () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     const { updateSession } = await import("./middleware");
     for (const path of ["/login", "/signup", "/auth/callback", "/api/payments"]) {
+      const res = await updateSession(makeRequest(path));
+      expect(res.status).not.toBe(307);
+    }
+  });
+
+  it("lets an unauthenticated visitor use guest-mode paths (/, /dashboard, /plots)", async () => {
+    getUserMock.mockResolvedValue({ data: { user: null } });
+    const { updateSession } = await import("./middleware");
+    for (const path of ["/", "/dashboard", "/plots", "/plots/new", "/plots/abc"]) {
       const res = await updateSession(makeRequest(path));
       expect(res.status).not.toBe(307);
     }

@@ -34,7 +34,8 @@
     "creatingAccount": "Creating account...",
     "createAccount": "Create account",
     "haveAccount": "Already have an account?",
-    "logIn": "Log in"
+    "logIn": "Log in",
+    "agreeToTerms": "By signing up, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
   },
   "AuthActions": {
     "passwordTooShort": "Password must be at least 10 characters.",
@@ -47,6 +48,7 @@
     "trialEnded": "Your free trial has ended",
     "pitch": "Pay once, use Landlord for life — no renewals, no subscription.",
     "price": "BDT {amount}",
+    "refundPolicyLink": "Refund policy",
     "status": {
       "failed": "Payment failed — please try again.",
       "cancelled": "Payment was cancelled.",
@@ -71,7 +73,8 @@
     "noPlots": "No plots yet.",
     "noLocationSet": "No location set",
     "areaValue": "{area} m²",
-    "boundaryNotWalked": "boundary not walked yet"
+    "boundaryNotWalked": "boundary not walked yet",
+    "sharedBadge": "Shared"
   },
   "StatsCards": {
     "totalPlots": "Total plots",
@@ -94,7 +97,10 @@
     "noLocationSet": "No location set",
     "areaValue": "{area} m²",
     "boundaryNotWalked": "boundary not walked yet",
-    "noPlotsYet": "No plots yet. Add your first one."
+    "noPlotsYet": "No plots yet. Add your first one.",
+    "sharedBadge": "Shared",
+    "searchPlaceholder": "Search by name, village, or district",
+    "noSearchResults": "No plots match your search."
   },
   "PlotsMapClient": {
     "loadingMap": "Loading map…",
@@ -306,5 +312,64 @@
   },
   "SyncManager": {
     "syncFailed": "Some changes couldn't sync — will retry automatically."
+  },
+  "PlotCollaborators": {
+    "title": "Shared with",
+    "trialEnded": "Your trial has ended — please upgrade to continue.",
+    "emailRequired": "Enter an email address.",
+    "invalidRole": "Choose a valid role.",
+    "noAccountFound": "No Landlord account found for that email.",
+    "cannotInviteSelf": "You can't invite yourself.",
+    "alreadyShared": "This plot is already shared with that person.",
+    "inviteEmail": "Email address",
+    "role": "Role",
+    "roleViewer": "Viewer (read-only)",
+    "roleEditor": "Editor (can edit and walk boundary)",
+    "invite": "Invite",
+    "inviting": "Inviting...",
+    "remove": "Remove",
+    "removing": "Removing...",
+    "removeConfirm": "Remove {email} from this plot?",
+    "noCollaborators": "Not shared with anyone yet.",
+    "ownerOnlyNotice": "Only the plot's owner can manage who it's shared with.",
+    "sharedByOwner": "Shared with you by the plot owner.",
+    "sharedAsRole": "Your role: {role}"
+  },
+  "ErrorPage": {
+    "title": "Something went wrong",
+    "subtitle": "An unexpected error occurred. It's been reported — please try again.",
+    "tryAgain": "Try again"
+  },
+  "Footer": {
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "refund": "Refund policy"
+  },
+  "TermsPage": {
+    "title": "Terms of Service",
+    "lastUpdated": "Draft — not yet reviewed by counsel.",
+    "draftNotice": "DRAFT — this is placeholder text, not a final legal document. Do not rely on it until it has been reviewed and replaced.",
+    "body": "1. Acceptance of terms\nBy creating an account or using Landlord without an account (\"guest mode\"), you agree to these Terms of Service.\n\n2. The service\nLandlord lets you record, measure, and store information about land plots you specify, including GPS boundaries, documents, and notes. You are solely responsible for the accuracy of any measurements, boundaries, or legal descriptions you enter — Landlord is a record-keeping tool, not a surveyor or legal authority, and nothing in the app constitutes legal or land-title advice.\n\n3. Accounts and trial\nNew accounts receive a 14-day free trial. After the trial, continued access requires a one-time lifetime payment. Guest mode data is stored only in your browser and is not backed up by Landlord until you create an account and it migrates to your account.\n\n4. Acceptable use\nYou may not use Landlord to store unlawfully obtained data, to misrepresent land ownership, or to interfere with the service's operation.\n\n5. Termination\nWe may suspend or terminate accounts that violate these terms.\n\n6. Limitation of liability\nLandlord is provided \"as is.\" To the maximum extent permitted by law, we are not liable for losses arising from reliance on GPS-derived measurements, data loss, or service interruptions.\n\n7. Changes\nWe may update these terms; continued use after an update constitutes acceptance."
+  },
+  "PrivacyPage": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Draft — not yet reviewed by counsel.",
+    "draftNotice": "DRAFT — this is placeholder text, not a final legal document. Do not rely on it until it has been reviewed and replaced.",
+    "body": "1. What we collect\nAccount data (name, email, phone), plot data you enter (location, boundaries, purchase/valuation details, notes, documents), and payment records for lifetime-access purchases.\n\n2. Guest mode\nIf you use Landlord without an account, your plot data is stored only in your browser's local storage (IndexedDB) and is never sent to our servers unless and until you create an account, at which point it migrates to your account and this policy applies to it.\n\n3. Client-side encryption\nYou may optionally enable client-side encryption for sensitive plot fields (village, mutation number, prices, dates, notes). When enabled, these fields are encrypted in your browser before being sent to our servers using a key derived from a passphrase only you know — we cannot read this data, and cannot recover it if you lose both your passphrase and recovery code.\n\n4. How we use data\nTo provide the service, process payments (via SSLCommerz/bKash), and communicate essential account/service notices. We do not sell personal data.\n\n5. Sharing\nIf you invite a collaborator to a plot, that collaborator can see the plot's non-encrypted data as described in-app. We may share data with service providers (hosting, payments) strictly to operate the service, and where required by law.\n\n6. Data retention and deletion\nYou may delete plots and documents at any time. Contact us to request full account deletion.\n\n7. Your rights\nYou may request a copy of your data or its deletion by contacting us."
+  },
+  "RefundPage": {
+    "title": "Refund Policy",
+    "lastUpdated": "Draft — not yet reviewed by counsel.",
+    "draftNotice": "DRAFT — this is placeholder text, not a final legal document. Do not rely on it until it has been reviewed and replaced.",
+    "body": "1. Free trial\nEvery account includes a 14-day free trial with full access — no payment is collected during the trial, so there is nothing to refund during this period.\n\n2. Lifetime access purchase\nThe one-time lifetime access payment is refundable within 7 days of purchase if you have not made substantial use of paid features beyond the trial, by contacting support with your payment reference.\n\n3. How refunds are processed\nApproved refunds are issued to the original payment method (via SSLCommerz or bKash) within 10 business days.\n\n4. Non-refundable situations\nRefunds are not available after 7 days, or where the account was suspended for violating the Terms of Service.\n\n5. Contact\nTo request a refund, contact support with your registered email and payment transaction ID."
+  },
+  "GuestMode": {
+    "guestBanner": "You're trying Landlord without an account — your plots are saved on this device only.",
+    "signUp": "Sign up to save them to your account.",
+    "signUpToSave": "Sign up to save",
+    "welcomeGuest": "Welcome — try it out before you sign up",
+    "plotNotFound": "This plot doesn't exist on this device.",
+    "documentsRequireSignup": "Sign up to attach and store documents for this plot.",
+    "migratedNotice": "{count, plural, =1 {# plot} other {# plots}} saved to your account."
   }
 }

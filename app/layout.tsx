@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import "./globals.css";
 import RegisterServiceWorker from "@/components/system/RegisterServiceWorker";
+import Footer from "@/components/system/Footer";
 
 const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("landlord-theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.classList.add(t);}catch(e){}})();`;
 
@@ -54,7 +55,8 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider>
           <RegisterServiceWorker />
-          {children}
+          <div className="flex flex-1 flex-col">{children}</div>
+          <Footer />
           <Analytics />
         </NextIntlClientProvider>
       </body>

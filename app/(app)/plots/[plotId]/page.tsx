@@ -12,6 +12,8 @@ import PlotBoundarySection from "@/components/plots/PlotBoundarySection";
 import DocumentUploader from "@/components/documents/DocumentUploader";
 import DocumentRow from "@/components/documents/DocumentRow";
 import DeletePlotButton from "@/components/plots/DeletePlotButton";
+import GuestPlotDetail from "@/components/plots/GuestPlotDetail";
+import PlotCollaborators from "@/components/plots/PlotCollaborators";
 
 export default async function PlotDetailPage({
   params,
@@ -20,13 +22,26 @@ export default async function PlotDetailPage({
 }) {
   const { plotId } = await params;
   const supabase = await createClient();
-  const [{ data: plot, error }, { data: documents }] = await Promise.all([
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return <GuestPlotDetail plotId={plotId} />;
+  }
+
+  const [{ data: plot, error }, { data: documents }, { data: collaborators }] = await Promise.all([
     supabase.from("land_plots").select("*").eq("id", plotId).single(),
     supabase
       .from("plot_documents")
       .select("id, file_name, storage_path, is_encrypted, encryption_iv")
       .eq("plot_id", plotId)
       .order("uploaded_at", { ascending: false }),
+    supabase
+      .from("plot_collaborators")
+      .select("id, invited_email, role")
+      .eq("plot_id", plotId)
+      .order("created_at", { ascending: true }),
   ]);
 
   const t = await getTranslations("PlotDetailPage");
@@ -172,7 +187,15 @@ export default async function PlotDetailPage({
         <DocumentUploader plotId={plot.id} />
       </div>
 
-      <DeletePlotButton plotId={plot.id} plotName={plot.name} />
+      <PlotCollaborators
+        plotId={plot.id}
+        isOwner={plot.user_id === user.id}
+        collaborators={collaborators ?? []}
+      />
+
+      {plot.user_id === user.id && (
+        <DeletePlotButton plotId={plot.id} plotName={plot.name} />
+      )}
     </div>
   );
 }

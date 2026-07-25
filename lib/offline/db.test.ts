@@ -5,12 +5,13 @@ afterEach(async () => {
   await db.walkSessions.clear();
   await db.walkPoints.clear();
   await db.offlineAreas.clear();
+  await db.guestPlots.clear();
 });
 
 describe("landlord Dexie schema", () => {
   it("opens with the expected table names", () => {
     expect(db.tables.map((t) => t.name).sort()).toEqual(
-      ["offlineAreas", "walkPoints", "walkSessions"].sort(),
+      ["guestPlots", "offlineAreas", "walkPoints", "walkSessions"].sort(),
     );
   });
 
@@ -69,5 +70,31 @@ describe("landlord Dexie schema", () => {
     });
     const areas = await db.offlineAreas.where("downloadedAt").above(0).toArray();
     expect(areas).toHaveLength(1);
+  });
+
+  it("stores and retrieves a guest plot by id", async () => {
+    const plot = {
+      id: "g1",
+      name: "Test plot",
+      upazila: null,
+      district: null,
+      division: null,
+      dolilArea: null,
+      dolilAreaUnit: null,
+      actualArea: null,
+      actualAreaUnit: null,
+      village: null,
+      mutationNumber: null,
+      purchasePrice: null,
+      purchaseDate: null,
+      currentEstimatedValue: null,
+      notes: null,
+      boundaryGeojson: null,
+      areaSqMeters: null,
+      createdAt: 1,
+      updatedAt: 1,
+    };
+    await db.guestPlots.add(plot);
+    expect(await db.guestPlots.get("g1")).toEqual(plot);
   });
 });
