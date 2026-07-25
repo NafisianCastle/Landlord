@@ -19,6 +19,11 @@ jobs:
       SSLCOMMERZ_STORE_ID: placeholder-store-id
       SSLCOMMERZ_STORE_PASSWORD: placeholder-store-password
       SSLCOMMERZ_IS_SANDBOX: "true"
+      BKASH_APP_KEY: placeholder-app-key
+      BKASH_APP_SECRET: placeholder-app-secret
+      BKASH_USERNAME: placeholder-username
+      BKASH_PASSWORD: placeholder-password
+      BKASH_IS_SANDBOX: "true"
       LIFETIME_PRICE_BDT: "2000"
     steps:
       - uses: actions/checkout@v4

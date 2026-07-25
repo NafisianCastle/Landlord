@@ -46,7 +46,7 @@ export default async function PaywallPage({
             {t("price", { amount: LIFETIME_PRICE_BDT.toLocaleString() })}
           </p>
           {statusKey && <p className="text-sm text-destructive">{t(`status.${statusKey}`)}</p>}
-          <form action="/api/payments/sslcommerz/init" method="POST">
+          <form action="/api/payments/bkash/init" method="POST">
             <PayButton />
           </form>
         </CardContent>
