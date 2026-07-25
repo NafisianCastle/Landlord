@@ -2,7 +2,7 @@
 
 create extension if not exists postgis;
 
-create table profiles (
+create table if not exists profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   full_name text,
   phone text,
@@ -14,12 +14,14 @@ create table profiles (
 
 alter table profiles enable row level security;
 
+drop policy if exists "profiles_select_own" on profiles;
 create policy "profiles_select_own" on profiles for select using (auth.uid() = id);
+drop policy if exists "profiles_update_own" on profiles;
 create policy "profiles_update_own" on profiles for update using (auth.uid() = id);
 -- no insert/delete policy: rows are only ever created by the trigger below (as the
 -- definer), and are never deleted by end users.
 
-create function handle_new_user()
+create or replace function handle_new_user()
 returns trigger
 language plpgsql
 security definer
@@ -32,6 +34,7 @@ begin
 end;
 $$;
 
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function handle_new_user();

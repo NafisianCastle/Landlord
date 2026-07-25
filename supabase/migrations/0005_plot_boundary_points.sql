@@ -4,7 +4,7 @@
 -- points for a walk session are captured. unique(session_id, seq) makes
 -- syncing safely retryable (client-generated session_id, per-tap sequence).
 
-create table plot_boundary_points (
+create table if not exists plot_boundary_points (
   id uuid primary key default gen_random_uuid(),
   plot_id uuid not null references land_plots(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete cascade,
@@ -19,9 +19,12 @@ create table plot_boundary_points (
 
 alter table plot_boundary_points enable row level security;
 
+drop policy if exists "plot_boundary_points_select_own" on plot_boundary_points;
 create policy "plot_boundary_points_select_own" on plot_boundary_points for select using (auth.uid() = user_id);
+drop policy if exists "plot_boundary_points_insert_own" on plot_boundary_points;
 create policy "plot_boundary_points_insert_own" on plot_boundary_points for insert with check (auth.uid() = user_id);
+drop policy if exists "plot_boundary_points_delete_own" on plot_boundary_points;
 create policy "plot_boundary_points_delete_own" on plot_boundary_points for delete using (auth.uid() = user_id);
 
-create index plot_boundary_points_session_idx on plot_boundary_points (session_id);
-create index plot_boundary_points_plot_idx on plot_boundary_points (plot_id);
+create index if not exists plot_boundary_points_session_idx on plot_boundary_points (session_id);
+create index if not exists plot_boundary_points_plot_idx on plot_boundary_points (plot_id);

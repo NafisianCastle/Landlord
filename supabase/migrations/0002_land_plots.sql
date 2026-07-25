@@ -1,6 +1,6 @@
 -- Phase 1: land plots + geodesic area trigger
 
-create table land_plots (
+create table if not exists land_plots (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   name text not null,
@@ -21,12 +21,16 @@ create table land_plots (
 
 alter table land_plots enable row level security;
 
+drop policy if exists "land_plots_select_own" on land_plots;
 create policy "land_plots_select_own" on land_plots for select using (auth.uid() = user_id);
+drop policy if exists "land_plots_insert_own" on land_plots;
 create policy "land_plots_insert_own" on land_plots for insert with check (auth.uid() = user_id);
+drop policy if exists "land_plots_update_own" on land_plots;
 create policy "land_plots_update_own" on land_plots for update using (auth.uid() = user_id);
+drop policy if exists "land_plots_delete_own" on land_plots;
 create policy "land_plots_delete_own" on land_plots for delete using (auth.uid() = user_id);
 
-create function set_plot_area_and_timestamp()
+create or replace function set_plot_area_and_timestamp()
 returns trigger
 language plpgsql
 as $$
@@ -40,16 +44,17 @@ begin
 end;
 $$;
 
+drop trigger if exists on_land_plot_write on land_plots;
 create trigger on_land_plot_write
   before insert or update on land_plots
   for each row execute function set_plot_area_and_timestamp();
 
-create index land_plots_user_id_idx on land_plots (user_id);
-create index land_plots_boundary_idx on land_plots using gist (boundary);
+create index if not exists land_plots_user_id_idx on land_plots (user_id);
+create index if not exists land_plots_boundary_idx on land_plots using gist (boundary);
 
 -- Idempotent full-replace boundary upsert, called after a boundary walk finishes.
 -- geojson is a GeoJSON Polygon (client builds it from the walked points).
-create function upsert_plot_boundary(p_plot_id uuid, p_geojson jsonb)
+create or replace function upsert_plot_boundary(p_plot_id uuid, p_geojson jsonb)
 returns void
 language plpgsql
 security invoker
