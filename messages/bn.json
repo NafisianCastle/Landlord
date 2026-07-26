@@ -87,6 +87,13 @@
     "documents": "নথি",
     "totalApartments": "মোট অ্যাপার্টমেন্ট"
   },
+  "RentDueCard": {
+    "title": "বকেয়া ভাড়া",
+    "viewAll": "সব দেখুন",
+    "overdue": "বকেয়া",
+    "upcoming30Days": "আগামী ৩০ দিনে দেয়",
+    "daysOverdue": "{count, plural, =1 {# দিন বকেয়া} other {# দিন বকেয়া}}"
+  },
   "WelcomeCard": {
     "title": "আপনার প্রথম প্লট যোগ করুন",
     "subtitle": "সীমানা হেঁটে বা এঁকে জমির পরিমাণ, মূল্য ও অবস্থান দেখুন।",
@@ -209,6 +216,18 @@
     "documents": "নথি",
     "noDocumentsYet": "এখনো কোনো নথি নেই।"
   },
+  "LeaseSection": {
+    "title": "লিজ / ভাড়া",
+    "addLease": "লিজ যোগ করুন",
+    "saveChanges": "পরিবর্তন সংরক্ষণ করুন",
+    "payments": "পেমেন্ট সময়সূচি",
+    "endLease": "লিজ শেষ করুন",
+    "ending": "শেষ করা হচ্ছে...",
+    "confirmEndLease": "এই লিজটি শেষ করবেন? আর কোনো পেমেন্ট নির্ধারণ করা হবে না।",
+    "deleteLease": "লিজ মুছুন",
+    "deleting": "মুছে ফেলা হচ্ছে...",
+    "confirmDeleteLease": "এই লিজ এবং এর সম্পূর্ণ পেমেন্ট ইতিহাস মুছে ফেলবেন? এটি পূর্বাবস্থায় ফেরানো যাবে না।"
+  },
   "PlotBoundarySection": {
     "walkWithGps": "জিপিএস দিয়ে হাঁটুন",
     "drawOnMap": "মানচিত্রে আঁকুন",
@@ -224,6 +243,19 @@
     "deleting": "মুছে ফেলা হচ্ছে...",
     "deleteApartment": "অ্যাপার্টমেন্ট মুছুন"
   },
+  "LeasesPage": {
+    "title": "লিজসমূহ",
+    "signInRequired": "লিজ ও ভাড়ার পেমেন্ট ট্র্যাক করতে সাইন ইন করুন।",
+    "loadError": "আপনার লিজ লোড করা যায়নি — {message}। পাতাটি রিফ্রেশ করে দেখুন।",
+    "noLeasesYet": "এখনো কোনো সক্রিয় লিজ নেই।",
+    "nextDue": "পরবর্তী দেয় {date}",
+    "allPaid": "সব পরিশোধিত",
+    "frequency": {
+      "monthly": "মাসিক",
+      "quarterly": "ত্রৈমাসিক",
+      "yearly": "বার্ষিক"
+    }
+  },
   "PlotActions": {
     "plotNameRequired": "প্লটের নাম আবশ্যক",
     "trialEnded": "আপনার ট্রায়াল শেষ হয়ে গেছে — চালিয়ে যেতে আপগ্রেড করুন।",
@@ -231,6 +263,12 @@
   },
   "ApartmentActions": {
     "apartmentNameRequired": "অ্যাপার্টমেন্টের নাম আবশ্যক",
+    "trialEnded": "আপনার ট্রায়াল শেষ হয়ে গেছে — চালিয়ে যেতে আপগ্রেড করুন।"
+  },
+  "LeaseActions": {
+    "tenantNameRequired": "ভাড়াটিয়ার নাম আবশ্যক",
+    "rentAmountRequired": "ভাড়ার পরিমাণ ০ এর চেয়ে বেশি হতে হবে",
+    "startDateRequired": "লিজ শুরুর তারিখ আবশ্যক",
     "trialEnded": "আপনার ট্রায়াল শেষ হয়ে গেছে — চালিয়ে যেতে আপগ্রেড করুন।"
   },
   "BoundaryWalker": {
@@ -456,5 +494,31 @@
     "documentsRequireSignup": "এই প্লটে নথি যুক্ত ও সংরক্ষণ করতে সাইন আপ করুন।",
     "migratedNotice": "{count, plural, =1 {# টি আইটেম} other {# টি আইটেম}} আপনার অ্যাকাউন্টে সংরক্ষিত হয়েছে।",
     "apartmentNotFound": "এই অ্যাপার্টমেন্টটি এই ডিভাইসে পাওয়া যায়নি।"
+  },
+  "LeaseForm": {
+    "tenantName": "ভাড়াটিয়ার নাম",
+    "tenantPhone": "ভাড়াটিয়ার ফোন",
+    "tenantEmail": "ভাড়াটিয়ার ইমেইল",
+    "rentAmount": "ভাড়ার পরিমাণ (টাকা)",
+    "frequency": "পেমেন্ট চক্র",
+    "frequencyOption": {
+      "monthly": "মাসিক",
+      "quarterly": "ত্রৈমাসিক",
+      "yearly": "বার্ষিক"
+    },
+    "startDate": "লিজ শুরুর তারিখ",
+    "endDate": "লিজ শেষের তারিখ",
+    "endDateHint": "চলমান লিজের জন্য খালি রাখুন।",
+    "notes": "নোট",
+    "saving": "সংরক্ষণ হচ্ছে..."
+  },
+  "PaymentsList": {
+    "receivedOn": "{date} তারিখে পাওয়া গেছে",
+    "overdue": "বকেয়া",
+    "upcoming": "আসন্ন",
+    "markPaid": "পরিশোধিত চিহ্নিত করুন",
+    "undo": "পূর্বাবস্থায় ফিরুন",
+    "updating": "আপডেট হচ্ছে...",
+    "noPaymentsYet": "এখনো কোনো পেমেন্ট নির্ধারিত নেই।"
   }
 }

@@ -87,6 +87,13 @@
     "documents": "Documents",
     "totalApartments": "Total apartments"
   },
+  "RentDueCard": {
+    "title": "Rent due",
+    "viewAll": "View all",
+    "overdue": "Overdue",
+    "upcoming30Days": "Due in next 30 days",
+    "daysOverdue": "{count, plural, =1 {# day overdue} other {# days overdue}}"
+  },
   "WelcomeCard": {
     "title": "Add your first plot",
     "subtitle": "Walk or draw a boundary to see area, value, and location stats here.",
@@ -209,6 +216,18 @@
     "documents": "Documents",
     "noDocumentsYet": "No documents yet."
   },
+  "LeaseSection": {
+    "title": "Lease / rent",
+    "addLease": "Add lease",
+    "saveChanges": "Save changes",
+    "payments": "Payment schedule",
+    "endLease": "End lease",
+    "ending": "Ending...",
+    "confirmEndLease": "End this lease? No further payments will be scheduled.",
+    "deleteLease": "Delete lease",
+    "deleting": "Deleting...",
+    "confirmDeleteLease": "Delete this lease and its whole payment history? This can't be undone."
+  },
   "PlotBoundarySection": {
     "walkWithGps": "Walk with GPS",
     "drawOnMap": "Draw on map",
@@ -224,6 +243,19 @@
     "deleting": "Deleting...",
     "deleteApartment": "Delete apartment"
   },
+  "LeasesPage": {
+    "title": "Leases",
+    "signInRequired": "Sign in to track leases and rent payments.",
+    "loadError": "Couldn't load your leases — {message}. Try refreshing the page.",
+    "noLeasesYet": "No active leases yet.",
+    "nextDue": "next due {date}",
+    "allPaid": "all paid",
+    "frequency": {
+      "monthly": "monthly",
+      "quarterly": "quarterly",
+      "yearly": "yearly"
+    }
+  },
   "PlotActions": {
     "plotNameRequired": "Plot name is required",
     "trialEnded": "Your trial has ended — please upgrade to continue.",
@@ -231,6 +263,12 @@
   },
   "ApartmentActions": {
     "apartmentNameRequired": "Apartment name is required",
+    "trialEnded": "Your trial has ended — please upgrade to continue."
+  },
+  "LeaseActions": {
+    "tenantNameRequired": "Tenant name is required",
+    "rentAmountRequired": "Rent amount must be greater than 0",
+    "startDateRequired": "Lease start date is required",
     "trialEnded": "Your trial has ended — please upgrade to continue."
   },
   "BoundaryWalker": {
@@ -456,5 +494,31 @@
     "documentsRequireSignup": "Sign up to attach and store documents for this plot.",
     "migratedNotice": "{count, plural, =1 {# item} other {# items}} saved to your account.",
     "apartmentNotFound": "This apartment doesn't exist on this device."
+  },
+  "LeaseForm": {
+    "tenantName": "Tenant name",
+    "tenantPhone": "Tenant phone",
+    "tenantEmail": "Tenant email",
+    "rentAmount": "Rent amount (BDT)",
+    "frequency": "Payment frequency",
+    "frequencyOption": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    },
+    "startDate": "Lease start date",
+    "endDate": "Lease end date",
+    "endDateHint": "Leave blank for an ongoing lease.",
+    "notes": "Notes",
+    "saving": "Saving..."
+  },
+  "PaymentsList": {
+    "receivedOn": "Received {date}",
+    "overdue": "Overdue",
+    "upcoming": "Upcoming",
+    "markPaid": "Mark as paid",
+    "undo": "Undo",
+    "updating": "Updating...",
+    "noPaymentsYet": "No payments scheduled yet."
   }
 }

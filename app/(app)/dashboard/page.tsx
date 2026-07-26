@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import StatsCards from "@/components/dashboard/StatsCards";
+import RentDueCard, { type OverduePaymentItem } from "@/components/dashboard/RentDueCard";
 import LocationBreakdown from "@/components/dashboard/LocationBreakdown";
 import RecentPlots from "@/components/dashboard/RecentPlots";
 import NeedsAttention from "@/components/dashboard/NeedsAttention";
@@ -20,6 +21,8 @@ export default async function DashboardPage() {
     return <GuestDashboard />;
   }
 
+  await supabase.rpc("ensure_all_lease_payments");
+
   const [
     { data: stats, error: statsError },
     { data: byDistrict, error: districtError },
@@ -27,6 +30,8 @@ export default async function DashboardPage() {
     { data: recentPlots, error: recentError },
     { data: unwalkedPlots },
     { count: apartmentCount },
+    { data: rentStats },
+    { data: overdueRows },
   ] = await Promise.all([
     supabase.from("plot_stats").select("*").single(),
     supabase.from("plot_stats_by_district").select("*"),
@@ -42,7 +47,40 @@ export default async function DashboardPage() {
       .is("area_sq_meters", null)
       .order("created_at", { ascending: false }),
     supabase.from("apartments").select("id", { count: "exact", head: true }),
+    supabase.from("lease_payment_stats").select("*").single(),
+    supabase
+      .from("lease_payments")
+      .select(
+        "id, due_date, amount, leases(tenant_name, plot_id, apartment_id, land_plots(name), apartments(name))",
+      )
+      .eq("paid", false)
+      .lt("due_date", new Date().toISOString().slice(0, 10))
+      .order("due_date", { ascending: true })
+      .limit(5),
   ]);
+
+  const overduePayments: OverduePaymentItem[] = (overdueRows ?? []).flatMap((row) => {
+    const lease = row.leases as unknown as {
+      tenant_name: string;
+      plot_id: string | null;
+      apartment_id: string | null;
+      land_plots: { name: string } | null;
+      apartments: { name: string } | null;
+    } | null;
+    if (!lease) return [];
+    const propertyName = lease.land_plots?.name ?? lease.apartments?.name ?? "";
+    const propertyHref = lease.plot_id ? `/plots/${lease.plot_id}` : `/apartments/${lease.apartment_id}`;
+    return [
+      {
+        id: row.id,
+        dueDate: row.due_date,
+        amount: row.amount,
+        tenantName: lease.tenant_name,
+        propertyName,
+        propertyHref,
+      },
+    ];
+  });
 
   const plotCount = stats?.plot_count ?? 0;
   const t = await getTranslations("DashboardPage");
@@ -78,6 +116,13 @@ export default async function DashboardPage() {
             totalCurrentValue={stats?.total_current_value ?? 0}
             documentCount={documentCount ?? 0}
             apartmentCount={apartmentCount ?? 0}
+          />
+
+          <RentDueCard
+            overdueCount={rentStats?.overdue_count ?? 0}
+            overdueAmount={rentStats?.overdue_amount ?? 0}
+            upcomingCount={rentStats?.upcoming_count ?? 0}
+            overduePayments={overduePayments}
           />
 
           <Card>
