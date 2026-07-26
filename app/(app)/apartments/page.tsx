@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import GuestApartmentsList from "@/components/apartments/GuestApartmentsList";
 import ApartmentsListClient from "@/components/apartments/ApartmentsListClient";
+import PageContainer from "@/components/system/PageContainer";
+import PageHeader from "@/components/system/PageHeader";
 
 export default async function ApartmentsPage() {
   const supabase = await createClient();
@@ -33,13 +35,15 @@ export default async function ApartmentsPage() {
   const t = await getTranslations("ApartmentsPage");
 
   return (
-    <div className="flex flex-col gap-4 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{t("title")}</h1>
-        <Button asChild>
-          <Link href="/apartments/new">{t("addApartment")}</Link>
-        </Button>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title={t("title")}
+        action={
+          <Button asChild>
+            <Link href="/apartments/new">{t("addApartment")}</Link>
+          </Button>
+        }
+      />
 
       {error ? (
         <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
@@ -48,6 +52,6 @@ export default async function ApartmentsPage() {
       ) : (
         <ApartmentsListClient apartments={mapped} />
       )}
-    </div>
+    </PageContainer>
   );
 }

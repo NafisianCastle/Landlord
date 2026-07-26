@@ -83,7 +83,7 @@ export default function GuestPlotDetail({ plotId }: { plotId: string }) {
   if (plot === undefined) return null;
   if (plot === null) {
     return (
-      <div className="mx-auto flex max-w-lg flex-col gap-4 p-6">
+      <div className="mx-auto flex max-w-2xl flex-col gap-4 p-6">
         <p className="text-sm text-muted-foreground">{tGuest("plotNotFound")}</p>
       </div>
     );
@@ -94,7 +94,7 @@ export default function GuestPlotDetail({ plotId }: { plotId: string }) {
   const navigateUrl = boundary ? googleMapsDirectionsUrl(polygonCentroid(boundary)) : null;
 
   return (
-    <div className="mx-auto flex max-w-lg flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
       <div>
         <h1 className="text-xl font-semibold">{plot.name}</h1>
         {navigateUrl && (

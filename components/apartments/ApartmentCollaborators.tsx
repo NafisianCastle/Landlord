@@ -9,6 +9,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
 
 interface Collaborator {
   id: string;
@@ -26,12 +28,21 @@ export default function ApartmentCollaborators({
   collaborators: Collaborator[];
 }) {
   const t = useTranslations("PlotCollaborators");
+  const tCommon = useTranslations("Common");
   const [state, formAction, pending] = useActionState(
     inviteApartmentCollaborator.bind(null, apartmentId),
     undefined,
   );
   const [removing, startRemoving] = useTransition();
   const [removeError, setRemoveError] = useState<string | null>(null);
+
+  function handleRemove(collaboratorId: string) {
+    setRemoveError(null);
+    startRemoving(async () => {
+      const result = await removeApartmentCollaborator(apartmentId, collaboratorId);
+      if (result?.error) setRemoveError(result.error);
+    });
+  }
 
   if (!isOwner) {
     if (collaborators.length === 0) return null;
@@ -53,25 +64,21 @@ export default function ApartmentCollaborators({
         <ul className="flex flex-col divide-y divide-border">
           {collaborators.map((c) => (
             <li key={c.id} className="flex items-center justify-between gap-2 py-2 text-sm">
-              <span className="truncate">
-                {c.invited_email} <span className="text-xs text-muted-foreground">({c.role})</span>
+              <span className="flex items-center gap-2 truncate">
+                {c.invited_email} <Badge>{c.role}</Badge>
               </span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                disabled={removing}
-                onClick={() => {
-                  if (!window.confirm(t("removeConfirm", { email: c.invited_email }))) return;
-                  setRemoveError(null);
-                  startRemoving(async () => {
-                    const result = await removeApartmentCollaborator(apartmentId, c.id);
-                    if (result?.error) setRemoveError(result.error);
-                  });
-                }}
-              >
-                {removing ? t("removing") : t("remove")}
-              </Button>
+              <ConfirmDialog
+                trigger={
+                  <Button type="button" variant="ghost" size="sm" disabled={removing}>
+                    {removing ? t("removing") : t("remove")}
+                  </Button>
+                }
+                title={t("remove")}
+                description={t("removeConfirm", { email: c.invited_email })}
+                confirmLabel={t("remove")}
+                cancelLabel={tCommon("cancel")}
+                onConfirm={() => handleRemove(c.id)}
+              />
             </li>
           ))}
           {collaborators.length === 0 && (

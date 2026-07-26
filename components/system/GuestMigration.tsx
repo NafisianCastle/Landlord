@@ -94,7 +94,7 @@ export default function GuestMigration() {
   return (
     <p
       role="status"
-      className="border-b border-border bg-green-500/10 px-4 py-2 text-center text-sm text-green-700 dark:text-green-400 md:px-6"
+      className="border-b border-border bg-success/10 px-4 py-2 text-center text-sm text-success md:px-6"
     >
       {t("migratedNotice", { count: migratedCount })}
     </p>

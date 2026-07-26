@@ -10,6 +10,8 @@ import RecentPlots from "@/components/dashboard/RecentPlots";
 import NeedsAttention from "@/components/dashboard/NeedsAttention";
 import WelcomeCard from "@/components/dashboard/WelcomeCard";
 import GuestDashboard from "@/components/dashboard/GuestDashboard";
+import PageContainer from "@/components/system/PageContainer";
+import PageHeader from "@/components/system/PageHeader";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -86,13 +88,15 @@ export default async function DashboardPage() {
   const t = await getTranslations("DashboardPage");
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-6">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="truncate text-xl font-semibold">{t("welcome", { email: user?.email ?? "" })}</h1>
-        <Button asChild size="sm">
-          <Link href="/plots/new">{t("addPlot")}</Link>
-        </Button>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title={t("welcome", { email: user?.email ?? "" })}
+        action={
+          <Button asChild size="sm">
+            <Link href="/plots/new">{t("addPlot")}</Link>
+          </Button>
+        }
+      />
 
       {(statsError || districtError || recentError) && (
         <p
@@ -159,6 +163,6 @@ export default async function DashboardPage() {
           </Card>
         </>
       )}
-    </div>
+    </PageContainer>
   );
 }

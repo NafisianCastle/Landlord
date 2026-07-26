@@ -64,7 +64,7 @@ export default function RentDueCard({
           </div>
         </div>
         {overduePayments.length > 0 && (
-          <ul className="flex flex-col divide-y divide-border rounded-lg border border-amber-500/50 bg-amber-500/10">
+          <ul className="flex flex-col divide-y divide-border rounded-lg border border-warning/50 bg-warning/10">
             {overduePayments.map((p) => (
               <li key={p.id} className="p-2 text-sm">
                 <Link href={p.propertyHref} className="flex flex-col">

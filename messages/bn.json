@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "cancel": "বাতিল"
+  },
   "Nav": {
     "dashboard": "ড্যাশবোর্ড",
     "plots": "প্লট",

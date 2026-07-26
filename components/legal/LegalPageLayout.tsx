@@ -13,7 +13,7 @@ export default function LegalPageLayout({
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-6">
       <h1 className="text-2xl font-semibold">{title}</h1>
       <p className="text-xs text-muted-foreground">{lastUpdated}</p>
-      <p className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-3 text-sm text-amber-800 dark:text-amber-300">
+      <p className="rounded-lg border border-warning/50 bg-warning/10 p-3 text-sm text-warning">
         {draftNotice}
       </p>
       <div className="flex flex-col gap-3 text-sm text-muted-foreground">

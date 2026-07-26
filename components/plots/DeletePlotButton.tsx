@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { deletePlot } from "@/app/actions/plots";
 import { Button } from "@/components/ui/button";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
 
 export default function DeletePlotButton({
   plotId,
@@ -18,25 +19,30 @@ export default function DeletePlotButton({
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations("DeletePlotButton");
+  const tCommon = useTranslations("Common");
+
+  function handleDelete() {
+    setError(null);
+    startTransition(async () => {
+      const result = await (onDelete ?? deletePlot)(plotId);
+      if (result?.error) setError(result.error);
+    });
+  }
 
   return (
     <div className="flex flex-col gap-2">
-      <Button
-        type="button"
-        variant="destructive"
-        size="sm"
-        disabled={pending}
-        onClick={() => {
-          if (!window.confirm(t("confirmDelete", { plotName }))) return;
-          setError(null);
-          startTransition(async () => {
-            const result = await (onDelete ?? deletePlot)(plotId);
-            if (result?.error) setError(result.error);
-          });
-        }}
-      >
-        {pending ? t("deleting") : t("deletePlot")}
-      </Button>
+      <ConfirmDialog
+        trigger={
+          <Button type="button" variant="destructive" size="sm" disabled={pending}>
+            {pending ? t("deleting") : t("deletePlot")}
+          </Button>
+        }
+        title={t("deletePlot")}
+        description={t("confirmDelete", { plotName })}
+        confirmLabel={t("deletePlot")}
+        cancelLabel={tCommon("cancel")}
+        onConfirm={handleDelete}
+      />
       {error && (
         <p role="alert" className="text-sm text-destructive">
           {error}

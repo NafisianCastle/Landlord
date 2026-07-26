@@ -70,14 +70,14 @@ export default function GuestApartmentDetail({ apartmentId }: { apartmentId: str
   if (apartment === undefined) return null;
   if (apartment === null) {
     return (
-      <div className="mx-auto flex max-w-lg flex-col gap-4 p-6">
+      <div className="mx-auto flex max-w-2xl flex-col gap-4 p-6">
         <p className="text-sm text-muted-foreground">{tGuest("apartmentNotFound")}</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex max-w-lg flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
       <div>
         <h1 className="text-xl font-semibold">{apartment.name}</h1>
       </div>

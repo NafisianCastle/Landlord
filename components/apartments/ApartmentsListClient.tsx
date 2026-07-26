@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
 export interface ApartmentListItem {
   id: string;
@@ -45,11 +46,7 @@ export default function ApartmentsListClient({ apartments }: { apartments: Apart
             <Link href={`/apartments/${apartment.id}`} className="flex flex-col">
               <span className="flex items-center gap-2 font-medium">
                 {apartment.name}
-                {apartment.shared && (
-                  <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-normal text-secondary-foreground">
-                    {t("sharedBadge")}
-                  </span>
-                )}
+                {apartment.shared && <Badge>{t("sharedBadge")}</Badge>}
               </span>
               <span className="text-sm text-muted-foreground">
                 {[apartment.upazila, apartment.district].filter(Boolean).join(", ") ||

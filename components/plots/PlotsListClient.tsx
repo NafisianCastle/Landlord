@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
 export interface PlotListItem {
   id: string;
@@ -44,11 +45,7 @@ export default function PlotsListClient({ plots }: { plots: PlotListItem[] }) {
             <Link href={`/plots/${plot.id}`} className="flex flex-col">
               <span className="flex items-center gap-2 font-medium">
                 {plot.name}
-                {plot.shared && (
-                  <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-normal text-secondary-foreground">
-                    {t("sharedBadge")}
-                  </span>
-                )}
+                {plot.shared && <Badge>{t("sharedBadge")}</Badge>}
               </span>
               <span className="text-sm text-muted-foreground">
                 {[plot.village, plot.district].filter(Boolean).join(", ") || t("noLocationSet")}

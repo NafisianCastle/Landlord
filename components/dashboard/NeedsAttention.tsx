@@ -14,7 +14,7 @@ export default function NeedsAttention({ plots }: { plots: UnwalkedPlot[] }) {
   if (plots.length === 0) return null;
 
   return (
-    <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-3">
+    <div className="rounded-lg border border-warning/50 bg-warning/10 p-3">
       <p className="mb-2 text-sm font-medium">{t("missingBoundary", { count: plots.length })}</p>
       <ul className="flex flex-col gap-1">
         {plots.map((plot) => (

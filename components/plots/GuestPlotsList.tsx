@@ -8,6 +8,8 @@ import { listGuestPlots, type GuestPlot } from "@/lib/offline/guestPlots";
 import { Button } from "@/components/ui/button";
 import PlotsMapClient from "@/app/(app)/plots/PlotsMapClient";
 import PlotsListClient from "@/components/plots/PlotsListClient";
+import PageContainer from "@/components/system/PageContainer";
+import PageHeader from "@/components/system/PageHeader";
 
 export default function GuestPlotsList() {
   const t = useTranslations("PlotsPage");
@@ -20,13 +22,15 @@ export default function GuestPlotsList() {
   if (plots === null) return null;
 
   return (
-    <div className="flex flex-col gap-4 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{t("title")}</h1>
-        <Button asChild>
-          <Link href="/plots/new">{t("addPlot")}</Link>
-        </Button>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title={t("title")}
+        action={
+          <Button asChild>
+            <Link href="/plots/new">{t("addPlot")}</Link>
+          </Button>
+        }
+      />
 
       <PlotsMapClient
         plots={plots
@@ -50,6 +54,6 @@ export default function GuestPlotsList() {
           areaSqMeters: p.areaSqMeters,
         }))}
       />
-    </div>
+    </PageContainer>
   );
 }

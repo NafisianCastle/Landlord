@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import PageContainer from "@/components/system/PageContainer";
+import PageHeader from "@/components/system/PageHeader";
 
 export default async function LeasesPage() {
   const supabase = await createClient();
@@ -12,7 +14,7 @@ export default async function LeasesPage() {
 
   if (!user) {
     return (
-      <div className="mx-auto flex max-w-lg flex-col gap-4 p-6">
+      <div className="mx-auto flex max-w-2xl flex-col gap-4 p-6">
         <p className="text-sm text-muted-foreground">{t("signInRequired")}</p>
       </div>
     );
@@ -61,8 +63,8 @@ export default async function LeasesPage() {
   });
 
   return (
-    <div className="flex flex-col gap-4 p-6">
-      <h1 className="text-xl font-semibold">{t("title")}</h1>
+    <PageContainer>
+      <PageHeader title={t("title")} />
 
       {error ? (
         <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
@@ -88,6 +90,6 @@ export default async function LeasesPage() {
           )}
         </ul>
       )}
-    </div>
+    </PageContainer>
   );
 }

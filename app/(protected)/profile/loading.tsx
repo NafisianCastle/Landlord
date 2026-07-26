@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProfileLoading() {
   return (
-    <div className="mx-auto flex max-w-lg flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
       <Skeleton className="h-8 w-32" />
       <Card>
         <CardHeader>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { Badge } from "@/components/ui/badge";
 
 interface RecentPlot {
   id: string;
@@ -29,11 +30,7 @@ export default function RecentPlots({ plots }: { plots: RecentPlot[] }) {
           >
             <span className="flex items-center gap-2 text-sm font-medium">
               {plot.name}
-              {plot.shared && (
-                <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-normal text-secondary-foreground">
-                  {t("sharedBadge")}
-                </span>
-              )}
+              {plot.shared && <Badge>{t("sharedBadge")}</Badge>}
             </span>
             <span className="text-xs text-muted-foreground">
               {[plot.village, plot.district].filter(Boolean).join(", ") || t("noLocationSet")}

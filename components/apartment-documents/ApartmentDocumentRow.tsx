@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { deleteApartmentDocument } from "@/app/actions/apartmentDocuments";
 import { Button } from "@/components/ui/button";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
 
 const ApartmentPdfPreviewModal = dynamic(() => import("./ApartmentPdfPreviewModal"), {
   ssr: false,
@@ -31,8 +32,21 @@ export default function ApartmentDocumentRow({
   const [removed, setRemoved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations("DocumentRow");
+  const tCommon = useTranslations("Common");
 
   if (removed) return null;
+
+  function handleDelete() {
+    setError(null);
+    startTransition(async () => {
+      try {
+        await deleteApartmentDocument(apartmentId, documentId, storagePath);
+        setRemoved(true);
+      } catch {
+        setError(t("deleteFailed"));
+      }
+    });
+  }
 
   return (
     <li className="flex flex-col gap-1 py-2">
@@ -45,27 +59,24 @@ export default function ApartmentDocumentRow({
             isEncrypted={isEncrypted}
             encryptionIvHex={encryptionIvHex}
           />
-          <Button
-            type="button"
-            variant="link"
-            size="sm"
-            className="text-destructive"
-            disabled={pending}
-            onClick={() => {
-              if (!window.confirm(t("confirmDelete", { fileName }))) return;
-              setError(null);
-              startTransition(async () => {
-                try {
-                  await deleteApartmentDocument(apartmentId, documentId, storagePath);
-                  setRemoved(true);
-                } catch {
-                  setError(t("deleteFailed"));
-                }
-              });
-            }}
-          >
-            {t("delete")}
-          </Button>
+          <ConfirmDialog
+            trigger={
+              <Button
+                type="button"
+                variant="link"
+                size="sm"
+                className="text-destructive"
+                disabled={pending}
+              >
+                {t("delete")}
+              </Button>
+            }
+            title={t("delete")}
+            description={t("confirmDelete", { fileName })}
+            confirmLabel={t("delete")}
+            cancelLabel={tCommon("cancel")}
+            onConfirm={handleDelete}
+          />
         </div>
       </div>
       {error && (

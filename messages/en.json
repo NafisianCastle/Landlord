@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "cancel": "Cancel"
+  },
   "Nav": {
     "dashboard": "Dashboard",
     "plots": "Plots",

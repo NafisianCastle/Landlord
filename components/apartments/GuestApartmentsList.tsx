@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { listGuestApartments, type GuestApartment } from "@/lib/offline/guestApartments";
 import { Button } from "@/components/ui/button";
 import ApartmentsListClient from "@/components/apartments/ApartmentsListClient";
+import PageContainer from "@/components/system/PageContainer";
+import PageHeader from "@/components/system/PageHeader";
 
 export default function GuestApartmentsList() {
   const t = useTranslations("ApartmentsPage");
@@ -18,13 +20,15 @@ export default function GuestApartmentsList() {
   if (apartments === null) return null;
 
   return (
-    <div className="flex flex-col gap-4 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{t("title")}</h1>
-        <Button asChild>
-          <Link href="/apartments/new">{t("addApartment")}</Link>
-        </Button>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title={t("title")}
+        action={
+          <Button asChild>
+            <Link href="/apartments/new">{t("addApartment")}</Link>
+          </Button>
+        }
+      />
 
       <ApartmentsListClient
         apartments={apartments.map((a) => ({
@@ -36,6 +40,6 @@ export default function GuestApartmentsList() {
           sizeUnit: a.sizeUnit,
         }))}
       />
-    </div>
+    </PageContainer>
   );
 }

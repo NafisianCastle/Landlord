@@ -70,7 +70,7 @@ export default function PaymentsList({
             key={row.id}
             className={
               isOverdue(row)
-                ? "flex items-center justify-between gap-2 bg-amber-500/10 p-3 text-sm"
+                ? "flex items-center justify-between gap-2 bg-warning/10 p-3 text-sm"
                 : "flex items-center justify-between gap-2 p-3 text-sm"
             }
           >

@@ -13,7 +13,7 @@ export default async function NewPlotPage() {
   const t = await getTranslations("NewPlotPage");
 
   return (
-    <div className="mx-auto max-w-lg p-6">
+    <div className="mx-auto max-w-2xl p-6">
       <h1 className="mb-4 text-xl font-semibold">{t("title")}</h1>
       <Card>
         <CardHeader>

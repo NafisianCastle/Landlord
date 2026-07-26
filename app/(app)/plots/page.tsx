@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import PlotsMapClient from "./PlotsMapClient";
 import GuestPlotsList from "@/components/plots/GuestPlotsList";
 import PlotsListClient from "@/components/plots/PlotsListClient";
+import PageContainer from "@/components/system/PageContainer";
+import PageHeader from "@/components/system/PageHeader";
 
 export default async function PlotsPage() {
   const supabase = await createClient();
@@ -35,13 +37,15 @@ export default async function PlotsPage() {
   const t = await getTranslations("PlotsPage");
 
   return (
-    <div className="flex flex-col gap-4 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{t("title")}</h1>
-        <Button asChild>
-          <Link href="/plots/new">{t("addPlot")}</Link>
-        </Button>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title={t("title")}
+        action={
+          <Button asChild>
+            <Link href="/plots/new">{t("addPlot")}</Link>
+          </Button>
+        }
+      />
 
       {error ? (
         <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
@@ -58,6 +62,6 @@ export default async function PlotsPage() {
           <PlotsListClient plots={mapped} />
         </>
       )}
-    </div>
+    </PageContainer>
   );
 }

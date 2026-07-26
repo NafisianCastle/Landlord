@@ -46,7 +46,7 @@ export default async function ApartmentDetailPage({
 
   if (error && error.code !== "PGRST116") {
     return (
-      <div className="mx-auto flex max-w-lg flex-col gap-4 p-6">
+      <div className="mx-auto flex max-w-2xl flex-col gap-4 p-6">
         <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
           {t("loadError", { message: error.message })}
         </p>
@@ -57,7 +57,7 @@ export default async function ApartmentDetailPage({
   if (!apartment) notFound();
 
   return (
-    <div className="mx-auto flex max-w-lg flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
       <div>
         <h1 className="text-xl font-semibold">{apartment.name}</h1>
       </div>
