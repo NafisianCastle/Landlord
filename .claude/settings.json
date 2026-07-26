@@ -42,7 +42,8 @@
       "Bash(curl -s http://localhost:3911/login -H \"Accept-Language: en\" -o /tmp/en_login.html)",
       "Bash(npx next *)",
       "WebSearch",
-      "Bash(git stash *)"
+      "Bash(git stash *)",
+      "Bash(npx --no-install playwright --version)"
     ],
     "additionalDirectories": [
       "/run/media/nafis/Projects/landly/components"
