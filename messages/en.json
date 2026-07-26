@@ -2,7 +2,8 @@
   "Nav": {
     "dashboard": "Dashboard",
     "plots": "Plots",
-    "profile": "Profile"
+    "profile": "Profile",
+    "apartments": "Apartments"
   },
   "ThemeToggle": {
     "toggleAriaLabel": "Toggle light/dark mode",
@@ -83,7 +84,8 @@
     "areaSub": "{bigha} bigha · {acre} acre",
     "totalPurchasePrice": "Total purchase price",
     "totalCurrentValue": "Total current value",
-    "documents": "Documents"
+    "documents": "Documents",
+    "totalApartments": "Total apartments"
   },
   "WelcomeCard": {
     "title": "Add your first plot",
@@ -101,6 +103,17 @@
     "sharedBadge": "Shared",
     "searchPlaceholder": "Search by name, village, or district",
     "noSearchResults": "No plots match your search."
+  },
+  "ApartmentsPage": {
+    "title": "Your apartments",
+    "addApartment": "Add apartment",
+    "loadError": "Couldn't load your apartments — {message}. Try refreshing the page.",
+    "noLocationSet": "No location set",
+    "sizeNotSet": "size not set",
+    "noApartmentsYet": "No apartments yet. Add your first one.",
+    "sharedBadge": "Shared",
+    "searchPlaceholder": "Search by name, upazila, or district",
+    "noSearchResults": "No apartments match your search."
   },
   "PlotsMapClient": {
     "loadingMap": "Loading map…",
@@ -132,10 +145,39 @@
     "willEncryptNotice": "Village, mutation number, prices, dates, and notes will be saved encrypted.",
     "saving": "Saving..."
   },
+  "ApartmentMetadataForm": {
+    "apartmentName": "Apartment name",
+    "apartmentNamePlaceholder": "e.g. Green View Flat",
+    "buildingName": "Building name / address",
+    "unitNumber": "Unit / flat number",
+    "floor": "Floor",
+    "upazila": "Upazila",
+    "district": "District",
+    "division": "Division",
+    "selectDivision": "Select division",
+    "selectDistrict": "Select district",
+    "selectUpazila": "Select upazila",
+    "size": "Size",
+    "purchasePrice": "Purchase price (BDT)",
+    "purchaseDate": "Purchase date",
+    "currentEstimatedValue": "Current estimated value (BDT)",
+    "notes": "Notes",
+    "notesLockedPlaceholder": "Unlock encryption in Profile to view/edit",
+    "locked": "Locked",
+    "sensitiveLockedNotice": "Building name, unit number, prices, and notes are encrypted. Unlock encryption in Profile to view or edit them.",
+    "decryptError": "Couldn't decrypt with the current session key.",
+    "willEncryptNotice": "Building name, unit number, prices, dates, and notes will be saved encrypted.",
+    "saving": "Saving..."
+  },
   "NewPlotPage": {
     "title": "Add a plot",
     "plotDetails": "Plot details",
     "createPlot": "Create plot"
+  },
+  "NewApartmentPage": {
+    "title": "Add an apartment",
+    "apartmentDetails": "Apartment details",
+    "createApartment": "Create apartment"
   },
   "PlotDetailPage": {
     "loadError": "Couldn't load this plot — {message}. Try refreshing the page.",
@@ -159,6 +201,14 @@
     "documents": "Documents",
     "noDocumentsYet": "No documents yet."
   },
+  "ApartmentDetailPage": {
+    "loadError": "Couldn't load this apartment — {message}. Try refreshing the page.",
+    "sizeValue": "{value} {unit}",
+    "details": "Details",
+    "saveChanges": "Save changes",
+    "documents": "Documents",
+    "noDocumentsYet": "No documents yet."
+  },
   "PlotBoundarySection": {
     "walkWithGps": "Walk with GPS",
     "drawOnMap": "Draw on map",
@@ -169,10 +219,19 @@
     "deleting": "Deleting...",
     "deletePlot": "Delete plot"
   },
+  "DeleteApartmentButton": {
+    "confirmDelete": "Delete \"{apartmentName}\"? This can't be undone.",
+    "deleting": "Deleting...",
+    "deleteApartment": "Delete apartment"
+  },
   "PlotActions": {
     "plotNameRequired": "Plot name is required",
     "trialEnded": "Your trial has ended — please upgrade to continue.",
     "needThreePoints": "Need at least 3 points to form a boundary"
+  },
+  "ApartmentActions": {
+    "apartmentNameRequired": "Apartment name is required",
+    "trialEnded": "Your trial has ended — please upgrade to continue."
   },
   "BoundaryWalker": {
     "webglError": "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
@@ -348,6 +407,18 @@
       "collaborator_removed": "removed a collaborator"
     }
   },
+  "ApartmentAuditLog": {
+    "title": "History",
+    "unknownActor": "Someone",
+    "noHistoryYet": "No history yet.",
+    "action": {
+      "created": "created this apartment",
+      "metadata_updated": "edited the details",
+      "deleted": "deleted this apartment",
+      "collaborator_invited": "invited a collaborator",
+      "collaborator_removed": "removed a collaborator"
+    }
+  },
   "ErrorPage": {
     "title": "Something went wrong",
     "subtitle": "An unexpected error occurred. It's been reported — please try again.",
@@ -383,6 +454,7 @@
     "welcomeGuest": "Welcome — try it out before you sign up",
     "plotNotFound": "This plot doesn't exist on this device.",
     "documentsRequireSignup": "Sign up to attach and store documents for this plot.",
-    "migratedNotice": "{count, plural, =1 {# plot} other {# plots}} saved to your account."
+    "migratedNotice": "{count, plural, =1 {# item} other {# items}} saved to your account.",
+    "apartmentNotFound": "This apartment doesn't exist on this device."
   }
 }

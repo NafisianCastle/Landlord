@@ -30,6 +30,25 @@ export interface GuestPlot {
   updatedAt: number;
 }
 
+export interface GuestApartment {
+  id: string;
+  name: string;
+  upazila: string | null;
+  district: string | null;
+  division: string | null;
+  floor: string | null;
+  size: number | null;
+  sizeUnit: string | null;
+  buildingName: string | null;
+  unitNumber: string | null;
+  purchasePrice: number | null;
+  purchaseDate: string | null;
+  currentEstimatedValue: number | null;
+  notes: string | null;
+  createdAt: number;
+  updatedAt: number;
+}
+
 export interface WalkPoint {
   id?: number;
   sessionId: string;
@@ -61,6 +80,7 @@ const db = new Dexie("landlord") as Dexie & {
   walkPoints: EntityTable<WalkPoint, "id">;
   offlineAreas: EntityTable<OfflineArea, "id">;
   guestPlots: EntityTable<GuestPlot, "id">;
+  guestApartments: EntityTable<GuestApartment, "id">;
 };
 
 db.version(1).stores({
@@ -79,6 +99,14 @@ db.version(3).stores({
   walkPoints: "++id, sessionId, [sessionId+seq], synced",
   offlineAreas: "id, downloadedAt",
   guestPlots: "id, createdAt",
+});
+
+db.version(4).stores({
+  walkSessions: "id, plotId, status",
+  walkPoints: "++id, sessionId, [sessionId+seq], synced",
+  offlineAreas: "id, downloadedAt",
+  guestPlots: "id, createdAt",
+  guestApartments: "id, createdAt",
 });
 
 export default db;

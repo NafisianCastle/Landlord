@@ -2,7 +2,8 @@
   "Nav": {
     "dashboard": "ড্যাশবোর্ড",
     "plots": "প্লট",
-    "profile": "প্রোফাইল"
+    "profile": "প্রোফাইল",
+    "apartments": "অ্যাপার্টমেন্ট"
   },
   "ThemeToggle": {
     "toggleAriaLabel": "লাইট/ডার্ক মোড পরিবর্তন করুন",
@@ -83,7 +84,8 @@
     "areaSub": "{bigha} বিঘা · {acre} একর",
     "totalPurchasePrice": "মোট কেনার মূল্য",
     "totalCurrentValue": "মোট বর্তমান মূল্য",
-    "documents": "নথি"
+    "documents": "নথি",
+    "totalApartments": "মোট অ্যাপার্টমেন্ট"
   },
   "WelcomeCard": {
     "title": "আপনার প্রথম প্লট যোগ করুন",
@@ -101,6 +103,17 @@
     "sharedBadge": "শেয়ারকৃত",
     "searchPlaceholder": "নাম, গ্রাম বা জেলা দিয়ে খুঁজুন",
     "noSearchResults": "আপনার খোঁজের সাথে মিলে এমন কোনো প্লট নেই।"
+  },
+  "ApartmentsPage": {
+    "title": "আপনার অ্যাপার্টমেন্টসমূহ",
+    "addApartment": "অ্যাপার্টমেন্ট যোগ করুন",
+    "loadError": "আপনার অ্যাপার্টমেন্ট লোড করা যায়নি — {message}। পাতাটি রিফ্রেশ করে দেখুন।",
+    "noLocationSet": "অবস্থান নির্ধারণ করা হয়নি",
+    "sizeNotSet": "আকার নির্ধারণ করা হয়নি",
+    "noApartmentsYet": "এখনো কোনো অ্যাপার্টমেন্ট নেই। প্রথমটি যোগ করুন।",
+    "sharedBadge": "শেয়ারকৃত",
+    "searchPlaceholder": "নাম, উপজেলা বা জেলা দিয়ে খুঁজুন",
+    "noSearchResults": "আপনার খোঁজের সাথে মিলে এমন কোনো অ্যাপার্টমেন্ট নেই।"
   },
   "PlotsMapClient": {
     "loadingMap": "মানচিত্র লোড হচ্ছে…",
@@ -132,10 +145,39 @@
     "willEncryptNotice": "গ্রাম, মিউটেশন নম্বর, মূল্য, তারিখ এবং নোট এনক্রিপ্ট করে সংরক্ষণ করা হবে।",
     "saving": "সংরক্ষণ হচ্ছে..."
   },
+  "ApartmentMetadataForm": {
+    "apartmentName": "অ্যাপার্টমেন্টের নাম",
+    "apartmentNamePlaceholder": "যেমন: গ্রিন ভিউ ফ্ল্যাট",
+    "buildingName": "ভবনের নাম / ঠিকানা",
+    "unitNumber": "ইউনিট / ফ্ল্যাট নম্বর",
+    "floor": "তলা",
+    "upazila": "উপজেলা",
+    "district": "জেলা",
+    "division": "বিভাগ",
+    "selectDivision": "বিভাগ নির্বাচন করুন",
+    "selectDistrict": "জেলা নির্বাচন করুন",
+    "selectUpazila": "উপজেলা নির্বাচন করুন",
+    "size": "আকার",
+    "purchasePrice": "কেনার মূল্য (টাকা)",
+    "purchaseDate": "কেনার তারিখ",
+    "currentEstimatedValue": "বর্তমান আনুমানিক মূল্য (টাকা)",
+    "notes": "নোট",
+    "notesLockedPlaceholder": "দেখতে/সম্পাদনা করতে প্রোফাইলে এনক্রিপশন আনলক করুন",
+    "locked": "লক করা আছে",
+    "sensitiveLockedNotice": "ভবনের নাম, ইউনিট নম্বর, মূল্য এবং নোট এনক্রিপ্ট করা আছে। দেখতে বা সম্পাদনা করতে প্রোফাইলে এনক্রিপশন আনলক করুন।",
+    "decryptError": "বর্তমান সেশন কী দিয়ে ডিক্রিপ্ট করা যায়নি।",
+    "willEncryptNotice": "ভবনের নাম, ইউনিট নম্বর, মূল্য, তারিখ এবং নোট এনক্রিপ্ট করে সংরক্ষণ করা হবে।",
+    "saving": "সংরক্ষণ হচ্ছে..."
+  },
   "NewPlotPage": {
     "title": "একটি প্লট যোগ করুন",
     "plotDetails": "প্লটের বিবরণ",
     "createPlot": "প্লট তৈরি করুন"
+  },
+  "NewApartmentPage": {
+    "title": "একটি অ্যাপার্টমেন্ট যোগ করুন",
+    "apartmentDetails": "অ্যাপার্টমেন্টের বিবরণ",
+    "createApartment": "অ্যাপার্টমেন্ট তৈরি করুন"
   },
   "PlotDetailPage": {
     "loadError": "এই প্লটটি লোড করা যায়নি — {message}। পাতাটি রিফ্রেশ করে দেখুন।",
@@ -159,6 +201,14 @@
     "documents": "নথি",
     "noDocumentsYet": "এখনো কোনো নথি নেই।"
   },
+  "ApartmentDetailPage": {
+    "loadError": "এই অ্যাপার্টমেন্টটি লোড করা যায়নি — {message}। পাতাটি রিফ্রেশ করে দেখুন।",
+    "sizeValue": "{value} {unit}",
+    "details": "বিবরণ",
+    "saveChanges": "পরিবর্তন সংরক্ষণ করুন",
+    "documents": "নথি",
+    "noDocumentsYet": "এখনো কোনো নথি নেই।"
+  },
   "PlotBoundarySection": {
     "walkWithGps": "জিপিএস দিয়ে হাঁটুন",
     "drawOnMap": "মানচিত্রে আঁকুন",
@@ -169,10 +219,19 @@
     "deleting": "মুছে ফেলা হচ্ছে...",
     "deletePlot": "প্লট মুছে ফেলুন"
   },
+  "DeleteApartmentButton": {
+    "confirmDelete": "\"{apartmentName}\" মুছে ফেলবেন? এটি পূর্বাবস্থায় ফেরানো যাবে না।",
+    "deleting": "মুছে ফেলা হচ্ছে...",
+    "deleteApartment": "অ্যাপার্টমেন্ট মুছুন"
+  },
   "PlotActions": {
     "plotNameRequired": "প্লটের নাম আবশ্যক",
     "trialEnded": "আপনার ট্রায়াল শেষ হয়ে গেছে — চালিয়ে যেতে আপগ্রেড করুন।",
     "needThreePoints": "সীমানা তৈরি করতে অন্তত ৩টি পয়েন্ট দরকার"
+  },
+  "ApartmentActions": {
+    "apartmentNameRequired": "অ্যাপার্টমেন্টের নাম আবশ্যক",
+    "trialEnded": "আপনার ট্রায়াল শেষ হয়ে গেছে — চালিয়ে যেতে আপগ্রেড করুন।"
   },
   "BoundaryWalker": {
     "webglError": "মানচিত্র লোড করা যায়নি — এই ব্রাউজার/ডিভাইসে WebGL সমর্থিত নয়, যা মানচিত্রের জন্য দরকার।",
@@ -348,6 +407,18 @@
       "collaborator_removed": "একজন সহযোগীকে সরিয়েছেন"
     }
   },
+  "ApartmentAuditLog": {
+    "title": "ইতিহাস",
+    "unknownActor": "কেউ একজন",
+    "noHistoryYet": "এখনো কোনো ইতিহাস নেই।",
+    "action": {
+      "created": "এই অ্যাপার্টমেন্ট তৈরি করেছেন",
+      "metadata_updated": "বিবরণ সম্পাদনা করেছেন",
+      "deleted": "এই অ্যাপার্টমেন্ট মুছে ফেলেছেন",
+      "collaborator_invited": "একজন সহযোগীকে আমন্ত্রণ জানিয়েছেন",
+      "collaborator_removed": "একজন সহযোগীকে সরিয়ে দিয়েছেন"
+    }
+  },
   "ErrorPage": {
     "title": "কিছু একটা সমস্যা হয়েছে",
     "subtitle": "একটি অপ্রত্যাশিত ত্রুটি ঘটেছে। এটি রিপোর্ট করা হয়েছে — আবার চেষ্টা করুন।",
@@ -383,6 +454,7 @@
     "welcomeGuest": "স্বাগতম — সাইন আপ করার আগে ব্যবহার করে দেখুন",
     "plotNotFound": "এই প্লটটি এই ডিভাইসে পাওয়া যায়নি।",
     "documentsRequireSignup": "এই প্লটে নথি যুক্ত ও সংরক্ষণ করতে সাইন আপ করুন।",
-    "migratedNotice": "{count, plural, =1 {# টি প্লট} other {# টি প্লট}} আপনার অ্যাকাউন্টে সংরক্ষিত হয়েছে।"
+    "migratedNotice": "{count, plural, =1 {# টি আইটেম} other {# টি আইটেম}} আপনার অ্যাকাউন্টে সংরক্ষিত হয়েছে।",
+    "apartmentNotFound": "এই অ্যাপার্টমেন্টটি এই ডিভাইসে পাওয়া যায়নি।"
   }
 }

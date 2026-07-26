@@ -26,6 +26,7 @@ export default async function DashboardPage() {
     { count: documentCount },
     { data: recentPlots, error: recentError },
     { data: unwalkedPlots },
+    { count: apartmentCount },
   ] = await Promise.all([
     supabase.from("plot_stats").select("*").single(),
     supabase.from("plot_stats_by_district").select("*"),
@@ -40,6 +41,7 @@ export default async function DashboardPage() {
       .select("id, name")
       .is("area_sq_meters", null)
       .order("created_at", { ascending: false }),
+    supabase.from("apartments").select("id", { count: "exact", head: true }),
   ]);
 
   const plotCount = stats?.plot_count ?? 0;
@@ -75,6 +77,7 @@ export default async function DashboardPage() {
             totalPurchasePrice={stats?.total_purchase_price ?? 0}
             totalCurrentValue={stats?.total_current_value ?? 0}
             documentCount={documentCount ?? 0}
+            apartmentCount={apartmentCount ?? 0}
           />
 
           <Card>

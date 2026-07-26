@@ -10,6 +10,7 @@ interface StatsCardsProps {
   totalPurchasePrice: number;
   totalCurrentValue: number;
   documentCount: number;
+  apartmentCount?: number;
 }
 
 const bdt = new Intl.NumberFormat("en-BD", {
@@ -24,6 +25,7 @@ export default function StatsCards({
   totalPurchasePrice,
   totalCurrentValue,
   documentCount,
+  apartmentCount,
 }: StatsCardsProps) {
   const t = useTranslations("StatsCards");
   const area = convertArea(totalAreaSqMeters);
@@ -32,6 +34,9 @@ export default function StatsCards({
 
   const cards = [
     { label: t("totalPlots"), value: String(plotCount) },
+    ...(apartmentCount !== undefined
+      ? [{ label: t("totalApartments"), value: String(apartmentCount) }]
+      : []),
     {
       label: t("totalArea"),
       value: t("decimalValue", { value: area.decimal.toFixed(2) }),

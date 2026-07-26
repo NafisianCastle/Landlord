@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { listGuestPlots, clearGuestPlots } from "@/lib/offline/guestPlots";
 import { migrateGuestPlots } from "@/app/actions/plots";
+import { listGuestApartments, clearGuestApartments } from "@/lib/offline/guestApartments";
+import { migrateGuestApartments } from "@/app/actions/apartments";
 
 /**
  * Mounted only when a Supabase session exists (see app/(app)/layout.tsx).
@@ -20,32 +22,65 @@ export default function GuestMigration() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const guestPlots = await listGuestPlots();
-      if (guestPlots.length === 0) return;
+      const [guestPlots, guestApartments] = await Promise.all([
+        listGuestPlots(),
+        listGuestApartments(),
+      ]);
+      if (guestPlots.length === 0 && guestApartments.length === 0) return;
 
-      const result = await migrateGuestPlots(
-        guestPlots.map((p) => ({
-          name: p.name,
-          upazila: p.upazila,
-          district: p.district,
-          division: p.division,
-          dolilArea: p.dolilArea,
-          dolilAreaUnit: p.dolilAreaUnit,
-          actualArea: p.actualArea,
-          actualAreaUnit: p.actualAreaUnit,
-          village: p.village,
-          mutationNumber: p.mutationNumber,
-          purchasePrice: p.purchasePrice,
-          purchaseDate: p.purchaseDate,
-          currentEstimatedValue: p.currentEstimatedValue,
-          notes: p.notes,
-          boundaryGeojson: p.boundaryGeojson,
-        })),
-      );
+      const [plotResult, apartmentResult] = await Promise.all([
+        guestPlots.length
+          ? migrateGuestPlots(
+              guestPlots.map((p) => ({
+                name: p.name,
+                upazila: p.upazila,
+                district: p.district,
+                division: p.division,
+                dolilArea: p.dolilArea,
+                dolilAreaUnit: p.dolilAreaUnit,
+                actualArea: p.actualArea,
+                actualAreaUnit: p.actualAreaUnit,
+                village: p.village,
+                mutationNumber: p.mutationNumber,
+                purchasePrice: p.purchasePrice,
+                purchaseDate: p.purchaseDate,
+                currentEstimatedValue: p.currentEstimatedValue,
+                notes: p.notes,
+                boundaryGeojson: p.boundaryGeojson,
+              })),
+            )
+          : { migrated: 0 },
+        guestApartments.length
+          ? migrateGuestApartments(
+              guestApartments.map((a) => ({
+                name: a.name,
+                upazila: a.upazila,
+                district: a.district,
+                division: a.division,
+                floor: a.floor,
+                size: a.size,
+                sizeUnit: a.sizeUnit,
+                buildingName: a.buildingName,
+                unitNumber: a.unitNumber,
+                purchasePrice: a.purchasePrice,
+                purchaseDate: a.purchaseDate,
+                currentEstimatedValue: a.currentEstimatedValue,
+                notes: a.notes,
+              })),
+            )
+          : { migrated: 0 },
+      ]);
 
-      if (cancelled || !result.migrated) return;
-      await clearGuestPlots(guestPlots.map((p) => p.id));
-      setMigratedCount(result.migrated);
+      if (cancelled) return;
+      const totalMigrated = plotResult.migrated + apartmentResult.migrated;
+      if (!totalMigrated) return;
+      await Promise.all([
+        plotResult.migrated ? clearGuestPlots(guestPlots.map((p) => p.id)) : Promise.resolve(),
+        apartmentResult.migrated
+          ? clearGuestApartments(guestApartments.map((a) => a.id))
+          : Promise.resolve(),
+      ]);
+      setMigratedCount(totalMigrated);
       router.refresh();
     })();
     return () => {
