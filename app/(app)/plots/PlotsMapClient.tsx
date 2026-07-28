@@ -8,7 +8,7 @@ import type { PlotMapFeature } from "@/components/map/PlotMap";
 function MapLoadingFallback() {
   const t = useTranslations("PlotsMapClient");
   return (
-    <div className="flex h-[60vh] min-h-[360px] items-center justify-center rounded border bg-neutral-50 text-sm text-neutral-500">
+    <div className="flex h-[40vh] min-h-[240px] items-center justify-center rounded-lg border border-border bg-muted/40 text-center text-sm text-muted-foreground sm:h-[60vh] sm:min-h-[360px]">
       {t("loadingMap")}
     </div>
   );
@@ -25,7 +25,7 @@ export default function PlotsMapClient({ plots }: { plots: PlotMapFeature[] }) {
 
   if (plots.length === 0) {
     return (
-      <div className="flex h-[60vh] min-h-[360px] items-center justify-center rounded border bg-neutral-50 text-sm text-neutral-500">
+      <div className="flex h-[40vh] min-h-[240px] items-center justify-center rounded-lg border border-border bg-muted/40 px-6 text-center text-sm text-muted-foreground sm:h-[60vh] sm:min-h-[360px]">
         {t("noBoundaries")}
       </div>
     );
@@ -35,7 +35,7 @@ export default function PlotsMapClient({ plots }: { plots: PlotMapFeature[] }) {
     <PlotMap
       plots={plots}
       onPlotClick={(id) => router.push(`/plots/${id}`)}
-      className="h-[60vh] min-h-[360px] w-full rounded"
+      className="h-[40vh] min-h-[240px] w-full rounded-lg sm:h-[60vh] sm:min-h-[360px]"
     />
   );
 }

@@ -27,12 +27,12 @@ export default async function AppShell({
       <Sidebar signedIn={Boolean(user)} />
 
       <div className="flex min-h-screen flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/95 px-4 py-3 backdrop-blur md:hidden">
-          <span className="flex items-center gap-2 font-semibold">
+        <header className="sticky top-0 z-40 flex items-center justify-between gap-2 border-b border-border bg-background/95 px-3 py-2.5 backdrop-blur sm:px-4 sm:py-3 md:hidden">
+          <span className="flex shrink-0 items-center gap-1.5 font-semibold">
             <Logo className="size-6 rounded-md" />
             Landlord
           </span>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <LocaleSwitcher />
             <ThemeToggle />
             {user ? (
@@ -43,7 +43,7 @@ export default async function AppShell({
                 </Button>
               </form>
             ) : (
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="shrink-0 whitespace-nowrap px-2.5 sm:px-3">
                 <Link href="/signup">{tGuest("signUpToSave")}</Link>
               </Button>
             )}

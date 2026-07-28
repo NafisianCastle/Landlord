@@ -21,7 +21,7 @@ export default function LocaleSwitcher() {
   }
 
   return (
-    <label className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2.5 text-xs text-card-foreground shadow-sm">
+    <label className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-2 text-xs text-card-foreground shadow-sm sm:gap-1.5 sm:px-3 sm:py-2.5">
       <Languages className="size-3.5" />
       <span className="sr-only">{t("label")}</span>
       <select
