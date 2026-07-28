@@ -11,6 +11,7 @@ import LocationBreakdown from "@/components/dashboard/LocationBreakdown";
 import RecentPlots from "@/components/dashboard/RecentPlots";
 import NeedsAttention from "@/components/dashboard/NeedsAttention";
 import WelcomeCard from "@/components/dashboard/WelcomeCard";
+import PageContainer from "@/components/system/PageContainer";
 
 export default function GuestDashboard() {
   const t = useTranslations("DashboardPage");
@@ -39,7 +40,7 @@ export default function GuestDashboard() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-6">
+    <PageContainer>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-xl font-semibold">{tGuest("welcomeGuest")}</h1>
         <Button asChild size="sm" className="self-start sm:self-auto">
@@ -93,6 +94,6 @@ export default function GuestDashboard() {
           </Card>
         </>
       )}
-    </div>
+    </PageContainer>
   );
 }
