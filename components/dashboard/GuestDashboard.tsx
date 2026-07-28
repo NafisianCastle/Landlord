@@ -40,9 +40,9 @@ export default function GuestDashboard() {
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="truncate text-xl font-semibold">{tGuest("welcomeGuest")}</h1>
-        <Button asChild size="sm">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-semibold">{tGuest("welcomeGuest")}</h1>
+        <Button asChild size="sm" className="self-start sm:self-auto">
           <Link href="/plots/new">{t("addPlot")}</Link>
         </Button>
       </div>

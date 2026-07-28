@@ -6,9 +6,9 @@ export default function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3">
-      <h1 className="truncate text-xl font-semibold">{title}</h1>
-      {action}
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h1 className="text-xl font-semibold">{title}</h1>
+      {action && <div className="self-start sm:self-auto">{action}</div>}
     </div>
   );
 }
