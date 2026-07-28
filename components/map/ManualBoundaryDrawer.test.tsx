@@ -8,6 +8,7 @@ const { FakeMap, fakeMapInstances } = vi.hoisted(() => {
   class FakeMap {
     handlers: Record<string, Array<{ layer?: string; cb: (...args: unknown[]) => void }>> = {};
     sources: Record<string, { setData: ReturnType<typeof vi.fn> }> = {};
+    layers = new Set<string>();
     removed = false;
     dragPan = { enable: vi.fn(), disable: vi.fn() };
     flyTo = vi.fn();
@@ -37,7 +38,15 @@ const { FakeMap, fakeMapInstances } = vi.hoisted(() => {
     getSource(id: string) {
       return this.sources[id];
     }
-    addLayer() {}
+    addLayer(layer: { id: string }) {
+      this.layers.add(layer.id);
+    }
+    getLayer(id: string) {
+      return this.layers.has(id) ? {} : undefined;
+    }
+    removeLayer(id: string) {
+      this.layers.delete(id);
+    }
     setCenter() {}
     setStyle() {
       this.fire("style.load");

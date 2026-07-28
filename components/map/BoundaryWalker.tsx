@@ -177,7 +177,10 @@ export default function BoundaryWalker({
       source?.setData(walkPreview(points));
     };
     if (map.isStyleLoaded()) apply();
-    else map.once("load", apply);
+    // "load" only ever fires once for a Map's lifetime — after a base-style
+    // toggle (map.setStyle), the style reloads and re-fires "style.load"
+    // instead, which is what we need to wait for here too.
+    else map.once("style.load", apply);
   }, [points]);
 
   const stats = useMemo(() => {
@@ -201,7 +204,11 @@ export default function BoundaryWalker({
     const map = mapRef.current;
     if (!map) return;
     const next: BaseStyle = baseStyle === "satellite" ? "streets" : "satellite";
-    map.setStyle(styleFor(next));
+    // setStyle() diffs against the current style by default, which patches
+    // in place and never fires "style.load" — our runtime-added walk layers
+    // (absent from the target style spec) get dropped by the diff with no
+    // event to re-add them on. Force a full reload so "style.load" fires.
+    map.setStyle(styleFor(next), { diff: false });
     map.once("style.load", () => addWalkLayers(map, pointsRef.current));
     setBaseStyle(next);
   }
@@ -350,7 +357,7 @@ export default function BoundaryWalker({
 }
 
 function addWalkLayers(map: maplibregl.Map, points: LatLng[]) {
-  for (const id of ["walk-fill", "walk-line", "walk-points"]) {
+  for (const id of ["walk-fill", "walk-line", "walk-points-halo", "walk-points"]) {
     if (map.getLayer(id)) map.removeLayer(id);
   }
   if (map.getSource("walk")) map.removeSource("walk");
@@ -369,11 +376,23 @@ function addWalkLayers(map: maplibregl.Map, points: LatLng[]) {
     paint: { "line-color": "#16a34a", "line-width": 3 },
   });
   map.addLayer({
+    id: "walk-points-halo",
+    type: "circle",
+    source: "walk",
+    filter: ["==", "$type", "Point"],
+    paint: { "circle-color": "#000", "circle-opacity": 0.25, "circle-radius": 12 },
+  });
+  map.addLayer({
     id: "walk-points",
     type: "circle",
     source: "walk",
     filter: ["==", "$type", "Point"],
-    paint: { "circle-color": "#16a34a", "circle-radius": 5 },
+    paint: {
+      "circle-color": "#fff",
+      "circle-radius": 8,
+      "circle-stroke-color": "#16a34a",
+      "circle-stroke-width": 3,
+    },
   });
 }
 

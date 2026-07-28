@@ -77,7 +77,9 @@ export default function ManualBoundaryDrawer({
     // with drag gestures.
     map.on("click", (e) => {
       if (draggingIndexRef.current != null) return;
-      const hits = map.queryRenderedFeatures(e.point, { layers: ["draw-points"] });
+      const hits = map.getLayer("draw-points")
+        ? map.queryRenderedFeatures(e.point, { layers: ["draw-points"] })
+        : [];
       if (hits.length > 0) return;
       setPoints((prev) => [...prev, { lat: e.lngLat.lat, lng: e.lngLat.lng }]);
     });
@@ -147,7 +149,10 @@ export default function ManualBoundaryDrawer({
       source?.setData(drawPreview(points));
     };
     if (map.isStyleLoaded()) apply();
-    else map.once("load", apply);
+    // "load" only ever fires once for a Map's lifetime — after a base-style
+    // toggle (map.setStyle), the style reloads and re-fires "style.load"
+    // instead, which is what we need to wait for here too.
+    else map.once("style.load", apply);
   }, [points]);
 
   const queryTooShort = searchQuery.trim().length < 3;
@@ -211,7 +216,11 @@ export default function ManualBoundaryDrawer({
     const map = mapRef.current;
     if (!map) return;
     const next: BaseStyle = baseStyle === "satellite" ? "streets" : "satellite";
-    map.setStyle(styleFor(next));
+    // setStyle() diffs against the current style by default, which patches
+    // in place and never fires "style.load" — our runtime-added draw layers
+    // (absent from the target style spec) get dropped by the diff with no
+    // event to re-add them on. Force a full reload so "style.load" fires.
+    map.setStyle(styleFor(next), { diff: false });
     map.once("style.load", () => addDrawLayers(map, pointsRef.current));
     setBaseStyle(next);
   }

@@ -184,7 +184,11 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
     if (!map) return;
     const next: BaseStyle = baseStyle === "satellite" ? "streets" : "satellite";
     readyRef.current = false;
-    map.setStyle(styleFor(next));
+    // setStyle() diffs against the current style by default, which patches
+    // in place and never fires "style.load" — our runtime-added plot layers
+    // (absent from the target style spec) get dropped by the diff with no
+    // event to re-add them on. Force a full reload so "style.load" fires.
+    map.setStyle(styleFor(next), { diff: false });
     map.once("style.load", () => {
       addPlotLayers(map, plots);
       readyRef.current = true;
