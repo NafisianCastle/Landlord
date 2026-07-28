@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { listGuestPlots, type GuestPlot } from "@/lib/offline/guestPlots";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,9 +43,12 @@ export default function GuestDashboard() {
   return (
     <PageContainer>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl font-semibold">{tGuest("welcomeGuest")}</h1>
-        <Button asChild size="sm" className="self-start sm:self-auto">
-          <Link href="/plots/new">{t("addPlot")}</Link>
+        <h1 className="text-lg font-semibold leading-snug sm:text-xl">{tGuest("welcomeGuest")}</h1>
+        <Button asChild size="sm" className="w-full sm:w-auto">
+          <Link href="/plots/new">
+            <Plus className="size-4" />
+            {t("addPlot")}
+          </Link>
         </Button>
       </div>
 
