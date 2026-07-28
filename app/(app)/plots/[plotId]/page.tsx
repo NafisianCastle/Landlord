@@ -91,7 +91,7 @@ export default async function PlotDetailPage({
             <CardTitle className="text-sm">{t("areaFromGps")}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground">
+            <ul className="grid grid-cols-1 gap-x-4 gap-y-1 text-sm text-muted-foreground sm:grid-cols-2">
               <li>{t("unitDecimal", { value: conversions.decimal.toFixed(2) })}</li>
               <li>{t("unitBigha", { value: conversions.bigha.toFixed(3) })}</li>
               <li>{t("unitKatha", { value: conversions.katha.toFixed(2) })}</li>
@@ -118,7 +118,7 @@ export default async function PlotDetailPage({
             <CardTitle className="text-sm">{t("dolilVsActual")}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground">
+            <ul className="grid grid-cols-1 gap-x-4 gap-y-1 text-sm text-muted-foreground sm:grid-cols-2">
               <li>
                 {plot.dolil_area
                   ? `${plot.dolil_area} ${plot.dolil_area_unit ?? ""}`

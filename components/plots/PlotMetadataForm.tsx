@@ -180,7 +180,7 @@ export default function PlotMetadataForm({
           required
         />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="village">{t("village")}</Label>
           <Input
@@ -244,7 +244,7 @@ export default function PlotMetadataForm({
           </datalist>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="dolilArea">{t("dolilArea")}</Label>
           <div className="flex gap-2">
@@ -311,7 +311,7 @@ export default function PlotMetadataForm({
           placeholder={sensitiveLocked ? t("locked") : undefined}
         />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="purchasePrice">{t("purchasePrice")}</Label>
           <Input

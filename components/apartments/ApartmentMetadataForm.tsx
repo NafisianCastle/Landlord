@@ -175,7 +175,7 @@ export default function ApartmentMetadataForm({
           required
         />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="buildingName">{t("buildingName")}</Label>
           <Input
@@ -199,7 +199,7 @@ export default function ApartmentMetadataForm({
           />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="division">{t("division")}</Label>
           <Input
@@ -282,7 +282,7 @@ export default function ApartmentMetadataForm({
           </select>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="purchasePrice">{t("purchasePrice")}</Label>
           <Input
