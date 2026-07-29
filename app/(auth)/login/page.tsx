@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { signIn } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
@@ -9,10 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Logo from "@/components/system/Logo";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 export default function LoginPage() {
   const [state, formAction, pending] = useActionState(signIn, undefined);
   const t = useTranslations("LoginPage");
+  const oauthError = useSearchParams().get("error") === "oauth";
 
   return (
     <div className="mx-auto flex w-full max-w-sm flex-col gap-4 p-6">
@@ -21,7 +24,14 @@ export default function LoginPage() {
         <CardHeader>
           <CardTitle className="text-2xl">{t("title")}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
+          {oauthError && <p className="text-sm text-destructive">{t("oauthError")}</p>}
+          <GoogleSignInButton />
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <div className="h-px flex-1 bg-border" />
+            {t("orContinueWithEmail")}
+            <div className="h-px flex-1 bg-border" />
+          </div>
           <form action={formAction} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">{t("email")}</Label>

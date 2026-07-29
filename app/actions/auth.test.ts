@@ -47,14 +47,12 @@ describe("signUp", () => {
     expect(result).toEqual({ error: "Email taken" });
   });
 
-  it("returns success and passes fullName through options.data", async () => {
+  it("redirects to /dashboard and passes fullName through options.data", async () => {
     supabaseMock.auth.signUp.mockResolvedValue({ error: null });
     const { signUp } = await import("./auth");
-    const result = await signUp(
-      null,
-      fd({ email: "a@b.com", password: "longenough1", fullName: "Jane Doe" }),
-    );
-    expect(result).toEqual({ success: true });
+    await expect(
+      signUp(null, fd({ email: "a@b.com", password: "longenough1", fullName: "Jane Doe" })),
+    ).rejects.toThrow("REDIRECT:/dashboard");
     expect(supabaseMock.auth.signUp).toHaveBeenCalledWith({
       email: "a@b.com",
       password: "longenough1",
@@ -65,7 +63,9 @@ describe("signUp", () => {
   it("defaults fullName to empty string when absent", async () => {
     supabaseMock.auth.signUp.mockResolvedValue({ error: null });
     const { signUp } = await import("./auth");
-    await signUp(null, fd({ email: "a@b.com", password: "longenough1" }));
+    await expect(signUp(null, fd({ email: "a@b.com", password: "longenough1" }))).rejects.toThrow(
+      "REDIRECT:/dashboard",
+    );
     expect(supabaseMock.auth.signUp).toHaveBeenCalledWith(
       expect.objectContaining({ options: { data: { full_name: "" } } }),
     );
@@ -74,8 +74,9 @@ describe("signUp", () => {
   it("accepts a password exactly 10 characters (boundary)", async () => {
     supabaseMock.auth.signUp.mockResolvedValue({ error: null });
     const { signUp } = await import("./auth");
-    const result = await signUp(null, fd({ email: "a@b.com", password: "1234567890" }));
-    expect(result).toEqual({ success: true });
+    await expect(
+      signUp(null, fd({ email: "a@b.com", password: "1234567890" })),
+    ).rejects.toThrow("REDIRECT:/dashboard");
   });
 });
 

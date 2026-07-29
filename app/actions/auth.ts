@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
@@ -26,7 +27,7 @@ export async function signUp(_prevState: unknown, formData: FormData) {
     return { error: error.message };
   }
 
-  return { success: true };
+  redirect("/dashboard");
 }
 
 export async function signIn(_prevState: unknown, formData: FormData) {
@@ -41,6 +42,21 @@ export async function signIn(_prevState: unknown, formData: FormData) {
   }
 
   redirect("/dashboard");
+}
+
+export async function signInWithGoogle() {
+  const origin = (await headers()).get("origin");
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${origin}/auth/callback` },
+  });
+
+  if (error) {
+    redirect("/login?error=oauth");
+  }
+
+  redirect(data.url);
 }
 
 export async function signOut() {

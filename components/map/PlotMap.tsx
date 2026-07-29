@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { FeatureCollection, Polygon } from "geojson";
+import { Download, Layers, Trash2, X } from "lucide-react";
 import maplibregl from "@/lib/map";
 import { styleFor, type BaseStyle } from "@/lib/mapStyles";
 import db, { type OfflineArea } from "@/lib/offline/db";
+import { Button } from "@/components/ui/button";
 import {
   downloadArea,
   deleteArea,
@@ -219,13 +221,10 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
           <div className="absolute bottom-2 left-2 right-2 rounded bg-card px-2 py-1 text-xs text-card-foreground shadow">
             <div className="flex items-center justify-between gap-2">
               <span>{t("downloadingTiles", { done: progress.done, total: progress.total })}</span>
-              <button
-                type="button"
-                onClick={cancelDownload}
-                className="rounded px-2 py-1 underline"
-              >
+              <Button type="button" variant="ghost" size="sm" onClick={cancelDownload}>
+                <X className="size-4" />
                 {t("cancel")}
-              </button>
+              </Button>
             </div>
             <div className="mt-1 h-1 w-full rounded bg-neutral-200 dark:bg-neutral-700">
               <div
@@ -238,22 +237,22 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
           </div>
         )}
         <div className="absolute right-2 top-2 flex flex-col items-end gap-1">
-          <button
-            type="button"
-            onClick={toggleStyle}
-            className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow"
-          >
+          <Button type="button" variant="outline" size="sm" onClick={toggleStyle} className="bg-card shadow">
+            <Layers className="size-4" />
             {baseStyle === "satellite" ? t("streets") : t("satellite")}
-          </button>
+          </Button>
           {baseStyle === "satellite" && (
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={handleDownload}
               disabled={downloading}
-              className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow disabled:opacity-50"
+              className="bg-card shadow"
             >
+              <Download className="size-4" />
               {t("downloadOffline")}
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -267,24 +266,23 @@ export default function PlotMap({ plots, onPlotClick, className }: PlotMapProps)
           <ul className="flex flex-col gap-1">
             {areas.map((area) => (
               <li key={area.id} className="flex items-center justify-between gap-2">
-                <button
-                  type="button"
-                  onClick={() => goToArea(area)}
-                  className="rounded py-1 text-left underline"
-                >
+                <Button type="button" variant="link" size="sm" className="h-auto px-0 text-left" onClick={() => goToArea(area)}>
                   {t("areaSummary", {
                     label: area.label,
                     mb: (area.bytesStored / 1024 / 1024).toFixed(1),
                     tiles: area.tileCount,
                   })}
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="shrink-0 text-destructive hover:text-destructive"
                   onClick={() => removeArea(area)}
-                  className="shrink-0 rounded px-2 py-1.5 text-destructive underline"
                 >
+                  <Trash2 className="size-4" />
                   {t("delete")}
-                </button>
+                </Button>
               </li>
             ))}
           </ul>

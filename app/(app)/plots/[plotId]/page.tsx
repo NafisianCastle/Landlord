@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { updatePlotMetadata } from "@/app/actions/plots";
 import { convertArea } from "@/lib/units";
 import { polygonCentroid, googleMapsDirectionsUrl } from "@/lib/geo";
+import { Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PlotMetadataForm from "@/components/plots/PlotMetadataForm";
@@ -71,8 +72,9 @@ export default async function PlotDetailPage({
       <div>
         <h1 className="text-xl font-semibold">{plot.name}</h1>
         {navigateUrl && (
-          <Button variant="link" size="sm" className="px-0" asChild>
+          <Button variant="outline" size="sm" className="mt-2" asChild>
             <a href={navigateUrl} target="_blank" rel="noopener noreferrer">
+              <Navigation className="size-4" />
               {t("navigateHere")}
             </a>
           </Button>

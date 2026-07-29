@@ -5,10 +5,12 @@ import { useTranslations } from "next-intl";
 import { Document, Page } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
+import { ChevronLeft, ChevronRight, Eye, X } from "lucide-react";
 import "@/lib/pdfWorker";
 import { getApartmentDocumentPreviewUrl } from "@/app/actions/apartmentDocuments";
 import { decryptBytes, fromPgBytea } from "@/lib/crypto/encryption";
 import { getSessionDEK } from "@/lib/crypto/session";
+import { Button } from "@/components/ui/button";
 
 interface ApartmentPdfPreviewModalProps {
   storagePath: string;
@@ -78,22 +80,20 @@ export default function ApartmentPdfPreviewModal({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={openPreview}
-        className="rounded px-2 py-2 text-sm text-blue-600 underline dark:text-blue-400"
-      >
+      <Button type="button" variant="link" size="sm" className="h-auto px-0" onClick={openPreview}>
+        <Eye className="size-4" />
         {t("preview")}
-      </button>
+      </Button>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="flex max-h-full w-full max-w-lg flex-col gap-2 rounded bg-card p-4 text-card-foreground">
             <div className="flex items-center justify-between">
               <span className="truncate text-sm font-medium">{fileName}</span>
-              <button type="button" onClick={close} className="rounded px-2 py-2 text-sm underline">
+              <Button type="button" variant="ghost" size="sm" onClick={close}>
+                <X className="size-4" />
                 {t("close")}
-              </button>
+              </Button>
             </div>
 
             {error && <p className="text-sm text-destructive">{error}</p>}
@@ -113,23 +113,27 @@ export default function ApartmentPdfPreviewModal({
                 </Document>
                 {numPages > 1 && (
                   <div className="flex items-center gap-3 text-sm">
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
                       disabled={pageNumber <= 1}
-                      className="rounded px-3 py-2 underline disabled:opacity-50"
                     >
+                      <ChevronLeft className="size-4" />
                       {t("prev")}
-                    </button>
+                    </Button>
                     <span>{t("pageOf", { page: pageNumber, total: numPages })}</span>
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setPageNumber((p) => Math.min(numPages, p + 1))}
                       disabled={pageNumber >= numPages}
-                      className="rounded px-3 py-2 underline disabled:opacity-50"
                     >
                       {t("next")}
-                    </button>
+                      <ChevronRight className="size-4" />
+                    </Button>
                   </div>
                 )}
               </div>

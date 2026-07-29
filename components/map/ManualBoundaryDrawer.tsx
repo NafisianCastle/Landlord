@@ -4,12 +4,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { Feature, FeatureCollection } from "geojson";
+import { Crosshair, Layers, Save, Trash2, Undo2 } from "lucide-react";
 import maplibregl from "@/lib/map";
 import { styleFor, type BaseStyle } from "@/lib/mapStyles";
-import { type LatLng, closedPerimeterMeters, polygonAreaSqMeters } from "@/lib/geo";
+import { type LatLng, closedPerimeterMeters, isSimplePolygon, polygonAreaSqMeters } from "@/lib/geo";
 import { convertArea } from "@/lib/units";
 import { savePlotBoundary } from "@/app/actions/plots";
 import { searchPlaces, type GeocodeResult } from "@/lib/geocode";
+import { Button } from "@/components/ui/button";
 
 /**
  * GPS drift can put a walked corner meters off. This mode lets the user drop
@@ -212,6 +214,8 @@ export default function ManualBoundaryDrawer({
     };
   }, [points]);
 
+  const selfIntersecting = points.length >= 3 && !isSimplePolygon(points);
+
   function toggleStyle() {
     const map = mapRef.current;
     if (!map) return;
@@ -235,6 +239,10 @@ export default function ManualBoundaryDrawer({
   }
 
   async function finish() {
+    if (selfIntersecting) {
+      setError(t("invalidPolygon"));
+      return;
+    }
     setSaving(true);
     setError(null);
     const result = await onSave(plotId, points);
@@ -289,24 +297,23 @@ export default function ManualBoundaryDrawer({
             )}
           </div>
           <div className="absolute right-2 top-32 flex flex-col items-end gap-1">
-            <button
-              type="button"
-              onClick={toggleStyle}
-              className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow"
-            >
+            <Button type="button" variant="outline" size="sm" onClick={toggleStyle} className="bg-card shadow">
+              <Layers className="size-4" />
               {baseStyle === "satellite" ? t("streets") : t("satellite")}
-            </button>
+            </Button>
           </div>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
             onClick={locateMe}
             disabled={locating}
             title={t("returnToMyLocation")}
             aria-label={t("returnToMyLocation")}
-            className="absolute bottom-2 right-2 flex h-11 w-11 items-center justify-center rounded-full bg-card text-lg text-card-foreground shadow disabled:opacity-50"
+            className="absolute bottom-2 right-2 h-11 w-11 rounded-full bg-card shadow"
           >
-            {locating ? "…" : "📍"}
-          </button>
+            <Crosshair className="size-5" />
+          </Button>
           {stats && (
             <div className="absolute bottom-2 left-2 rounded bg-card px-2 py-1 text-xs text-card-foreground shadow">
               {t("perimeterStats", {
@@ -320,31 +327,27 @@ export default function ManualBoundaryDrawer({
       )}
       <p className="text-xs text-muted-foreground">{t("tapInstructions")}</p>
       <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={undoLast}
-          disabled={points.length === 0}
-          className="rounded border px-3 py-2 disabled:opacity-50"
-        >
+        <Button type="button" variant="outline" onClick={undoLast} disabled={points.length === 0}>
+          <Undo2 className="size-4" />
           {t("undoLast")}
-        </button>
-        <button
-          type="button"
-          onClick={clearAll}
-          disabled={points.length === 0}
-          className="rounded border px-3 py-2 disabled:opacity-50"
-        >
+        </Button>
+        <Button type="button" variant="outline" onClick={clearAll} disabled={points.length === 0}>
+          <Trash2 className="size-4" />
           {t("clearAll")}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={finish}
-          disabled={points.length < 3 || saving}
-          className="rounded bg-green-600 px-3 py-2 text-white disabled:opacity-50"
+          disabled={points.length < 3 || selfIntersecting || saving}
+          className="bg-green-600 text-white hover:opacity-90"
         >
+          <Save className="size-4" />
           {saving ? t("saving") : t("saveBoundary", { count: points.length })}
-        </button>
+        </Button>
       </div>
+      {selfIntersecting && !error && (
+        <p className="text-sm text-destructive">{t("invalidPolygon")}</p>
+      )}
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   );

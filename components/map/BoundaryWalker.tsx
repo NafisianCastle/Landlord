@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { Feature, FeatureCollection } from "geojson";
+import { Crosshair, Layers, MapPin, Save, Undo2 } from "lucide-react";
 import maplibregl from "@/lib/map";
 import { styleFor, type BaseStyle } from "@/lib/mapStyles";
 import {
@@ -13,6 +14,7 @@ import {
   polygonAreaSqMeters,
 } from "@/lib/geo";
 import { convertArea } from "@/lib/units";
+import { Button } from "@/components/ui/button";
 import {
   resumeOrCreateSession,
   recordPoint,
@@ -283,20 +285,14 @@ export default function BoundaryWalker({
         <div className="relative h-[65vh] min-h-[400px] w-full">
           <div ref={containerRef} className="h-full w-full rounded" />
           <div className="absolute right-2 top-2 flex flex-col items-end gap-1">
-            <button
-              type="button"
-              onClick={toggleStyle}
-              className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow"
-            >
+            <Button type="button" variant="outline" size="sm" onClick={toggleStyle} className="bg-card shadow">
+              <Layers className="size-4" />
               {baseStyle === "satellite" ? t("streets") : t("satellite")}
-            </button>
-            <button
-              type="button"
-              onClick={recenter}
-              className="rounded bg-card px-3 py-2 text-xs text-card-foreground shadow"
-            >
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={recenter} className="bg-card shadow">
+              <Crosshair className="size-4" />
               {t("recenterOnMe")}
-            </button>
+            </Button>
           </div>
           {stats && (
             <div className="absolute bottom-2 left-2 rounded bg-card px-2 py-1 text-xs text-card-foreground shadow">
@@ -325,30 +321,28 @@ export default function BoundaryWalker({
       )}
       <p className="text-sm text-muted-foreground">{t("walkInstructions")}</p>
       <div className="flex flex-wrap gap-2">
-        <button
+        <Button
           type="button"
           onClick={markPoint}
           disabled={capturing || !sessionId}
-          className="rounded bg-black px-3 py-2 text-white disabled:opacity-50"
+          className="bg-black text-white hover:opacity-90"
         >
+          <MapPin className="size-4" />
           {capturing ? t("gettingLocation") : t("markPoint")}
-        </button>
-        <button
-          type="button"
-          onClick={undoLast}
-          disabled={points.length === 0}
-          className="rounded border px-3 py-2 disabled:opacity-50"
-        >
+        </Button>
+        <Button type="button" variant="outline" onClick={undoLast} disabled={points.length === 0}>
+          <Undo2 className="size-4" />
           {t("undoLast")}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={finish}
           disabled={points.length < 3 || saving}
-          className="rounded bg-green-600 px-3 py-2 text-white disabled:opacity-50"
+          className="bg-green-600 text-white hover:opacity-90"
         >
+          <Save className="size-4" />
           {saving ? t("saving") : t("finish", { count: points.length })}
-        </button>
+        </Button>
       </div>
       {queuedMessage && <p className="text-sm text-amber-700">{queuedMessage}</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}

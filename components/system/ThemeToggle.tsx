@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 
 const STORAGE_KEY = "landlord-theme";
 type Theme = "light" | "dark";
@@ -57,14 +58,16 @@ export default function ThemeToggle() {
   if (!theme) return null;
 
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
+      size="sm"
       onClick={toggle}
       aria-label={t("toggleAriaLabel")}
-      className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-2 text-xs text-card-foreground shadow-sm sm:gap-1.5 sm:px-3 sm:py-2.5"
+      className="rounded-full bg-card shadow-sm"
     >
       {theme === "dark" ? <Moon className="size-3.5" /> : <Sun className="size-3.5" />}
       {theme === "dark" ? t("dark") : t("light")}
-    </button>
+    </Button>
   );
 }

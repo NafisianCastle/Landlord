@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
 import type { Polygon } from "geojson";
 import type { LatLng } from "@/lib/geo";
-import { pointsToPolygon } from "@/lib/geo";
+import { isSimplePolygon, pointsToPolygon } from "@/lib/geo";
 
 /**
  * village/mutation_number/purchase_price/purchase_date/current_estimated_value/notes
@@ -217,6 +217,9 @@ export async function savePlotBoundary(plotId: string, points: LatLng[]) {
 
   if (points.length < 3) {
     return { error: t("needThreePoints") };
+  }
+  if (!isSimplePolygon(points)) {
+    return { error: t("invalidPolygon") };
   }
 
   const supabase = await createClient();

@@ -26,7 +26,8 @@
     "loggingIn": "Logging in...",
     "logIn": "Log in",
     "noAccount": "No account?",
-    "signUp": "Sign up"
+    "signUp": "Sign up",
+    "oauthError": "Google sign-in failed. Please try again."
   },
   "SignupPage": {
     "title": "Sign up",
@@ -34,7 +35,6 @@
     "fullName": "Full name",
     "email": "Email",
     "password": "Password",
-    "successMessage": "Account created. Check your email to confirm before logging in.",
     "creatingAccount": "Creating account...",
     "createAccount": "Create account",
     "haveAccount": "Already have an account?",
@@ -46,7 +46,9 @@
     "notAuthenticated": "Not authenticated.",
     "newPasswordTooShort": "New password must be at least 10 characters.",
     "passwordsDoNotMatch": "New passwords do not match.",
-    "currentPasswordIncorrect": "Current password is incorrect."
+    "currentPasswordIncorrect": "Current password is incorrect.",
+    "continueWithGoogle": "Continue with Google",
+    "orContinueWithEmail": "or continue with email"
   },
   "PaywallPage": {
     "trialEnded": "Your free trial has ended",
@@ -60,7 +62,7 @@
     }
   },
   "DashboardPage": {
-    "welcome": "Welcome, {email}",
+    "welcome": "Welcome, {name}",
     "addPlot": "Add plot",
     "statsLoadError": "Couldn't load your stats — figures below may be incomplete. Try refreshing.",
     "recentPlots": "Recent plots",
@@ -262,7 +264,8 @@
   "PlotActions": {
     "plotNameRequired": "Plot name is required",
     "trialEnded": "Your trial has ended — please upgrade to continue.",
-    "needThreePoints": "Need at least 3 points to form a boundary"
+    "needThreePoints": "Need at least 3 points to form a boundary",
+    "invalidPolygon": "Boundary lines cross themselves — fix the shape before saving"
   },
   "ApartmentActions": {
     "apartmentNameRequired": "Apartment name is required",
@@ -310,7 +313,8 @@
     "undoLast": "Undo last",
     "clearAll": "Clear all",
     "saving": "Saving...",
-    "saveBoundary": "Save boundary ({count} points)"
+    "saveBoundary": "Save boundary ({count} points)",
+    "invalidPolygon": "Boundary lines cross themselves — fix the shape before saving"
   },
   "PlotMap": {
     "webglError": "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",

@@ -62,6 +62,56 @@ export function closedPerimeterMeters(points: LatLng[]): number {
  * the ring's mean latitude — accurate enough for plot-sized areas (tens to
  * low thousands of m²), not meant for large/planet-scale polygons.
  */
+function orientation(a: LatLng, b: LatLng, c: LatLng): number {
+  const v = (b.lng - a.lng) * (c.lat - a.lat) - (b.lat - a.lat) * (c.lng - a.lng);
+  if (Math.abs(v) < 1e-12) return 0;
+  return v > 0 ? 1 : -1;
+}
+
+function onSegment(a: LatLng, b: LatLng, p: LatLng): boolean {
+  return (
+    Math.min(a.lng, b.lng) <= p.lng &&
+    p.lng <= Math.max(a.lng, b.lng) &&
+    Math.min(a.lat, b.lat) <= p.lat &&
+    p.lat <= Math.max(a.lat, b.lat)
+  );
+}
+
+function segmentsIntersect(a1: LatLng, a2: LatLng, b1: LatLng, b2: LatLng): boolean {
+  const o1 = orientation(a1, a2, b1);
+  const o2 = orientation(a1, a2, b2);
+  const o3 = orientation(b1, b2, a1);
+  const o4 = orientation(b1, b2, a2);
+
+  if (o1 !== o2 && o3 !== o4) return true;
+
+  if (o1 === 0 && onSegment(a1, a2, b1)) return true;
+  if (o2 === 0 && onSegment(a1, a2, b2)) return true;
+  if (o3 === 0 && onSegment(b1, b2, a1)) return true;
+  if (o4 === 0 && onSegment(b1, b2, a2)) return true;
+
+  return false;
+}
+
+/**
+ * True if the closed ring described by `points` has no self-intersecting or
+ * overlapping edges. Only non-adjacent edge pairs are checked — adjacent
+ * edges always share an endpoint and would otherwise register a false hit.
+ */
+export function isSimplePolygon(points: LatLng[]): boolean {
+  const n = points.length;
+  if (n < 3) return true;
+  const edges: [LatLng, LatLng][] = points.map((p, i) => [p, points[(i + 1) % n]]);
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      const adjacent = j === i + 1 || (i === 0 && j === n - 1);
+      if (adjacent) continue;
+      if (segmentsIntersect(edges[i][0], edges[i][1], edges[j][0], edges[j][1])) return false;
+    }
+  }
+  return true;
+}
+
 export function polygonAreaSqMeters(points: LatLng[]): number {
   if (points.length < 3) return 0;
   const meanLat = points.reduce((s, p) => s + p.lat, 0) / points.length;

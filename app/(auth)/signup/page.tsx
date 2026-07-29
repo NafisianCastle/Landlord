@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Logo from "@/components/system/Logo";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 export default function SignupPage() {
   const [state, formAction, pending] = useActionState(signUp, undefined);
@@ -22,7 +23,13 @@ export default function SignupPage() {
           <CardTitle className="text-2xl">{t("title")}</CardTitle>
           <CardDescription>{t("subtitle")}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
+          <GoogleSignInButton />
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <div className="h-px flex-1 bg-border" />
+            {t("orContinueWithEmail")}
+            <div className="h-px flex-1 bg-border" />
+          </div>
           <form action={formAction} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="fullName">{t("fullName")}</Label>
@@ -52,11 +59,6 @@ export default function SignupPage() {
               />
             </div>
             {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
-            {state?.success && (
-              <p className="text-sm text-green-600 dark:text-green-500">
-                {t("successMessage")}
-              </p>
-            )}
             <p className="text-xs text-muted-foreground">
               {t.rich("agreeToTerms", {
                 terms: (chunks) => (
@@ -71,7 +73,7 @@ export default function SignupPage() {
                 ),
               })}
             </p>
-            <Button type="submit" disabled={pending || state?.success}>
+            <Button type="submit" disabled={pending}>
               {pending ? t("creatingAccount") : t("createAccount")}
             </Button>
           </form>

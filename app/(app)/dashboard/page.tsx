@@ -90,7 +90,9 @@ export default async function DashboardPage() {
   return (
     <PageContainer>
       <PageHeader
-        title={t("welcome", { email: user?.email ?? "" })}
+        title={t("welcome", {
+          name: (user?.user_metadata?.full_name as string | undefined) || user?.email || "",
+        })}
         action={
           <Button asChild size="sm">
             <Link href="/plots/new">{t("addPlot")}</Link>
