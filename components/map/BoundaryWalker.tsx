@@ -32,6 +32,7 @@ import {
 export default function BoundaryWalker({
   plotId,
   onFinish,
+  onSaved,
 }: {
   plotId: string;
   /**
@@ -40,6 +41,8 @@ export default function BoundaryWalker({
    * a local-only finalizer instead, since syncPending() is a no-op without a user.
    */
   onFinish?: (plotId: string, points: LatLng[]) => Promise<{ error?: string }>;
+  /** Called once the boundary is actually finished (not just queued offline), so the parent can swap out the walker. */
+  onSaved?: () => void;
 }) {
   const router = useRouter();
   const t = useTranslations("BoundaryWalker");
@@ -264,12 +267,14 @@ export default function BoundaryWalker({
         return;
       }
       router.refresh();
+      onSaved?.();
       return;
     }
     const { finished } = await finishSession(plotId, sessionId);
     setSaving(false);
     if (finished.includes(plotId)) {
       router.refresh();
+      onSaved?.();
     } else {
       setQueuedMessage(t("queuedOfflineMessage"));
     }

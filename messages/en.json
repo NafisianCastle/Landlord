@@ -155,7 +155,8 @@
     "sensitiveLockedNotice": "Village, mutation number, prices, and notes are encrypted. Unlock encryption in Profile to view or edit them.",
     "decryptError": "Couldn't decrypt with the current session key.",
     "willEncryptNotice": "Village, mutation number, prices, dates, and notes will be saved encrypted.",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "saved": "Saved"
   },
   "ApartmentMetadataForm": {
     "apartmentName": "Apartment name",
@@ -179,7 +180,8 @@
     "sensitiveLockedNotice": "Building name, unit number, prices, and notes are encrypted. Unlock encryption in Profile to view or edit them.",
     "decryptError": "Couldn't decrypt with the current session key.",
     "willEncryptNotice": "Building name, unit number, prices, dates, and notes will be saved encrypted.",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "saved": "Saved"
   },
   "NewPlotPage": {
     "title": "Add a plot",
@@ -339,7 +341,8 @@
   "DocumentUploader": {
     "uploadingWithSize": "Uploading {size} MB...",
     "uploading": "Uploading...",
-    "uploadDocument": "Upload document"
+    "uploadDocument": "Upload document",
+    "uploaded": "Uploaded"
   },
   "PdfPreviewModal": {
     "unlockEncryption": "Unlock encryption in Profile to preview this document.",
@@ -431,6 +434,7 @@
     "roleEditor": "Editor (can edit and walk boundary)",
     "invite": "Invite",
     "inviting": "Inviting...",
+    "invited": "Invited",
     "remove": "Remove",
     "removing": "Removing...",
     "removeConfirm": "Remove {email} from this plot?",

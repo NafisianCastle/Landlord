@@ -21,10 +21,13 @@ import { Button } from "@/components/ui/button";
 export default function ManualBoundaryDrawer({
   plotId,
   onSave = savePlotBoundary,
+  onSaved,
 }: {
   plotId: string;
   /** Overridable so guest mode (no Supabase session) can save the boundary locally instead. */
   onSave?: (plotId: string, points: LatLng[]) => Promise<{ error?: string }>;
+  /** Called after a successful save, so the parent can swap the drawer out for the saved-boundary view. */
+  onSaved?: () => void;
 }) {
   const router = useRouter();
   const t = useTranslations("ManualBoundaryDrawer");
@@ -252,6 +255,7 @@ export default function ManualBoundaryDrawer({
       return;
     }
     router.refresh();
+    onSaved?.();
   }
 
   return (

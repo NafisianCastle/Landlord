@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { uploadDocument } from "@/app/actions/documents";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,15 @@ export default function DocumentUploader({ plotId }: { plotId: string }) {
     undefined,
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const t = useTranslations("DocumentUploader");
+
+  useEffect(() => {
+    if (state?.success) {
+      setSelectedFile(null);
+      formRef.current?.reset();
+    }
+  }, [state]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     const dek = getSessionDEK();
@@ -35,7 +43,7 @@ export default function DocumentUploader({ plotId }: { plotId: string }) {
   }
 
   return (
-    <form action={formAction} onSubmit={handleSubmit} className="flex flex-col gap-2">
+    <form ref={formRef} action={formAction} onSubmit={handleSubmit} className="flex flex-col gap-2">
       <input
         name="file"
         type="file"
@@ -45,6 +53,7 @@ export default function DocumentUploader({ plotId }: { plotId: string }) {
         className="text-sm text-foreground"
       />
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
+      {state?.success && <p className="text-sm text-muted-foreground">{t("uploaded")}</p>}
       <Button type="submit" size="sm" disabled={pending} className="self-start">
         {pending
           ? selectedFile

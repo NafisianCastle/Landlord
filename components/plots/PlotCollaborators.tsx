@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { inviteCollaborator, removeCollaborator } from "@/app/actions/plots";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,11 @@ export default function PlotCollaborators({
   );
   const [removing, startRemoving] = useTransition();
   const [removeError, setRemoveError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (state?.success) formRef.current?.reset();
+  }, [state]);
 
   function handleRemove(collaboratorId: string) {
     setRemoveError(null);
@@ -83,7 +88,7 @@ export default function PlotCollaborators({
           )}
         </ul>
 
-        <form action={formAction} className="flex flex-col gap-2 sm:flex-row sm:items-end">
+        <form ref={formRef} action={formAction} className="flex flex-col gap-2 sm:flex-row sm:items-end">
           <div className="flex flex-1 flex-col gap-1.5">
             <Label htmlFor="collaborator-email">{t("inviteEmail")}</Label>
             <Input id="collaborator-email" name="email" type="email" required />
@@ -105,6 +110,7 @@ export default function PlotCollaborators({
           </Button>
         </form>
         {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
+        {state?.success && <p className="text-sm text-muted-foreground">{t("invited")}</p>}
         {removeError && <p className="text-sm text-destructive">{removeError}</p>}
       </div>
     </div>

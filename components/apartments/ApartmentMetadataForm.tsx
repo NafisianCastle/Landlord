@@ -46,7 +46,10 @@ export interface ApartmentMetadataValues {
 }
 
 interface ApartmentMetadataFormProps {
-  action: (prevState: unknown, formData: FormData) => Promise<{ error?: string } | undefined>;
+  action: (
+    prevState: unknown,
+    formData: FormData,
+  ) => Promise<{ error?: string; success?: boolean } | undefined>;
   initial?: ApartmentMetadataValues;
   submitLabel: string;
 }
@@ -349,6 +352,7 @@ export default function ApartmentMetadataForm({
         <p className="text-xs text-muted-foreground">{t("willEncryptNotice")}</p>
       )}
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
+      {state?.success && <p className="text-sm text-muted-foreground">{t("saved")}</p>}
       <Button type="submit" disabled={pending || sensitiveLocked}>
         {pending ? t("saving") : submitLabel}
       </Button>

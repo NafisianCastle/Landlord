@@ -55,9 +55,9 @@ export default function PlotBoundarySection({
           </Button>
         </div>
         {mode === "gps" ? (
-          <BoundaryWalker plotId={plotId} onFinish={onSaveBoundary} />
+          <BoundaryWalker plotId={plotId} onFinish={onSaveBoundary} onSaved={() => setRedrawing(false)} />
         ) : (
-          <ManualBoundaryDrawer plotId={plotId} onSave={onSaveBoundary} />
+          <ManualBoundaryDrawer plotId={plotId} onSave={onSaveBoundary} onSaved={() => setRedrawing(false)} />
         )}
       </div>
     );
