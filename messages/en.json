@@ -27,7 +27,8 @@
     "logIn": "Log in",
     "noAccount": "No account?",
     "signUp": "Sign up",
-    "oauthError": "Google sign-in failed. Please try again."
+    "oauthError": "Google sign-in failed. Please try again.",
+    "orContinueWithEmail": "or continue with email"
   },
   "SignupPage": {
     "title": "Sign up",
@@ -39,7 +40,8 @@
     "createAccount": "Create account",
     "haveAccount": "Already have an account?",
     "logIn": "Log in",
-    "agreeToTerms": "By signing up, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
+    "agreeToTerms": "By signing up, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+    "orContinueWithEmail": "or continue with email"
   },
   "AuthActions": {
     "passwordTooShort": "Password must be at least 10 characters.",
