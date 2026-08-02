@@ -37,9 +37,14 @@ export default async function AppShell({
             <ThemeToggle />
             {user ? (
               <form action={signOut}>
-                <Button type="submit" variant="ghost" size="sm">
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t("logOut")}
+                  title={t("logOut")}
+                >
                   <LogOut className="size-4" />
-                  {t("logOut")}
                 </Button>
               </form>
             ) : (

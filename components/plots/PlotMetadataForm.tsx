@@ -382,7 +382,7 @@ export default function PlotMetadataForm({
       )}
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
       {state?.success && <p className="text-sm text-muted-foreground">{t("saved")}</p>}
-      <Button type="submit" disabled={pending || sensitiveLocked}>
+      <Button type="submit" className="w-fit" disabled={pending || sensitiveLocked}>
         {pending ? t("saving") : submitLabel}
       </Button>
     </form>

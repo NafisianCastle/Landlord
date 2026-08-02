@@ -32,7 +32,13 @@ export default function EndLeaseButton({
     <div className="flex flex-col gap-2">
       <ConfirmDialog
         trigger={
-          <Button type="button" variant="outline" size="sm" disabled={pending}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="min-w-28"
+            disabled={pending}
+          >
             {pending ? t("ending") : t("endLease")}
           </Button>
         }

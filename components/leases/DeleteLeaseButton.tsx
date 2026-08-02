@@ -32,7 +32,13 @@ export default function DeleteLeaseButton({
     <div className="flex flex-col gap-2">
       <ConfirmDialog
         trigger={
-          <Button type="button" variant="destructive" size="sm" disabled={pending}>
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            className="min-w-32"
+            disabled={pending}
+          >
             {pending ? t("deleting") : t("deleteLease")}
           </Button>
         }

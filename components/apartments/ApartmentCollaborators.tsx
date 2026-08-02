@@ -74,7 +74,13 @@ export default function ApartmentCollaborators({
               </span>
               <ConfirmDialog
                 trigger={
-                  <Button type="button" variant="ghost" size="sm" disabled={removing}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="min-w-20"
+                    disabled={removing}
+                  >
                     {removing ? t("removing") : t("remove")}
                   </Button>
                 }

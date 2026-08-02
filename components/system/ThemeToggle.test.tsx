@@ -23,16 +23,16 @@ describe("ThemeToggle", () => {
     mockMatchMedia(false);
     const { default: ThemeToggle } = await import("./ThemeToggle");
     render(<ThemeToggle />);
-    expect(await screen.findByRole("button", { name: "Toggle light/dark mode" })).toHaveTextContent(
-      "Light",
-    );
+    expect(
+      await screen.findByRole("button", { name: "Toggle light/dark mode" }),
+    ).toHaveAttribute("title", "Light");
   });
 
   it("defaults to dark when the system prefers dark and nothing is stored", async () => {
     mockMatchMedia(true);
     const { default: ThemeToggle } = await import("./ThemeToggle");
     render(<ThemeToggle />);
-    expect(await screen.findByText("Dark")).toBeInTheDocument();
+    expect(await screen.findByRole("button")).toHaveAttribute("title", "Dark");
   });
 
   it("respects a previously stored preference over the system one", async () => {
@@ -40,23 +40,23 @@ describe("ThemeToggle", () => {
     mockMatchMedia(false);
     const { default: ThemeToggle } = await import("./ThemeToggle");
     render(<ThemeToggle />);
-    expect(await screen.findByText("Dark")).toBeInTheDocument();
+    expect(await screen.findByRole("button")).toHaveAttribute("title", "Dark");
   });
 
   it("toggles the theme, persists it, and applies the class to <html>", async () => {
     const { default: ThemeToggle } = await import("./ThemeToggle");
     render(<ThemeToggle />);
     const button = await screen.findByRole("button");
-    expect(button).toHaveTextContent("Light");
+    expect(button).toHaveAttribute("title", "Light");
 
     await userEvent.click(button);
-    expect(button).toHaveTextContent("Dark");
+    expect(button).toHaveAttribute("title", "Dark");
     expect(localStorage.getItem("landlord-theme")).toBe("dark");
     expect(document.documentElement.classList.contains("dark")).toBe(true);
     expect(document.documentElement.classList.contains("light")).toBe(false);
 
     await userEvent.click(button);
-    expect(button).toHaveTextContent("Light");
+    expect(button).toHaveAttribute("title", "Light");
     expect(localStorage.getItem("landlord-theme")).toBe("light");
   });
 });

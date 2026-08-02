@@ -103,7 +103,7 @@ export default function LeaseForm({ action, initial, submitLabel }: LeaseFormPro
         <Textarea id="notes" name="notes" rows={2} defaultValue={initial?.notes ?? ""} />
       </div>
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" className="w-fit" disabled={pending}>
         {pending ? t("saving") : submitLabel}
       </Button>
     </form>

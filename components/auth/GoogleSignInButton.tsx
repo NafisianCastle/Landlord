@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 
 export default function GoogleSignInButton() {
   const t = useTranslations("AuthActions");
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleClick() {
+    setSubmitting(true);
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -16,7 +19,13 @@ export default function GoogleSignInButton() {
   }
 
   return (
-    <Button type="button" variant="outline" className="w-full gap-2" onClick={handleClick}>
+    <Button
+      type="button"
+      variant="outline"
+      className="w-full gap-2"
+      onClick={handleClick}
+      disabled={submitting}
+    >
       <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true">
         <path
           fill="#4285F4"

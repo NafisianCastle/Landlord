@@ -61,13 +61,13 @@ export default function ThemeToggle() {
     <Button
       type="button"
       variant="outline"
-      size="sm"
+      size="icon"
       onClick={toggle}
       aria-label={t("toggleAriaLabel")}
+      title={theme === "dark" ? t("dark") : t("light")}
       className="rounded-full bg-card shadow-sm"
     >
       {theme === "dark" ? <Moon className="size-3.5" /> : <Sun className="size-3.5" />}
-      {theme === "dark" ? t("dark") : t("light")}
     </Button>
   );
 }
