@@ -68,6 +68,9 @@ export async function createPlot(_prevState: unknown, formData: FormData) {
   const t = await getTranslations("PlotActions");
   if (!name) return { error: t("plotNameRequired") };
 
+  const { data: sessionCheck } = await supabase.auth.getSession();
+  console.log("[createPlot] user.id", user.id, "session.user.id", sessionCheck.session?.user.id, "has session", !!sessionCheck.session);
+
   const { data, error } = await supabase
     .from("land_plots")
     .insert({

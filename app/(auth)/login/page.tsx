@@ -57,7 +57,7 @@ export default function LoginPage() {
               />
             </div>
             {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
-            <Button type="submit" disabled={pending}>
+            <Button type="submit" className="w-full" disabled={pending}>
               {pending ? t("loggingIn") : t("logIn")}
             </Button>
           </form>

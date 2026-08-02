@@ -73,7 +73,7 @@ export default function SignupPage() {
                 ),
               })}
             </p>
-            <Button type="submit" disabled={pending}>
+            <Button type="submit" className="w-full" disabled={pending}>
               {pending ? t("creatingAccount") : t("createAccount")}
             </Button>
           </form>
