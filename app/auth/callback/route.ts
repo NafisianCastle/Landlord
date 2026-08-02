@@ -8,9 +8,19 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    console.log("[auth/callback] exchange result", {
+      error: error?.message,
+      user: data?.user?.id,
+      session: !!data?.session,
+    });
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      const response = NextResponse.redirect(`${origin}${next}`);
+      console.log(
+        "[auth/callback] outgoing Set-Cookie names",
+        response.cookies.getAll().map((c) => c.name),
+      );
+      return response;
     }
   }
 
