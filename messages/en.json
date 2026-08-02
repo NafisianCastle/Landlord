@@ -28,6 +28,7 @@
     "noAccount": "No account?",
     "signUp": "Sign up",
     "oauthError": "Google sign-in failed. Please try again.",
+    "accountExistsError": "An account with this email already exists. Sign in with your email and password instead.",
     "orContinueWithEmail": "or continue with email"
   },
   "SignupPage": {

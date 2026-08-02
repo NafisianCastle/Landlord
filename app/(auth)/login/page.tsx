@@ -15,7 +15,9 @@ import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 export default function LoginPage() {
   const [state, formAction, pending] = useActionState(signIn, undefined);
   const t = useTranslations("LoginPage");
-  const oauthError = useSearchParams().get("error") === "oauth";
+  const errorParam = useSearchParams().get("error");
+  const oauthError = errorParam === "oauth";
+  const accountExistsError = errorParam === "account_exists";
 
   return (
     <div className="mx-auto flex w-full max-w-sm flex-col gap-4 p-6">
@@ -25,6 +27,9 @@ export default function LoginPage() {
           <CardTitle className="text-2xl">{t("title")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
+          {accountExistsError && (
+            <p className="text-sm text-destructive">{t("accountExistsError")}</p>
+          )}
           {oauthError && <p className="text-sm text-destructive">{t("oauthError")}</p>}
           <GoogleSignInButton />
           <div className="flex items-center gap-3 text-xs text-muted-foreground">

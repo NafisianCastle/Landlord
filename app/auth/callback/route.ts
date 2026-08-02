@@ -9,19 +9,16 @@ export async function GET(request: NextRequest) {
   if (code) {
     const supabase = await createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    console.log("[auth/callback] exchange result", {
-      error: error?.message,
-      user: data?.user?.id,
-      session: !!data?.session,
-    });
+
     if (!error) {
-      const response = NextResponse.redirect(`${origin}${next}`);
-      console.log(
-        "[auth/callback] outgoing Set-Cookie names",
-        response.cookies.getAll().map((c) => c.name),
-      );
-      return response;
+      return NextResponse.redirect(`${origin}${next}`);
     }
+
+    const reason =
+      error.code === "identity_already_exists" || error.message.toLowerCase().includes("already registered")
+        ? "account_exists"
+        : "oauth";
+    return NextResponse.redirect(`${origin}/login?error=${reason}`);
   }
 
   return NextResponse.redirect(`${origin}/login?error=oauth`);
