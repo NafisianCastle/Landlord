@@ -46,6 +46,23 @@ export async function signIn(_prevState: unknown, formData: FormData) {
   redirect("/dashboard");
 }
 
+export async function demoSignIn(_prevState: unknown, _formData: FormData) {
+  const email = process.env.DEMO_USER_EMAIL;
+  const password = process.env.DEMO_USER_PASSWORD;
+  if (!email || !password) {
+    return { error: "Demo login is not configured." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  redirect("/dashboard");
+}
+
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();

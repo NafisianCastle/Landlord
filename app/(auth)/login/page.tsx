@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { signIn } from "@/app/actions/auth";
+import { signIn, demoSignIn } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 export default function LoginPage() {
   const [state, formAction, pending] = useActionState(signIn, undefined);
+  const [demoState, demoFormAction, demoPending] = useActionState(demoSignIn, undefined);
   const t = useTranslations("LoginPage");
   const errorParam = useSearchParams().get("error");
   const oauthError = errorParam === "oauth";
@@ -74,6 +75,14 @@ export default function LoginPage() {
           {t("signUp")}
         </Link>
       </p>
+      {process.env.NEXT_PUBLIC_DEMO_LOGIN_ENABLED === "true" && (
+        <form action={demoFormAction}>
+          {demoState?.error && <p className="text-sm text-destructive">{demoState.error}</p>}
+          <Button type="submit" variant="outline" className="w-full" disabled={demoPending}>
+            {t("tryDemo")}
+          </Button>
+        </form>
+      )}
     </div>
   );
 }

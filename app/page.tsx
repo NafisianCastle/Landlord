@@ -66,12 +66,12 @@ export default async function LandingPage() {
     <div className="flex flex-1 flex-col">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between p-4 md:p-6">
+      <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-y-3 p-4 md:p-6">
         <Link href="/" className="flex items-center gap-2">
           <Logo className="size-8 rounded-lg" />
           <span className="font-semibold">Landlord</span>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2">
           <LocaleSwitcher />
           <ThemeToggle />
           <Button asChild variant="ghost" size="sm">
