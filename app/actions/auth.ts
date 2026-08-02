@@ -16,7 +16,7 @@ export async function signUp(_prevState: unknown, formData: FormData) {
     return { error: t("passwordTooShort") };
   }
 
-  const referralCode = (await cookies()).get("landly_ref")?.value;
+  const referralCode = (await cookies()).get("landlord_ref")?.value;
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signUp({

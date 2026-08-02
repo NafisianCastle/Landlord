@@ -7,6 +7,7 @@ import "./globals.css";
 import RegisterServiceWorker from "@/components/system/RegisterServiceWorker";
 import ReferralCapture from "@/components/system/ReferralCapture";
 import Footer from "@/components/system/Footer";
+import { SITE_URL } from "@/lib/site";
 
 const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("landlord-theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.classList.add(t);}catch(e){}})();`;
 
@@ -21,12 +22,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Landlord",
-  description: "Map, track, and manage land plots with boundaries, documents, and offline sync",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Landlord — Land, Apartment & Rent Management for Bangladesh",
+    template: "%s · Landlord",
+  },
+  description:
+    "Map land boundaries, track apartments, manage leases and rent collection, and store ownership documents — offline-first, built for Bangladeshi landlords.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Landlord",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Landlord",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
   },
 };
 

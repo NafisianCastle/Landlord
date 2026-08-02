@@ -3,8 +3,10 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { hasActiveAccess } from "@/lib/access";
-import { LIFETIME_PRICE_BDT } from "@/lib/sslcommerz";
+import { getAppSettings } from "@/lib/settings";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import ThemeToggle from "@/components/system/ThemeToggle";
 import LocaleSwitcher from "@/components/system/LocaleSwitcher";
 import PayButton from "@/components/payments/PayButton";
@@ -28,6 +30,7 @@ export default async function PaywallPage({
   const t = await getTranslations("PaywallPage");
   const statusKey =
     status === "failed" || status === "cancelled" || status === "error" ? status : undefined;
+  const { lifetimePriceBdt } = await getAppSettings();
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-sm flex-col gap-4 p-6">
@@ -44,10 +47,14 @@ export default async function PaywallPage({
           <h1 className="text-2xl font-semibold">{t("trialEnded")}</h1>
           <p className="text-muted-foreground">{t("pitch")}</p>
           <p className="text-3xl font-bold">
-            {t("price", { amount: LIFETIME_PRICE_BDT.toLocaleString() })}
+            {t("price", { amount: lifetimePriceBdt.toLocaleString() })}
           </p>
           {statusKey && <p className="text-sm text-destructive">{t(`status.${statusKey}`)}</p>}
-          <form action="/api/payments/bkash/init" method="POST">
+          <form action="/api/payments/bkash/init" method="POST" className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="couponCode">{t("couponCode")}</Label>
+              <Input id="couponCode" name="couponCode" placeholder={t("couponCodePlaceholder")} />
+            </div>
             <PayButton />
           </form>
           <Link href="/refund" className="text-center text-xs text-muted-foreground underline">

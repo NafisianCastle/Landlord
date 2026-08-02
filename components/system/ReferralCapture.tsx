@@ -10,7 +10,7 @@ export default function ReferralCapture() {
     const ref = new URLSearchParams(window.location.search).get("ref");
     if (!ref) return;
     const maxAge = 60 * 60 * 24 * 30;
-    document.cookie = `landly_ref=${encodeURIComponent(ref)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    document.cookie = `landlord_ref=${encodeURIComponent(ref)}; path=/; max-age=${maxAge}; SameSite=Lax`;
   }, []);
 
   return null;

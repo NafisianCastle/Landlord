@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { validateSslcommerzPayment } from "@/lib/sslcommerz";
+import { recordCouponRedemption } from "@/lib/coupons";
 
 // Server-to-server webhook from SSLCommerz. The IPN payload itself is never
 // trusted — val_id is re-checked against SSLCommerz's validation API before
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
   const admin = createAdminClient();
   const { data: txn } = await admin
     .from("payment_transactions")
-    .select("user_id, amount, status")
+    .select("user_id, amount, status, coupon_code")
     .eq("tran_id", tranId)
     .single();
 
@@ -75,6 +76,15 @@ export async function POST(request: Request) {
       },
       { onConflict: "user_id" },
     );
+
+    if (txn.coupon_code) {
+      const { data: coupon } = await admin
+        .from("referral_coupons")
+        .select("id")
+        .eq("code", txn.coupon_code)
+        .single();
+      if (coupon) await recordCouponRedemption(coupon.id, txn.user_id, tranId);
+    }
   }
 
   return NextResponse.json({ received: true });

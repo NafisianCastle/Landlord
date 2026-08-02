@@ -57,6 +57,8 @@
     "trialEnded": "Your free trial has ended",
     "pitch": "Pay once, use Landlord for life — no renewals, no subscription.",
     "price": "BDT {amount}",
+    "couponCode": "Coupon code (optional)",
+    "couponCodePlaceholder": "e.g. LAUNCH20",
     "refundPolicyLink": "Refund policy",
     "status": {
       "failed": "Payment failed — please try again.",
@@ -442,7 +444,7 @@
     "notSetUp": "Encryption isn't set up yet.",
     "wrongPassphrase": "Wrong passphrase.",
     "saveRecoveryCode": "Save your recovery code",
-    "recoveryCodeHint": "If you forget your passphrase, this is the only other way to recover encrypted plot data. Landly cannot reset it for you.",
+    "recoveryCodeHint": "If you forget your passphrase, this is the only other way to recover encrypted plot data. Landlord cannot reset it for you.",
     "savedSomewhereSafe": "I've saved this somewhere safe",
     "done": "Done",
     "unlockedForSession": "Unlocked for this session. Sensitive plot fields (mutation number, prices, dates, notes, village) are encrypted before leaving your device.",
@@ -451,7 +453,7 @@
     "passphrase": "Passphrase",
     "unlocking": "Unlocking...",
     "unlock": "Unlock",
-    "setupExplanation": "Encrypt sensitive plot fields (mutation number, purchase price, dates, notes, village) client-side, so only you can read them — not even Landly. Boundary/map data stays unencrypted (needed for area calculation and map rendering). This passphrase is separate from your login password, and lost passphrase + lost recovery code means that data is gone for good.",
+    "setupExplanation": "Encrypt sensitive plot fields (mutation number, purchase price, dates, notes, village) client-side, so only you can read them — not even Landlord. Boundary/map data stays unencrypted (needed for area calculation and map rendering). This passphrase is separate from your login password, and lost passphrase + lost recovery code means that data is gone for good.",
     "encryptionPassphrase": "Encryption passphrase",
     "confirmPassphrase": "Confirm passphrase",
     "settingUp": "Setting up...",
@@ -582,5 +584,123 @@
     "undo": "Undo",
     "updating": "Updating...",
     "noPaymentsYet": "No payments scheduled yet."
+  },
+  "LandingPage": {
+    "metaTitle": "Landlord — Land, Apartment & Rent Management for Bangladesh",
+    "metaDescription": "Map land boundaries, track apartments, manage leases and rent collection, and store ownership documents — offline-first, built for Bangladeshi landlords.",
+    "logIn": "Log in",
+    "getStarted": "Get started",
+    "heroTitle": "Manage your land, apartments, and rent — from your phone",
+    "heroSubtitle": "Walk and map plot boundaries, track apartments, collect rent on schedule, and keep ownership documents safe. Works offline, built for how landlords actually operate in Bangladesh.",
+    "heroCta": "Start free trial",
+    "heroSecondaryCta": "See pricing",
+    "heroTrialNote": "{days}-day free trial, no card required. Pay once after that — no subscription.",
+    "featuresTitle": "Everything a landlord needs, in one app",
+    "features": {
+      "0": {
+        "title": "Map plot boundaries",
+        "description": "Walk a plot's edges with your phone's GPS or draw them on satellite imagery — no surveyor needed."
+      },
+      "1": {
+        "title": "Track apartments",
+        "description": "Keep floor, size, purchase price, and ownership details for every unit you own."
+      },
+      "2": {
+        "title": "Leases & rent tracking",
+        "description": "One place for tenant details, rent schedule, and which payments are paid, upcoming, or overdue."
+      },
+      "3": {
+        "title": "Rent due reminders",
+        "description": "Get a push notification before rent is due and when it's overdue — no more chasing tenants from memory."
+      },
+      "4": {
+        "title": "Maintenance log",
+        "description": "Log repair requests per plot or apartment and track them from open to resolved."
+      },
+      "5": {
+        "title": "Encrypted documents",
+        "description": "Store deeds and ownership papers as PDFs, optionally encrypted client-side so only you can read them."
+      },
+      "6": {
+        "title": "Works offline",
+        "description": "Map boundaries and enter data with no signal — everything syncs once you're back online."
+      },
+      "7": {
+        "title": "Reports & export",
+        "description": "Export your full rent payment history to CSV any time — for your own records or for tax season."
+      }
+    },
+    "pricingTitle": "Simple, one-time pricing",
+    "pricingAmount": "BDT {amount}",
+    "pricingHint": "{days}-day free trial, then pay once. Use it for life — no renewals, no subscription."
+  },
+  "AdminNav": {
+    "overview": "Overview",
+    "settings": "Settings",
+    "coupons": "Coupons",
+    "users": "Users",
+    "backToApp": "Back to app"
+  },
+  "AdminOverviewPage": {
+    "title": "Admin overview",
+    "totalUsers": "Total users",
+    "activeTrials": "Active trials",
+    "paidUsers": "Paid users",
+    "totalRevenue": "Total revenue",
+    "referredSignups": "Referred signups"
+  },
+  "AdminSettingsPage": {
+    "title": "Settings"
+  },
+  "AdminSettingsForm": {
+    "lifetimePriceBdt": "Lifetime price (BDT)",
+    "trialDays": "Trial length (days)",
+    "trialDaysHint": "Applies to new signups going forward — existing trials keep their original end date.",
+    "saving": "Saving...",
+    "save": "Save",
+    "saved": "Saved."
+  },
+  "AdminSettingsActions": {
+    "priceRequired": "Price must be greater than 0",
+    "trialDaysRequired": "Trial days must be greater than 0"
+  },
+  "AdminCouponsPage": {
+    "title": "Coupons"
+  },
+  "AdminCouponForm": {
+    "code": "Code",
+    "discountType": "Discount type",
+    "percent": "Percent off",
+    "fixed": "Fixed amount off (BDT)",
+    "discountValue": "Discount value",
+    "maxRedemptions": "Max redemptions (optional)",
+    "expiresAt": "Expires on (optional)",
+    "creating": "Creating...",
+    "create": "Create coupon"
+  },
+  "AdminCouponsActions": {
+    "codeRequired": "Code is required",
+    "discountValueRequired": "Discount value must be greater than 0",
+    "percentTooHigh": "Percent discount can't exceed 100",
+    "codeAlreadyExists": "A coupon with this code already exists"
+  },
+  "AdminCouponsList": {
+    "redeemed": "{count}/{max} redeemed",
+    "expires": "expires {date}",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "noCouponsYet": "No coupons yet."
+  },
+  "AdminUsersPage": {
+    "title": "Users",
+    "searchPlaceholder": "Search by email",
+    "admin": "admin",
+    "paid": "paid",
+    "trialActive": "trial active",
+    "trialExpired": "trial expired",
+    "noUsersFound": "No users found.",
+    "grantAccess": "Grant lifetime access",
+    "granting": "Granting...",
+    "granted": "Access granted"
   }
 }
