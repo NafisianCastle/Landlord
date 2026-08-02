@@ -55,13 +55,13 @@ export default function StatsCards({
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
       {cards.map((card) => (
-        <Card key={card.label}>
-          <CardContent className="p-3">
-            <p className="text-xs text-muted-foreground">{card.label}</p>
-            <p className="text-lg font-semibold">{card.value}</p>
-            {card.sub && <p className="text-xs text-muted-foreground">{card.sub}</p>}
+        <Card key={card.label} className="min-w-0">
+          <CardContent className="min-w-0 p-3">
+            <p className="truncate text-xs text-muted-foreground">{card.label}</p>
+            <p className="truncate text-lg font-semibold">{card.value}</p>
+            {card.sub && <p className="truncate text-xs text-muted-foreground">{card.sub}</p>}
           </CardContent>
         </Card>
       ))}

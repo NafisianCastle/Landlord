@@ -52,26 +52,26 @@ export default function RentDueCard({
       </CardHeader>
       <CardContent className="flex flex-col gap-3 pt-0">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div>
+          <div className="min-w-0">
             <p className="text-xs text-muted-foreground">{t("overdue")}</p>
-            <p className="text-lg font-semibold text-destructive">
+            <p className="truncate text-lg font-semibold text-destructive">
               {overdueCount} · {bdt.format(overdueAmount)}
             </p>
           </div>
-          <div>
+          <div className="min-w-0">
             <p className="text-xs text-muted-foreground">{t("upcoming30Days")}</p>
-            <p className="text-lg font-semibold">{upcomingCount}</p>
+            <p className="truncate text-lg font-semibold">{upcomingCount}</p>
           </div>
         </div>
         {overduePayments.length > 0 && (
           <ul className="flex flex-col divide-y divide-border rounded-lg border border-warning/50 bg-warning/10">
             {overduePayments.map((p) => (
-              <li key={p.id} className="p-2 text-sm">
-                <Link href={p.propertyHref} className="flex flex-col">
-                  <span className="font-medium">
+              <li key={p.id} className="min-w-0 p-2 text-sm">
+                <Link href={p.propertyHref} className="flex min-w-0 flex-col">
+                  <span className="truncate font-medium">
                     {p.tenantName} · {p.propertyName}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="truncate text-xs text-muted-foreground">
                     {bdt.format(p.amount)} ·{" "}
                     {t("daysOverdue", { count: daysOverdue(p.dueDate) })}
                   </span>

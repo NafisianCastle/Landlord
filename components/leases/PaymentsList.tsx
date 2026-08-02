@@ -74,9 +74,9 @@ export default function PaymentsList({
                 : "flex items-center justify-between gap-2 p-3 text-sm"
             }
           >
-            <div className="flex flex-col">
-              <span className="font-medium">{row.dueDate}</span>
-              <span className="text-xs text-muted-foreground">
+            <div className="flex min-w-0 flex-col">
+              <span className="truncate font-medium">{row.dueDate}</span>
+              <span className="truncate text-xs text-muted-foreground">
                 {row.paid
                   ? t("receivedOn", { date: row.paidDate ?? "" })
                   : isOverdue(row)
@@ -84,8 +84,8 @@ export default function PaymentsList({
                     : t("upcoming")}
               </span>
             </div>
-            <div className="flex items-center gap-3">
-              <span>{bdt.format(row.paidAmount ?? row.amount)}</span>
+            <div className="flex shrink-0 items-center gap-3">
+              <span className="truncate">{bdt.format(row.paidAmount ?? row.amount)}</span>
               {row.paid ? (
                 <Button
                   type="button"
