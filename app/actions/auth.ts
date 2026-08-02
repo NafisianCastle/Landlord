@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
@@ -15,11 +16,13 @@ export async function signUp(_prevState: unknown, formData: FormData) {
     return { error: t("passwordTooShort") };
   }
 
+  const referralCode = (await cookies()).get("landly_ref")?.value;
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: fullName } },
+    options: { data: { full_name: fullName, ...(referralCode ? { referral_code: referralCode } : {}) } },
   });
 
   if (error) {

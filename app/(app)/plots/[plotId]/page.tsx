@@ -17,6 +17,7 @@ import GuestPlotDetail from "@/components/plots/GuestPlotDetail";
 import PlotCollaborators from "@/components/plots/PlotCollaborators";
 import PlotAuditLog from "@/components/plots/PlotAuditLog";
 import LeaseSection from "@/components/leases/LeaseSection";
+import MaintenanceSection from "@/components/maintenance/MaintenanceSection";
 
 export default async function PlotDetailPage({
   params,
@@ -200,6 +201,10 @@ export default async function PlotDetailPage({
       <PlotAuditLog plotId={plot.id} isOwner={plot.user_id === user.id} />
 
       {plot.user_id === user.id && <LeaseSection subjectType="plot" subjectId={plot.id} />}
+
+      {plot.user_id === user.id && (
+        <MaintenanceSection subjectType="plot" subjectId={plot.id} />
+      )}
 
       {plot.user_id === user.id && (
         <DeletePlotButton plotId={plot.id} plotName={plot.name} />

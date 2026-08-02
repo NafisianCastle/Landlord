@@ -11,6 +11,7 @@ import GuestApartmentDetail from "@/components/apartments/GuestApartmentDetail";
 import ApartmentCollaborators from "@/components/apartments/ApartmentCollaborators";
 import ApartmentAuditLog from "@/components/apartments/ApartmentAuditLog";
 import LeaseSection from "@/components/leases/LeaseSection";
+import MaintenanceSection from "@/components/maintenance/MaintenanceSection";
 
 export default async function ApartmentDetailPage({
   params,
@@ -134,6 +135,10 @@ export default async function ApartmentDetailPage({
 
       {apartment.user_id === user.id && (
         <LeaseSection subjectType="apartment" subjectId={apartment.id} />
+      )}
+
+      {apartment.user_id === user.id && (
+        <MaintenanceSection subjectType="apartment" subjectId={apartment.id} />
       )}
 
       {apartment.user_id === user.id && (

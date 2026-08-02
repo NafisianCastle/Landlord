@@ -255,6 +255,7 @@
   },
   "LeasesPage": {
     "title": "Leases",
+    "exportCsv": "Export CSV",
     "signInRequired": "Sign in to track leases and rent payments.",
     "loadError": "Couldn't load your leases — {message}. Try refreshing the page.",
     "noLeasesYet": "No active leases yet.",
@@ -281,6 +282,33 @@
     "rentAmountRequired": "Rent amount must be greater than 0",
     "startDateRequired": "Lease start date is required",
     "trialEnded": "Your trial has ended — please upgrade to continue."
+  },
+  "MaintenanceSection": {
+    "title": "Maintenance"
+  },
+  "MaintenanceActions": {
+    "titleRequired": "Title is required"
+  },
+  "MaintenanceRequestForm": {
+    "title": "Title",
+    "cost": "Cost",
+    "reportedDate": "Reported date",
+    "description": "Description",
+    "saving": "Saving...",
+    "addRequest": "Add request"
+  },
+  "MaintenanceRequestsList": {
+    "reportedOn": "reported {date}",
+    "markInProgress": "Mark in progress",
+    "markResolved": "Mark resolved",
+    "reopen": "Reopen",
+    "delete": "Delete",
+    "noRequestsYet": "No maintenance requests yet.",
+    "status": {
+      "open": "Open",
+      "in_progress": "In progress",
+      "resolved": "Resolved"
+    }
   },
   "BoundaryWalker": {
     "webglError": "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
@@ -370,7 +398,27 @@
     "title": "Profile",
     "accountDetails": "Account details",
     "changePassword": "Change password",
+    "rentReminders": "Rent reminders",
+    "referrals": "Invite friends",
     "encryptedPlotData": "Encrypted plot data"
+  },
+  "ReferralSettings": {
+    "explanation": "Share this link — anyone who signs up through it is linked to your account.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "referredCount": "{count, plural, =0 {No one has signed up through your link yet.} =1 {# person has signed up through your link.} other {# people have signed up through your link.}}"
+  },
+  "RentReminderSettings": {
+    "explanation": "Get a notification on this device when rent is due soon or overdue.",
+    "unsupported": "Your browser doesn't support push notifications.",
+    "denied": "Notifications are blocked for this site. Enable them in your browser settings to use reminders.",
+    "notConfigured": "Push notifications aren't configured yet.",
+    "subscribeFailed": "Couldn't enable reminders. Please try again.",
+    "unsubscribeFailed": "Couldn't disable reminders. Please try again.",
+    "enable": "Enable rent reminders",
+    "enabling": "Enabling...",
+    "disable": "Disable rent reminders",
+    "disabling": "Disabling..."
   },
   "ProfileForm": {
     "email": "Email",

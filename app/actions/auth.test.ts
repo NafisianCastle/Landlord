@@ -17,6 +17,7 @@ const createClientMock = vi.fn(async () => supabaseMock);
 
 vi.mock("next/navigation", () => ({ redirect: redirectMock }));
 vi.mock("next/cache", () => ({ revalidatePath: revalidatePathMock }));
+vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock("@/lib/supabase/server", () => ({ createClient: createClientMock }));
 
 function fd(fields: Record<string, string>) {

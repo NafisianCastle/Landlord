@@ -46,3 +46,33 @@ async function trimCache(cache) {
   if (keys.length <= MAX_ENTRIES) return;
   await cache.delete(keys[0]);
 }
+
+// Rent-due reminders, sent via web-push from app/api/cron/rent-reminders.
+self.addEventListener("push", (event) => {
+  let data = { title: "Landly", body: "" };
+  try {
+    data = event.data.json();
+  } catch {
+    // Non-JSON payload — fall back to the default above.
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: "/icons/icon-192.png",
+      data: { url: data.url || "/leases" },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || "/leases";
+  event.waitUntil(
+    self.clients.matchAll({ type: "window" }).then((clientsList) => {
+      for (const client of clientsList) {
+        if (client.url.endsWith(url) && "focus" in client) return client.focus();
+      }
+      if (self.clients.openWindow) return self.clients.openWindow(url);
+    }),
+  );
+});

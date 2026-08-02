@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import PageContainer from "@/components/system/PageContainer";
 import PageHeader from "@/components/system/PageHeader";
+import { Button } from "@/components/ui/button";
 
 export default async function LeasesPage() {
   const supabase = await createClient();
@@ -64,7 +65,14 @@ export default async function LeasesPage() {
 
   return (
     <PageContainer>
-      <PageHeader title={t("title")} />
+      <PageHeader
+        title={t("title")}
+        action={
+          <Button asChild variant="outline" size="sm">
+            <a href="/api/reports/lease-payments">{t("exportCsv")}</a>
+          </Button>
+        }
+      />
 
       {error ? (
         <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">

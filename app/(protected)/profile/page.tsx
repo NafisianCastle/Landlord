@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProfileForm from "@/components/profile/ProfileForm";
 import ChangePasswordForm from "@/components/profile/ChangePasswordForm";
 import EncryptionSettings from "@/components/profile/EncryptionSettings";
+import RentReminderSettings from "@/components/profile/RentReminderSettings";
+import ReferralSettings from "@/components/profile/ReferralSettings";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -16,13 +18,16 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select(
-      "encryption_enabled, dek_salt, dek_wrapped_by_passphrase, dek_wrapped_by_passphrase_iv",
-    )
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, { data: referralCount }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select(
+        "encryption_enabled, dek_salt, dek_wrapped_by_passphrase, dek_wrapped_by_passphrase_iv, referral_code",
+      )
+      .eq("id", user.id)
+      .single(),
+    supabase.rpc("get_referral_count"),
+  ]);
 
   const t = await getTranslations("ProfilePage");
 
@@ -43,6 +48,25 @@ export default async function ProfilePage() {
         </CardHeader>
         <CardContent>
           <ChangePasswordForm />
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("rentReminders")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RentReminderSettings />
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("referrals")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ReferralSettings
+            referralCode={profile?.referral_code ?? ""}
+            referralCount={referralCount ?? 0}
+          />
         </CardContent>
       </Card>
       <Card>
