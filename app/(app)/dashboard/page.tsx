@@ -34,6 +34,8 @@ export default async function DashboardPage() {
     { count: apartmentCount },
     { data: rentStats },
     { data: overdueRows },
+    { data: expenseStats },
+    { data: expiringLeaseRows },
   ] = await Promise.all([
     supabase.from("plot_stats").select("*").single(),
     supabase.from("plot_stats_by_district").select("*"),
@@ -59,7 +61,29 @@ export default async function DashboardPage() {
       .lt("due_date", new Date().toISOString().slice(0, 10))
       .order("due_date", { ascending: true })
       .limit(5),
+    supabase.from("expense_stats").select("*").single(),
+    supabase
+      .from("leases")
+      .select("id, tenant_name, end_date, plot_id, apartment_id, land_plots(name), apartments(name)")
+      .eq("status", "active")
+      .not("end_date", "is", null)
+      .lte("end_date", new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10))
+      .order("end_date", { ascending: true }),
   ]);
+
+  const expiringLeases = (expiringLeaseRows ?? []).map((row) => {
+    const lp = row.land_plots as unknown as { name: string } | null;
+    const ap = row.apartments as unknown as { name: string } | null;
+    return {
+      id: row.id,
+      tenantName: row.tenant_name,
+      endDate: row.end_date as string,
+      propertyHref: row.plot_id ? `/plots/${row.plot_id}` : `/apartments/${row.apartment_id}`,
+      propertyName: lp?.name ?? ap?.name ?? "",
+    };
+  });
+
+  const netThisMonth = (rentStats?.received_this_month_amount ?? 0) - (expenseStats?.this_month_amount ?? 0);
 
   const overduePayments: OverduePaymentItem[] = (overdueRows ?? []).flatMap((row) => {
     const lease = row.leases as unknown as {
@@ -113,7 +137,7 @@ export default async function DashboardPage() {
         <WelcomeCard />
       ) : (
         <>
-          <NeedsAttention plots={unwalkedPlots ?? []} />
+          <NeedsAttention plots={unwalkedPlots ?? []} expiringLeases={expiringLeases} />
 
           <StatsCards
             plotCount={plotCount}
@@ -123,6 +147,24 @@ export default async function DashboardPage() {
             documentCount={documentCount ?? 0}
             apartmentCount={apartmentCount ?? 0}
           />
+
+          <Card>
+            <CardContent className="flex items-center justify-between gap-3 pt-6">
+              <div>
+                <p className="text-xs text-muted-foreground">{t("netThisMonth")}</p>
+                <p className={`text-lg font-semibold ${netThisMonth < 0 ? "text-destructive" : ""}`}>
+                  {new Intl.NumberFormat("en-BD", {
+                    style: "currency",
+                    currency: "BDT",
+                    maximumFractionDigits: 0,
+                  }).format(netThisMonth)}
+                </p>
+              </div>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/analytics">{t("viewAnalytics")}</Link>
+              </Button>
+            </CardContent>
+          </Card>
 
           <RentDueCard
             overdueCount={rentStats?.overdue_count ?? 0}

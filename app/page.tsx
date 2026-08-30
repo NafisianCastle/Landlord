@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { MapPin, Building2, Wallet, Bell, Wrench, ShieldCheck, WifiOff, FileSpreadsheet } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { getAppSettings } from "@/lib/settings";
 import { SITE_URL } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,7 +39,6 @@ export default async function LandingPage() {
   if (user) redirect("/dashboard");
 
   const t = await getTranslations("LandingPage");
-  const { lifetimePriceBdt, trialDays } = await getAppSettings();
 
   const features = FEATURE_ICONS.map((Icon, i) => ({
     Icon,
@@ -57,7 +55,7 @@ export default async function LandingPage() {
     description: t("metaDescription"),
     offers: {
       "@type": "Offer",
-      price: lifetimePriceBdt,
+      price: "0",
       priceCurrency: "BDT",
     },
   };
@@ -90,11 +88,8 @@ export default async function LandingPage() {
           <Button asChild size="lg">
             <Link href="/signup">{t("heroCta")}</Link>
           </Button>
-          <Button asChild variant="outline" size="lg">
-            <Link href="#pricing">{t("heroSecondaryCta")}</Link>
-          </Button>
         </div>
-        <p className="text-sm text-muted-foreground">{t("heroTrialNote", { days: trialDays })}</p>
+        <p className="text-sm text-muted-foreground">{t("heroTrialNote")}</p>
       </section>
 
       <section className="mx-auto w-full max-w-6xl px-4 py-12 md:py-16">
@@ -112,14 +107,12 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section id="pricing" className="mx-auto w-full max-w-md px-4 py-12 md:py-16">
+      <section className="mx-auto w-full max-w-md px-4 py-12 md:py-16">
         <Card>
           <CardContent className="flex flex-col items-center gap-3 pt-6 text-center">
             <h2 className="text-xl font-semibold">{t("pricingTitle")}</h2>
-            <p className="text-4xl font-bold">
-              {t("pricingAmount", { amount: lifetimePriceBdt.toLocaleString() })}
-            </p>
-            <p className="text-sm text-muted-foreground">{t("pricingHint", { days: trialDays })}</p>
+            <p className="text-4xl font-bold">{t("pricingAmount")}</p>
+            <p className="text-sm text-muted-foreground">{t("pricingHint")}</p>
             <Button asChild className="w-full">
               <Link href="/signup">{t("heroCta")}</Link>
             </Button>

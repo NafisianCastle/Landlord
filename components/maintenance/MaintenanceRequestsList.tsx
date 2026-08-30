@@ -17,6 +17,7 @@ export interface MaintenanceRequestRow {
   cost: number | null;
   reportedDate: string;
   resolvedDate: string | null;
+  vendorName?: string | null;
 }
 
 const bdt = new Intl.NumberFormat("en-BD", {
@@ -71,6 +72,7 @@ export default function MaintenanceRequestsList({
                 <span className="text-xs text-muted-foreground">
                   {t("reportedOn", { date: row.reportedDate })}
                   {row.cost != null ? ` · ${bdt.format(row.cost)}` : ""}
+                  {row.vendorName ? ` · ${row.vendorName}` : ""}
                 </span>
               </div>
               <span

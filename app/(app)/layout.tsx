@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { hasActiveAccess } from "@/lib/access";
-import SyncManager from "@/components/system/SyncManager";
 import GuestMigration from "@/components/system/GuestMigration";
 import AppShell from "@/components/system/AppShell";
 
@@ -21,7 +20,6 @@ export default async function AppLayout({
 
   return (
     <>
-      {user && <SyncManager />}
       {user && <GuestMigration />}
       <AppShell user={user} showGuestBanner>
         {children}

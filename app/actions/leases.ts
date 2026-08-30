@@ -120,6 +120,39 @@ export async function endLease(
   return { success: true };
 }
 
+export async function renewLease(
+  leaseId: string,
+  subjectType: LeaseSubjectType,
+  subjectId: string,
+  _prevState: unknown,
+  formData: FormData,
+) {
+  const auth = await getUserWithAccess();
+  if (!auth) redirect("/login");
+  const t = await getTranslations("LeaseActions");
+  if (!auth.hasAccess) return { error: t("trialEnded") };
+
+  const newEndDate = String(formData.get("newEndDate") ?? "") || null;
+  if (!newEndDate) return { error: t("newEndDateRequired") };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("leases")
+    .update({ status: "active", end_date: newEndDate, expiry_reminder_sent_at: null })
+    .eq("id", leaseId);
+  if (error) return { error: error.message };
+
+  const { error: rpcError } = await supabase.rpc("ensure_lease_payments", {
+    p_lease_id: leaseId,
+  });
+  if (rpcError) console.error("ensure_lease_payments failed:", rpcError.message);
+
+  revalidatePath(subjectPath(subjectType, subjectId));
+  revalidatePath("/dashboard");
+  revalidatePath("/leases");
+  return { success: true };
+}
+
 export async function deleteLease(
   leaseId: string,
   subjectType: LeaseSubjectType,

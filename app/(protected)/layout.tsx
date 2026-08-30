@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { hasActiveAccess } from "@/lib/access";
-import SyncManager from "@/components/system/SyncManager";
 import AppShell from "@/components/system/AppShell";
 
 export default async function ProtectedLayout({
@@ -24,7 +23,6 @@ export default async function ProtectedLayout({
 
   return (
     <>
-      <SyncManager />
       <AppShell user={user}>{children}</AppShell>
     </>
   );

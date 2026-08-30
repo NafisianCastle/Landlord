@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import PageContainer from "@/components/system/PageContainer";
 import PageHeader from "@/components/system/PageHeader";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default async function LeasesPage() {
   const supabase = await createClient();
@@ -23,7 +24,8 @@ export default async function LeasesPage() {
 
   await supabase.rpc("ensure_all_lease_payments");
 
-  const [{ data: leases, error }, { data: unpaidPayments }] = await Promise.all([
+  const [{ data: leases, error }, { data: unpaidPayments }, { data: rentStats }, { data: expenseStats }] =
+    await Promise.all([
     supabase
       .from("leases")
       .select(
@@ -36,6 +38,8 @@ export default async function LeasesPage() {
       .select("lease_id, due_date")
       .eq("paid", false)
       .order("due_date", { ascending: true }),
+    supabase.from("lease_payment_stats").select("*").single(),
+    supabase.from("expense_stats").select("*").single(),
   ]);
 
   const nextDueByLease = new Map<string, string>();
@@ -73,6 +77,33 @@ export default async function LeasesPage() {
           </Button>
         }
       />
+
+      <Card>
+        <CardContent className="grid grid-cols-3 gap-3 p-3 text-center">
+          <div>
+            <p className="text-xs text-muted-foreground">{t("receivedThisMonth")}</p>
+            <p className="font-semibold">{bdt.format(rentStats?.received_this_month_amount ?? 0)}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("expensesThisMonth")}</p>
+            <p className="font-semibold">{bdt.format(expenseStats?.this_month_amount ?? 0)}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("netThisMonth")}</p>
+            <p className="font-semibold">
+              {bdt.format(
+                (rentStats?.received_this_month_amount ?? 0) - (expenseStats?.this_month_amount ?? 0),
+              )}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+      <a
+        href="/api/reports/finances"
+        className="self-start text-xs text-muted-foreground underline underline-offset-2"
+      >
+        {t("exportExpensesCsv")}
+      </a>
 
       {error ? (
         <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">

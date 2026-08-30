@@ -9,9 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface MaintenanceRequestFormProps {
   action: (prevState: unknown, formData: FormData) => Promise<{ error?: string } | undefined>;
+  vendors?: { id: string; name: string }[];
 }
 
-export default function MaintenanceRequestForm({ action }: MaintenanceRequestFormProps) {
+export default function MaintenanceRequestForm({ action, vendors }: MaintenanceRequestFormProps) {
   const [state, formAction, pending] = useActionState(action, undefined);
   const t = useTranslations("MaintenanceRequestForm");
 
@@ -35,6 +36,24 @@ export default function MaintenanceRequestForm({ action }: MaintenanceRequestFor
             defaultValue={new Date().toISOString().slice(0, 10)}
           />
         </div>
+        {vendors && vendors.length > 0 && (
+          <div className="flex flex-col gap-1.5 sm:col-span-2">
+            <Label htmlFor="vendorId">{t("vendor")}</Label>
+            <select
+              id="vendorId"
+              name="vendorId"
+              className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+              defaultValue=""
+            >
+              <option value="">{t("noVendor")}</option>
+              {vendors.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="description">{t("description")}</Label>

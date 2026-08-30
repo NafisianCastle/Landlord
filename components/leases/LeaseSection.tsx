@@ -6,6 +6,7 @@ import LeaseForm from "@/components/leases/LeaseForm";
 import PaymentsList, { type PaymentRow } from "@/components/leases/PaymentsList";
 import EndLeaseButton from "@/components/leases/EndLeaseButton";
 import DeleteLeaseButton from "@/components/leases/DeleteLeaseButton";
+import RenewLeaseButton from "@/components/leases/RenewLeaseButton";
 
 export default async function LeaseSection({
   subjectType,
@@ -89,7 +90,16 @@ export default async function LeaseSection({
         <PaymentsList payments={rows} subjectType={subjectType} subjectId={subjectId} />
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
+        {lease.end_date &&
+          new Date(lease.end_date).getTime() - Date.now() <= 14 * 24 * 60 * 60 * 1000 && (
+            <RenewLeaseButton
+              leaseId={lease.id}
+              subjectType={subjectType}
+              subjectId={subjectId}
+              currentEndDate={lease.end_date}
+            />
+          )}
         <EndLeaseButton leaseId={lease.id} subjectType={subjectType} subjectId={subjectId} />
         <DeleteLeaseButton leaseId={lease.id} subjectType={subjectType} subjectId={subjectId} />
       </div>

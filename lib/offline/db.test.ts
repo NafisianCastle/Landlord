@@ -2,8 +2,6 @@ import { afterEach, describe, expect, it } from "vitest";
 import db from "./db";
 
 afterEach(async () => {
-  await db.walkSessions.clear();
-  await db.walkPoints.clear();
   await db.offlineAreas.clear();
   await db.guestPlots.clear();
   await db.guestApartments.clear();
@@ -12,47 +10,8 @@ afterEach(async () => {
 describe("landlord Dexie schema", () => {
   it("opens with the expected table names", () => {
     expect(db.tables.map((t) => t.name).sort()).toEqual(
-      ["guestApartments", "guestPlots", "offlineAreas", "walkPoints", "walkSessions"].sort(),
+      ["guestApartments", "guestPlots", "offlineAreas"].sort(),
     );
-  });
-
-  it("stores and retrieves a walk session by id", async () => {
-    await db.walkSessions.add({ id: "s1", plotId: "p1", status: "active", startedAt: 1 });
-    const found = await db.walkSessions.get("s1");
-    expect(found).toEqual({ id: "s1", plotId: "p1", status: "active", startedAt: 1 });
-  });
-
-  it("auto-increments walkPoints ids", async () => {
-    const id1 = await db.walkPoints.add({
-      sessionId: "s1",
-      plotId: "p1",
-      seq: 0,
-      lat: 1,
-      lng: 2,
-      accuracy: null,
-      capturedAt: 1,
-      synced: 0,
-    });
-    const id2 = await db.walkPoints.add({
-      sessionId: "s1",
-      plotId: "p1",
-      seq: 1,
-      lat: 1,
-      lng: 2,
-      accuracy: null,
-      capturedAt: 2,
-      synced: 0,
-    });
-    expect(id2 as number).toBeGreaterThan(id1 as number);
-  });
-
-  it("supports the compound [sessionId+seq] index for ordered lookups", async () => {
-    await db.walkPoints.bulkAdd([
-      { sessionId: "s1", plotId: "p1", seq: 1, lat: 0, lng: 0, accuracy: null, capturedAt: 1, synced: 0 },
-      { sessionId: "s1", plotId: "p1", seq: 0, lat: 0, lng: 0, accuracy: null, capturedAt: 1, synced: 0 },
-    ]);
-    const ordered = await db.walkPoints.where("sessionId").equals("s1").sortBy("seq");
-    expect(ordered.map((p) => p.seq)).toEqual([0, 1]);
   });
 
   it("supports querying offlineAreas by downloadedAt", async () => {

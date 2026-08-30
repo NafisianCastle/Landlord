@@ -18,6 +18,7 @@ function fieldsFromForm(formData: FormData) {
     description: String(formData.get("description") ?? "") || null,
     cost: formData.get("cost") ? Number(formData.get("cost")) : null,
     reported_date: String(formData.get("reportedDate") ?? "") || new Date().toISOString().slice(0, 10),
+    vendor_id: String(formData.get("vendorId") ?? "") || null,
   };
 }
 

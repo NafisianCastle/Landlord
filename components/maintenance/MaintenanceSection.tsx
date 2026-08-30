@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { createMaintenanceRequest, type MaintenanceSubjectType } from "@/app/actions/maintenance";
@@ -18,11 +19,14 @@ export default async function MaintenanceSection({
   const supabase = await createClient();
   const column = subjectType === "plot" ? "plot_id" : "apartment_id";
 
-  const { data: requests } = await supabase
-    .from("maintenance_requests")
-    .select("id, title, description, status, cost, reported_date, resolved_date")
-    .eq(column, subjectId)
-    .order("reported_date", { ascending: false });
+  const [{ data: requests }, { data: vendors }] = await Promise.all([
+    supabase
+      .from("maintenance_requests")
+      .select("id, title, description, status, cost, reported_date, resolved_date, vendors(name)")
+      .eq(column, subjectId)
+      .order("reported_date", { ascending: false }),
+    supabase.from("vendors").select("id, name").order("name", { ascending: true }),
+  ]);
 
   const rows: MaintenanceRequestRow[] = (requests ?? []).map((r) => ({
     id: r.id,
@@ -32,18 +36,25 @@ export default async function MaintenanceSection({
     cost: r.cost,
     reportedDate: r.reported_date,
     resolvedDate: r.resolved_date,
+    vendorName: (r.vendors as unknown as { name: string } | null)?.name ?? null,
   }));
 
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h2 className="mb-2 font-medium">{t("title")}</h2>
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="font-medium">{t("title")}</h2>
+          <Link href="/vendors" className="text-xs text-muted-foreground underline underline-offset-2">
+            {t("manageVendors")}
+          </Link>
+        </div>
         <MaintenanceRequestsList requests={rows} subjectType={subjectType} subjectId={subjectId} />
       </div>
       <Card>
         <CardContent className="pt-6">
           <MaintenanceRequestForm
             action={createMaintenanceRequest.bind(null, subjectType, subjectId)}
+            vendors={vendors ?? []}
           />
         </CardContent>
       </Card>

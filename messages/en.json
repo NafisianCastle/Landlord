@@ -72,14 +72,18 @@
     "addPlot": "Add plot",
     "statsLoadError": "Couldn't load your stats — figures below may be incomplete. Try refreshing.",
     "recentPlots": "Recent plots",
-    "byDistrict": "By district"
+    "byDistrict": "By district",
+    "netThisMonth": "Net this month",
+    "viewAnalytics": "View analytics"
   },
   "LocationBreakdown": {
     "noPlots": "No plots yet.",
     "summary": "{count, plural, =1 {# plot} other {# plots}} · {area} decimal"
   },
   "NeedsAttention": {
-    "missingBoundary": "{count, plural, =1 {# plot} other {# plots}} missing a boundary"
+    "missingBoundary": "{count, plural, =1 {# plot} other {# plots}} missing a boundary",
+    "leasesExpiring": "{count, plural, =1 {# lease} other {# leases}} expiring soon",
+    "leaseExpiringItem": "{tenant} — ends {date}"
   },
   "RecentPlots": {
     "noPlots": "No plots yet.",
@@ -239,11 +243,12 @@
     "confirmEndLease": "End this lease? No further payments will be scheduled.",
     "deleteLease": "Delete lease",
     "deleting": "Deleting...",
-    "confirmDeleteLease": "Delete this lease and its whole payment history? This can't be undone."
+    "confirmDeleteLease": "Delete this lease and its whole payment history? This can't be undone.",
+    "renewLease": "Renew lease",
+    "newEndDate": "New end date",
+    "saving": "Saving..."
   },
   "PlotBoundarySection": {
-    "walkWithGps": "Walk with GPS",
-    "drawOnMap": "Draw on map",
     "redrawBoundary": "Redraw boundary"
   },
   "DeletePlotButton": {
@@ -268,7 +273,11 @@
       "monthly": "monthly",
       "quarterly": "quarterly",
       "yearly": "yearly"
-    }
+    },
+    "receivedThisMonth": "Received this month",
+    "expensesThisMonth": "Expenses this month",
+    "netThisMonth": "Net this month",
+    "exportExpensesCsv": "Export expenses CSV"
   },
   "PlotActions": {
     "plotNameRequired": "Plot name is required",
@@ -284,10 +293,12 @@
     "tenantNameRequired": "Tenant name is required",
     "rentAmountRequired": "Rent amount must be greater than 0",
     "startDateRequired": "Lease start date is required",
-    "trialEnded": "Your trial has ended — please upgrade to continue."
+    "trialEnded": "Your trial has ended — please upgrade to continue.",
+    "newEndDateRequired": "New end date is required"
   },
   "MaintenanceSection": {
-    "title": "Maintenance"
+    "title": "Maintenance",
+    "manageVendors": "Manage vendors"
   },
   "MaintenanceActions": {
     "titleRequired": "Title is required"
@@ -298,7 +309,9 @@
     "reportedDate": "Reported date",
     "description": "Description",
     "saving": "Saving...",
-    "addRequest": "Add request"
+    "addRequest": "Add request",
+    "vendor": "Vendor",
+    "noVendor": "No vendor"
   },
   "MaintenanceRequestsList": {
     "reportedOn": "reported {date}",
@@ -312,28 +325,6 @@
       "in_progress": "In progress",
       "resolved": "Resolved"
     }
-  },
-  "BoundaryWalker": {
-    "webglError": "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
-    "imageryUnavailable": "Imagery not available at this zoom level here — zoom out a bit.",
-    "removePointConfirm": "Remove this point from the boundary?",
-    "geolocationUnavailable": "Geolocation is not available on this device/browser.",
-    "queuedOfflineMessage": "Saved on this device — will finish syncing once you're back online.",
-    "mapErrorWithFallback": "{mapError} You can still mark points below — they'll save without a map preview.",
-    "streets": "Streets",
-    "satellite": "Satellite",
-    "recenterOnMe": "Recenter on me",
-    "walkedSoFar": "{distance} m walked so far",
-    "perimeterStats": "{distance} m perimeter • {decimal} decimal ({sqMeters} m²)",
-    "gpsDotHelp": "The blue dot is your current GPS position — that's the exact point \"Mark point\" will record. Tap a marked point on the map to remove just that one.",
-    "offlineBanner": "Offline — points are saved on this device and will sync automatically.",
-    "pendingSync": "{count} point(s) waiting to sync.",
-    "walkInstructions": "Walk the boundary of the plot. Tap \"Mark point\" at each corner as you go.",
-    "gettingLocation": "Getting location...",
-    "markPoint": "Mark point",
-    "undoLast": "Undo last",
-    "saving": "Saving...",
-    "finish": "Finish ({count} points)"
   },
   "ManualBoundaryDrawer": {
     "webglError": "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
@@ -471,9 +462,6 @@
     "redirecting": "Redirecting to payment...",
     "payWith": "Pay with bKash / card / bank"
   },
-  "SyncManager": {
-    "syncFailed": "Some changes couldn't sync — will retry automatically."
-  },
   "PlotCollaborators": {
     "title": "Shared with",
     "trialEnded": "Your trial has ended — please upgrade to continue.",
@@ -485,7 +473,7 @@
     "inviteEmail": "Email address",
     "role": "Role",
     "roleViewer": "Viewer (read-only)",
-    "roleEditor": "Editor (can edit and walk boundary)",
+    "roleEditor": "Editor (can edit and draw boundary)",
     "invite": "Invite",
     "inviting": "Inviting...",
     "invited": "Invited",
@@ -592,15 +580,14 @@
     "logIn": "Log in",
     "getStarted": "Get started",
     "heroTitle": "Manage your land, apartments, and rent — from your phone",
-    "heroSubtitle": "Walk and map plot boundaries, track apartments, collect rent on schedule, and keep ownership documents safe. Works offline, built for how landlords actually operate in Bangladesh.",
-    "heroCta": "Start free trial",
-    "heroSecondaryCta": "See pricing",
-    "heroTrialNote": "{days}-day free trial, no card required. Pay once after that — no subscription.",
+    "heroSubtitle": "Map plot boundaries, track apartments, collect rent on schedule, and keep ownership documents safe. Works offline, built for how landlords actually operate in Bangladesh.",
+    "heroCta": "Get started free",
+    "heroTrialNote": "Free to use, no card required, no subscription.",
     "featuresTitle": "Everything a landlord needs, in one app",
     "features": {
       "0": {
         "title": "Map plot boundaries",
-        "description": "Walk a plot's edges with your phone's GPS or draw them on satellite imagery — no surveyor needed."
+        "description": "Mark a plot's corners on satellite imagery — no surveyor needed."
       },
       "1": {
         "title": "Track apartments",
@@ -631,9 +618,9 @@
         "description": "Export your full rent payment history to CSV any time — for your own records or for tax season."
       }
     },
-    "pricingTitle": "Simple, one-time pricing",
-    "pricingAmount": "BDT {amount}",
-    "pricingHint": "{days}-day free trial, then pay once. Use it for life — no renewals, no subscription."
+    "pricingTitle": "Free to use",
+    "pricingAmount": "Free",
+    "pricingHint": "No trial, no payment, no subscription — every feature, free."
   },
   "AdminNav": {
     "overview": "Overview",
@@ -703,5 +690,77 @@
     "grantAccess": "Grant lifetime access",
     "granting": "Granting...",
     "granted": "Access granted"
+  },
+  "ExpenseActions": {
+    "amountRequired": "Amount must be greater than 0"
+  },
+  "ExpenseForm": {
+    "category": "Category",
+    "categoryOption": {
+      "tax": "Tax",
+      "insurance": "Insurance",
+      "utility": "Utility",
+      "repair": "Repair",
+      "management_fee": "Management fee",
+      "other": "Other"
+    },
+    "amount": "Amount",
+    "expenseDate": "Expense date",
+    "notes": "Notes",
+    "saving": "Saving...",
+    "addExpense": "Add expense"
+  },
+  "ExpensesList": {
+    "categoryOption": {
+      "tax": "Tax",
+      "insurance": "Insurance",
+      "utility": "Utility",
+      "repair": "Repair",
+      "management_fee": "Management fee",
+      "other": "Other"
+    },
+    "delete": "Delete",
+    "noExpensesYet": "No expenses yet.",
+    "total": "Total: {amount}"
+  },
+  "ExpenseSection": {
+    "title": "Expenses"
+  },
+  "VendorActions": {
+    "nameRequired": "Vendor name is required"
+  },
+  "VendorForm": {
+    "name": "Name",
+    "trade": "Trade",
+    "tradePlaceholder": "e.g. Plumber, Electrician",
+    "phone": "Phone",
+    "notes": "Notes",
+    "saving": "Saving...",
+    "addVendor": "Add vendor"
+  },
+  "VendorsList": {
+    "delete": "Delete",
+    "noVendorsYet": "No vendors yet."
+  },
+  "VendorsPage": {
+    "title": "Vendors",
+    "signInRequired": "Sign in to manage your vendors."
+  },
+  "AnalyticsPage": {
+    "title": "Analytics",
+    "signInRequired": "Sign in to view analytics.",
+    "occupancyRate": "Occupancy rate",
+    "unitsLeased": "{leased} of {total} units leased",
+    "portfolioProfit12mo": "Profit (last 12 months)",
+    "incomeVsExpense": "Income vs. expense",
+    "roiPerProperty": "ROI per property",
+    "roiValue": "{value}% / yr",
+    "noPropertiesYet": "No properties yet."
+  },
+  "TrendChart": {
+    "income": "Income",
+    "expense": "Expense",
+    "chartLabel": "Monthly income and expense trend",
+    "month": "Month"
   }
 }
