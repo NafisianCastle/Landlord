@@ -89,7 +89,7 @@
     "noPlots": "এখনো কোনো প্লট নেই।",
     "noLocationSet": "অবস্থান নির্ধারণ করা হয়নি",
     "areaValue": "{area} বর্গমিটার",
-    "boundaryNotWalked": "সীমানা এখনো মাপা হয়নি",
+    "boundaryNotWalked": "সীমানা এখনো আঁকা হয়নি",
     "sharedBadge": "শেয়ারকৃত"
   },
   "StatsCards": {
@@ -120,7 +120,7 @@
     "loadError": "আপনার প্লট লোড করা যায়নি — {message}। পাতাটি রিফ্রেশ করে দেখুন।",
     "noLocationSet": "অবস্থান নির্ধারণ করা হয়নি",
     "areaValue": "{area} বর্গমিটার",
-    "boundaryNotWalked": "সীমানা এখনো মাপা হয়নি",
+    "boundaryNotWalked": "সীমানা এখনো আঁকা হয়নি",
     "noPlotsYet": "এখনো কোনো প্লট নেই। প্রথমটি যোগ করুন।",
     "sharedBadge": "শেয়ারকৃত",
     "searchPlaceholder": "নাম, গ্রাম বা জেলা দিয়ে খুঁজুন",
@@ -206,7 +206,7 @@
   "PlotDetailPage": {
     "loadError": "এই প্লটটি লোড করা যায়নি — {message}। পাতাটি রিফ্রেশ করে দেখুন।",
     "navigateHere": "এখানে যান",
-    "areaFromGps": "জমির পরিমাণ (জিপিএস সীমানা থেকে)",
+    "areaFromGps": "জমির পরিমাণ (আঁকা সীমানা থেকে)",
     "unitDecimal": "{value} ডেসিমেল",
     "unitBigha": "{value} বিঘা",
     "unitKatha": "{value} কাঠা",
@@ -216,7 +216,7 @@
     "unitSqFt": "{value} বর্গফুট",
     "unitSqKm": "{value} বর্গকিলোমিটার",
     "regionalEst": "(আঞ্চলিক আনুমানিক)",
-    "gpsDerivedNotice": "জিপিএস থেকে পাওয়া — হেঁটে বা হাতে সীমানা আঁকায় সামান্য ভুল হতে পারে। নিচে দলিল ও প্রকৃত পরিমাণের সাথে মিলিয়ে দেখুন।",
+    "gpsDerivedNotice": "আঁকা সীমানা থেকে পাওয়া — ম্যাপে সীমানা আঁকায় সামান্য ভুল হতে পারে। নিচে দলিল ও প্রকৃত পরিমাণের সাথে মিলিয়ে দেখুন।",
     "dolilVsActual": "দলিল বনাম প্রকৃত পরিমাপ",
     "dolilLabel": "(দলিল)",
     "actualLabel": "(প্রকৃত)",

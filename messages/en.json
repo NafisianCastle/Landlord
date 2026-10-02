@@ -89,7 +89,7 @@
     "noPlots": "No plots yet.",
     "noLocationSet": "No location set",
     "areaValue": "{area} m²",
-    "boundaryNotWalked": "boundary not walked yet",
+    "boundaryNotWalked": "boundary not drawn yet",
     "sharedBadge": "Shared"
   },
   "StatsCards": {
@@ -111,7 +111,7 @@
   },
   "WelcomeCard": {
     "title": "Add your first plot",
-    "subtitle": "Walk or draw a boundary to see area, value, and location stats here.",
+    "subtitle": "Draw a boundary to see area, value, and location stats here.",
     "addPlot": "Add plot"
   },
   "PlotsPage": {
@@ -120,7 +120,7 @@
     "loadError": "Couldn't load your plots — {message}. Try refreshing the page.",
     "noLocationSet": "No location set",
     "areaValue": "{area} m²",
-    "boundaryNotWalked": "boundary not walked yet",
+    "boundaryNotWalked": "boundary not drawn yet",
     "noPlotsYet": "No plots yet. Add your first one.",
     "sharedBadge": "Shared",
     "searchPlaceholder": "Search by name, village, or district",
@@ -139,7 +139,7 @@
   },
   "PlotsMapClient": {
     "loadingMap": "Loading map…",
-    "noBoundaries": "No walked boundaries yet — plots with a drawn boundary appear here."
+    "noBoundaries": "No drawn boundaries yet — plots with a drawn boundary appear here."
   },
   "PlotMetadataForm": {
     "plotName": "Plot name",
@@ -206,7 +206,7 @@
   "PlotDetailPage": {
     "loadError": "Couldn't load this plot — {message}. Try refreshing the page.",
     "navigateHere": "Navigate here",
-    "areaFromGps": "Area (from GPS boundary)",
+    "areaFromGps": "Area (from drawn boundary)",
     "unitDecimal": "{value} decimal",
     "unitBigha": "{value} bigha",
     "unitKatha": "{value} katha",
@@ -216,7 +216,7 @@
     "unitSqFt": "{value} sq ft",
     "unitSqKm": "{value} sq km",
     "regionalEst": "(regional est.)",
-    "gpsDerivedNotice": "GPS-derived — walking/manual boundary drawing can introduce error. See dolil and actual measurements below for cross-check.",
+    "gpsDerivedNotice": "Derived from the drawn boundary — map tracing can introduce error. See dolil and actual measurements below for cross-check.",
     "dolilVsActual": "Dolil vs. actual measurement",
     "dolilLabel": "(dolil)",
     "actualLabel": "(actual)",

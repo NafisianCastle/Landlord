@@ -208,7 +208,7 @@ export async function deletePlot(plotId: string) {
 }
 
 /**
- * Finalizes a walked boundary: builds a GeoJSON polygon from the tapped
+ * Finalizes a drawn boundary: builds a GeoJSON polygon from the tapped
  * points and writes it via the idempotent upsert_plot_boundary RPC (safe to
  * retry — full-replace by plot_id, single writer per plot).
  */

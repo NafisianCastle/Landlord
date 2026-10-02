@@ -5,7 +5,7 @@ Landlord is a land-plot management web app for recording plot boundaries, tracki
 ## What this app does
 
 - Map and manage land plots from a dashboard
-- Walk plot boundaries on a map and save the resulting GeoJSON boundary
+- Draw plot boundaries on a map and save the resulting GeoJSON boundary
 - Store plot documents such as PDFs with optional client-side encryption
 - Track area, purchase value, current value, and location-based summaries
 - Support offline-first behavior with local persistence and sync queueing
