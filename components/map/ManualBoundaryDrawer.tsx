@@ -162,11 +162,6 @@ export default function ManualBoundaryDrawer({
 
   const queryTooShort = searchQuery.trim().length < 3;
 
-  function handleSearchChange(value: string) {
-    setSearchQuery(value);
-    setSearching(value.trim().length >= 3);
-  }
-
   useEffect(() => {
     if (searchQuery.trim().length < 3) return;
     searchAbortRef.current?.abort();
