@@ -742,6 +742,9 @@
   },
   "VendorsList": {
     "delete": "মুছুন",
+    "edit": "সম্পাদনা",
+    "editVendor": "ভেন্ডর সম্পাদনা করুন",
+    "saveChanges": "পরিবর্তন সংরক্ষণ করুন",
     "noVendorsYet": "এখনো কোনো ভেন্ডর নেই।"
   },
   "VendorsPage": {

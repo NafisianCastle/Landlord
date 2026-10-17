@@ -41,6 +41,7 @@ export async function createVendor(_prevState: unknown, formData: FormData) {
 export async function updateVendor(vendorId: string, _prevState: unknown, formData: FormData) {
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
+  if (!auth.hasAccess) redirect("/paywall");
 
   const t = await getTranslations("VendorActions");
 
@@ -61,6 +62,7 @@ export async function updateVendor(vendorId: string, _prevState: unknown, formDa
 export async function deleteVendor(vendorId: string) {
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
+  if (!auth.hasAccess) redirect("/paywall");
 
   const supabase = await createClient();
   const { error } = await supabase.from("vendors").delete().eq("id", vendorId);

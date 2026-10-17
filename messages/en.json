@@ -742,6 +742,9 @@
   },
   "VendorsList": {
     "delete": "Delete",
+    "edit": "Edit",
+    "editVendor": "Edit vendor",
+    "saveChanges": "Save changes",
     "noVendorsYet": "No vendors yet."
   },
   "VendorsPage": {

@@ -13,6 +13,12 @@ import GuestDashboard from "@/components/dashboard/GuestDashboard";
 import PageContainer from "@/components/system/PageContainer";
 import PageHeader from "@/components/system/PageHeader";
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function isoDateInDays(days: number) {
+  return new Date(Date.now() + days * DAY_MS).toISOString().slice(0, 10);
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
@@ -67,7 +73,7 @@ export default async function DashboardPage() {
       .select("id, tenant_name, end_date, plot_id, apartment_id, land_plots(name), apartments(name)")
       .eq("status", "active")
       .not("end_date", "is", null)
-      .lte("end_date", new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10))
+      .lte("end_date", isoDateInDays(14))
       .order("end_date", { ascending: true }),
   ]);
 

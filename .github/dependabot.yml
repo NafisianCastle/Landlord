@@ -9,3 +9,8 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    ignore:
+      # ESLint 10 breaks `npm run lint`: the eslint-plugin-react bundled with
+      # eslint-config-next crashes under it. Remove once eslint-config-next supports v10.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]

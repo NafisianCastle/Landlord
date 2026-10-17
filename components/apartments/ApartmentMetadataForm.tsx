@@ -89,35 +89,43 @@ export default function ApartmentMetadataForm({
         )
       : UPAZILAS;
 
-  useEffect(() => {
-    if (!upazilaMatch) return;
-    const parentDistrict = DISTRICTS.find((d) => d.id === upazilaMatch.districtId);
-    if (parentDistrict && byName(parentDistrict.name) !== byName(districtName)) {
-      setDistrictName(parentDistrict.name);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [upazilaName]);
-
-  useEffect(() => {
-    if (!districtMatch) return;
-    const parentDivision = DIVISIONS.find((d) => d.id === districtMatch.divisionId);
-    if (parentDivision && byName(parentDivision.name) !== byName(divisionName)) {
-      setDivisionName(parentDivision.name);
-    }
-    if (upazilaMatch && upazilaMatch.districtId !== districtMatch.id) {
-      setUpazilaName("");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [districtName]);
-
-  useEffect(() => {
-    if (!divisionMatch) return;
-    if (districtMatch && districtMatch.divisionId !== divisionMatch.id) {
+  // Selecting a lower level fills in its parents; selecting a higher level clears
+  // lower levels that no longer belong to it.
+  function selectDivision(name: string) {
+    setDivisionName(name);
+    const division = DIVISIONS.find((d) => byName(d.name) === byName(name));
+    if (division && districtMatch && districtMatch.divisionId !== division.id) {
       setDistrictName("");
       setUpazilaName("");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [divisionName]);
+  }
+
+  function selectDistrict(name: string) {
+    setDistrictName(name);
+    const district = DISTRICTS.find((d) => byName(d.name) === byName(name));
+    if (!district) return;
+    const parentDivision = DIVISIONS.find((d) => d.id === district.divisionId);
+    if (parentDivision && byName(parentDivision.name) !== byName(divisionName)) {
+      setDivisionName(parentDivision.name);
+    }
+    if (upazilaMatch && upazilaMatch.districtId !== district.id) {
+      setUpazilaName("");
+    }
+  }
+
+  function selectUpazila(name: string) {
+    setUpazilaName(name);
+    const upazila = UPAZILAS.find((u) => byName(u.name) === byName(name));
+    if (!upazila) return;
+    const parentDistrict = DISTRICTS.find((d) => d.id === upazila.districtId);
+    if (parentDistrict && byName(parentDistrict.name) !== byName(districtName)) {
+      setDistrictName(parentDistrict.name);
+      const parentDivision = DIVISIONS.find((d) => d.id === parentDistrict.divisionId);
+      if (parentDivision && byName(parentDivision.name) !== byName(divisionName)) {
+        setDivisionName(parentDivision.name);
+      }
+    }
+  }
 
   useEffect(() => onSessionChange(() => setUnlocked(getSessionDEK() !== null)), []);
 
@@ -212,7 +220,7 @@ export default function ApartmentMetadataForm({
             autoComplete="off"
             placeholder={t("selectDivision")}
             value={divisionName}
-            onChange={(e) => setDivisionName(e.target.value)}
+            onChange={(e) => selectDivision(e.target.value)}
           />
           <datalist id="apt-division-options">
             {DIVISIONS.map((d) => (
@@ -229,7 +237,7 @@ export default function ApartmentMetadataForm({
             autoComplete="off"
             placeholder={t("selectDistrict")}
             value={districtName}
-            onChange={(e) => setDistrictName(e.target.value)}
+            onChange={(e) => selectDistrict(e.target.value)}
           />
           <datalist id="apt-district-options">
             {districtOptions.map((d) => (
@@ -246,7 +254,7 @@ export default function ApartmentMetadataForm({
             autoComplete="off"
             placeholder={t("selectUpazila")}
             value={upazilaName}
-            onChange={(e) => setUpazilaName(e.target.value)}
+            onChange={(e) => selectUpazila(e.target.value)}
           />
           <datalist id="apt-upazila-options">
             {upazilaOptions.map((u) => (

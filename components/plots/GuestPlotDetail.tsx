@@ -33,8 +33,8 @@ export default function GuestPlotDetail({ plotId }: { plotId: string }) {
   }, [plotId]);
 
   useEffect(() => {
-    reload();
-  }, [reload]);
+    getGuestPlot(plotId).then((found) => setPlot(found ?? null));
+  }, [plotId]);
 
   const handleSaveBoundary = useCallback(
     async (id: string, points: LatLng[]) => {

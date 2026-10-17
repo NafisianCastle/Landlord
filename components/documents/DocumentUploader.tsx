@@ -19,11 +19,14 @@ export default function DocumentUploader({ plotId }: { plotId: string }) {
   const validationMessages = useTranslations("DocumentActions");
   const [clientError, setClientError] = useState<string | null>(null);
 
+  const [prevState, setPrevState] = useState(state);
+  if (state !== prevState) {
+    setPrevState(state);
+    if (state?.success) setSelectedFile(null);
+  }
+
   useEffect(() => {
-    if (state?.success) {
-      setSelectedFile(null);
-      formRef.current?.reset();
-    }
+    if (state?.success) formRef.current?.reset();
   }, [state]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

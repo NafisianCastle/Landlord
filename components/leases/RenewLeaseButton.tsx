@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { renewLease, type LeaseSubjectType } from "@/app/actions/leases";
 import { Button } from "@/components/ui/button";
@@ -33,9 +33,11 @@ export default function RenewLeaseButton({
     undefined,
   );
 
-  useEffect(() => {
+  const [prevState, setPrevState] = useState(state);
+  if (state !== prevState) {
+    setPrevState(state);
     if (state?.success) setOpen(false);
-  }, [state]);
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { deleteVendor } from "@/app/actions/vendors";
 import { Button } from "@/components/ui/button";
+import EditVendorButton from "@/components/vendors/EditVendorButton";
 
 export interface VendorRow {
   id: string;
@@ -40,15 +41,18 @@ export default function VendorsList({ vendors }: { vendors: VendorRow[] }) {
               </span>
               {v.notes && <span className="text-xs text-muted-foreground">{v.notes}</span>}
             </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              disabled={pending && pendingId === v.id}
-              onClick={() => remove(v.id)}
-            >
-              {t("delete")}
-            </Button>
+            <div className="flex shrink-0 gap-1">
+              <EditVendorButton vendor={v} />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={pending && pendingId === v.id}
+                onClick={() => remove(v.id)}
+              >
+                {t("delete")}
+              </Button>
+            </div>
           </li>
         ))}
         {vendors.length === 0 && (
