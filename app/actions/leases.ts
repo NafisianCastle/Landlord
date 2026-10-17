@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
+import { validateLease, validateForm, money } from "@/lib/validation/forms";
 
 export type LeaseSubjectType = "plot" | "apartment";
 
@@ -31,12 +32,17 @@ export async function createLease(
   _prevState: unknown,
   formData: FormData,
 ) {
+  if (subjectType !== "plot" && subjectType !== "apartment") return { error: "Invalid property type." };
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
   if (!auth.hasAccess) redirect("/paywall");
   const { user } = auth;
 
   const t = await getTranslations("LeaseActions");
+
+  const validationError = validateLease(formData);
+  if (validationError) return { error: validationError };
+
   const fields = leaseFieldsFromForm(formData);
   if (!fields.tenant_name) return { error: t("tenantNameRequired") };
   if (!fields.rent_amount || fields.rent_amount <= 0) return { error: t("rentAmountRequired") };
@@ -72,10 +78,14 @@ export async function updateLease(
   _prevState: unknown,
   formData: FormData,
 ) {
+  if (subjectType !== "plot" && subjectType !== "apartment") return { error: "Invalid property type." };
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
   const t = await getTranslations("LeaseActions");
   if (!auth.hasAccess) return { error: t("trialEnded") };
+
+  const validationError = validateLease(formData);
+  if (validationError) return { error: validationError };
 
   const fields = leaseFieldsFromForm(formData);
   if (!fields.tenant_name) return { error: t("tenantNameRequired") };
@@ -100,6 +110,7 @@ export async function endLease(
   subjectType: LeaseSubjectType,
   subjectId: string,
 ) {
+  if (subjectType !== "plot" && subjectType !== "apartment") return { error: "Invalid property type." };
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
 
@@ -127,10 +138,14 @@ export async function renewLease(
   _prevState: unknown,
   formData: FormData,
 ) {
+  if (subjectType !== "plot" && subjectType !== "apartment") return { error: "Invalid property type." };
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
   const t = await getTranslations("LeaseActions");
   if (!auth.hasAccess) return { error: t("trialEnded") };
+
+  const validationError = validateForm(formData, { newEndDate: { kind: "date", max: 10 } });
+  if (validationError) return { error: validationError };
 
   const newEndDate = String(formData.get("newEndDate") ?? "") || null;
   if (!newEndDate) return { error: t("newEndDateRequired") };
@@ -158,6 +173,7 @@ export async function deleteLease(
   subjectType: LeaseSubjectType,
   subjectId: string,
 ) {
+  if (subjectType !== "plot" && subjectType !== "apartment") return { error: "Invalid property type." };
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
   if (!auth.hasAccess) redirect("/paywall");
@@ -177,10 +193,14 @@ export async function recordPayment(
   _prevState: unknown,
   formData: FormData,
 ) {
+  if (subjectType !== "plot" && subjectType !== "apartment") return { error: "Invalid property type." };
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
   const t = await getTranslations("LeaseActions");
   if (!auth.hasAccess) return { error: t("trialEnded") };
+
+  const validationError = validateForm(formData, { paidAmount: money, paidDate: { kind: "date", max: 10 } });
+  if (validationError) return { error: validationError };
 
   const paidAmount = formData.get("paidAmount") ? Number(formData.get("paidAmount")) : null;
   const paidDate = String(formData.get("paidDate") ?? "") || new Date().toISOString().slice(0, 10);
@@ -203,6 +223,7 @@ export async function unmarkPayment(
   subjectType: LeaseSubjectType,
   subjectId: string,
 ) {
+  if (subjectType !== "plot" && subjectType !== "apartment") return { error: "Invalid property type." };
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
 

@@ -5,12 +5,17 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin";
+import { validateForm, money, UUID } from "@/lib/validation/forms";
 
 export async function updateAppSettings(_prevState: unknown, formData: FormData) {
   const admin = await requireAdmin();
   if (!admin) redirect("/dashboard");
 
   const t = await getTranslations("AdminSettingsActions");
+  const validationError = validateForm(formData, {
+    lifetimePriceBdt: money, trialDays: { kind: "number", min: 1, integer: true, max: 6 },
+  });
+  if (validationError) return { error: validationError };
   const lifetimePriceBdt = Number(formData.get("lifetimePriceBdt"));
   const trialDays = Number(formData.get("trialDays"));
 
@@ -39,6 +44,13 @@ export async function createCoupon(_prevState: unknown, formData: FormData) {
   if (!admin) redirect("/dashboard");
 
   const t = await getTranslations("AdminCouponsActions");
+  const validationError = validateForm(formData, {
+    code: { max: 64, pattern: /^[a-z0-9_-]+$/i },
+    discountType: { choices: ["percent", "fixed"] }, discountValue: money,
+    maxRedemptions: { kind: "number", min: 1, integer: true, max: 10 },
+    expiresAt: { kind: "date", max: 10 },
+  });
+  if (validationError) return { error: validationError };
   const code = String(formData.get("code") ?? "").trim().toUpperCase();
   const discountType = String(formData.get("discountType") ?? "percent");
   const discountValue = Number(formData.get("discountValue"));
@@ -73,6 +85,7 @@ export async function toggleCoupon(couponId: string, active: boolean) {
   const admin = await requireAdmin();
   if (!admin) redirect("/dashboard");
 
+  if (typeof couponId !== "string" || !UUID.test(couponId) || typeof active !== "boolean") return { error: "Invalid coupon." };
   const supabaseAdmin = createAdminClient();
   const { error } = await supabaseAdmin
     .from("referral_coupons")
@@ -88,6 +101,7 @@ export async function grantLifetimeAccess(userId: string) {
   const admin = await requireAdmin();
   if (!admin) redirect("/dashboard");
 
+  if (typeof userId !== "string" || !UUID.test(userId)) return { error: "Invalid account ID." };
   const supabaseAdmin = createAdminClient();
   const { error } = await supabaseAdmin.from("subscriptions").upsert(
     {

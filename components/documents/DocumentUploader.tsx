@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { uploadDocument } from "@/app/actions/documents";
 import { Button } from "@/components/ui/button";
 import { encryptBytes, toPgBytea } from "@/lib/crypto/encryption";
 import { getSessionDEK } from "@/lib/crypto/session";
+import { validatePdf } from "@/lib/validation/documents";
 
 export default function DocumentUploader({ plotId }: { plotId: string }) {
   const [state, formAction, pending] = useActionState(
@@ -15,6 +16,8 @@ export default function DocumentUploader({ plotId }: { plotId: string }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const t = useTranslations("DocumentUploader");
+  const validationMessages = useTranslations("DocumentActions");
+  const [clientError, setClientError] = useState<string | null>(null);
 
   useEffect(() => {
     if (state?.success) {
@@ -24,22 +27,30 @@ export default function DocumentUploader({ plotId }: { plotId: string }) {
   }, [state]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    const dek = getSessionDEK();
-    if (!dek) return; // plaintext path: let the form submit normally
-
     e.preventDefault();
+    setClientError(null);
+    const dek = getSessionDEK();
     const form = e.currentTarget;
     const fileInput = form.elements.namedItem("file") as HTMLInputElement;
     const file = fileInput.files?.[0];
     if (!file) return;
+    const validationError = await validatePdf(file);
+    if (validationError) {
+      setClientError(validationMessages(validationError));
+      return;
+    }
+    const fd = new FormData(form);
+    if (!dek) {
+      startTransition(() => formAction(fd));
+      return;
+    }
 
     const { ciphertext, iv } = await encryptBytes(new Uint8Array(await file.arrayBuffer()), dek);
 
-    const fd = new FormData(form);
     fd.set("file", new Blob([ciphertext.slice()], { type: "application/octet-stream" }), file.name);
     fd.set("originalFileName", file.name);
     fd.set("encryptionIvHex", toPgBytea(iv));
-    formAction(fd);
+    startTransition(() => formAction(fd));
   }
 
   return (
@@ -49,9 +60,10 @@ export default function DocumentUploader({ plotId }: { plotId: string }) {
         type="file"
         accept="application/pdf"
         required
-        onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
+        onChange={(e) => { setSelectedFile(e.target.files?.[0] ?? null); setClientError(null); }}
         className="text-sm text-foreground"
       />
+      {clientError && <p className="text-sm text-destructive">{clientError}</p>}
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
       {state?.success && <p className="text-sm text-muted-foreground">{t("uploaded")}</p>}
       <Button type="submit" size="sm" disabled={pending} className="self-start">

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
+import { validateForm, expenseRules } from "@/lib/validation/forms";
 
 export type ExpenseSubjectType = "plot" | "apartment";
 export type ExpenseCategory =
@@ -34,12 +35,17 @@ export async function createExpense(
   _prevState: unknown,
   formData: FormData,
 ) {
+  if (subjectType !== "plot" && subjectType !== "apartment") return { error: "Invalid property type." };
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
   if (!auth.hasAccess) redirect("/paywall");
   const { user } = auth;
 
   const t = await getTranslations("ExpenseActions");
+
+  const validationError = validateForm(formData, expenseRules);
+  if (validationError) return { error: validationError };
+
   const fields = fieldsFromForm(formData);
   if (!fields.amount || fields.amount <= 0) return { error: t("amountRequired") };
 
@@ -63,6 +69,7 @@ export async function deleteExpense(
   subjectType: ExpenseSubjectType,
   subjectId: string,
 ) {
+  if (subjectType !== "plot" && subjectType !== "apartment") return { error: "Invalid property type." };
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
 
