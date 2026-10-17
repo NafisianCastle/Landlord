@@ -8,6 +8,12 @@ import EndLeaseButton from "@/components/leases/EndLeaseButton";
 import DeleteLeaseButton from "@/components/leases/DeleteLeaseButton";
 import RenewLeaseButton from "@/components/leases/RenewLeaseButton";
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function endsWithinDays(endDate: string, days: number) {
+  return new Date(endDate).getTime() - Date.now() <= days * DAY_MS;
+}
+
 export default async function LeaseSection({
   subjectType,
   subjectId,
@@ -91,15 +97,14 @@ export default async function LeaseSection({
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {lease.end_date &&
-          new Date(lease.end_date).getTime() - Date.now() <= 14 * 24 * 60 * 60 * 1000 && (
-            <RenewLeaseButton
-              leaseId={lease.id}
-              subjectType={subjectType}
-              subjectId={subjectId}
-              currentEndDate={lease.end_date}
-            />
-          )}
+        {lease.end_date && endsWithinDays(lease.end_date, 14) && (
+          <RenewLeaseButton
+            leaseId={lease.id}
+            subjectType={subjectType}
+            subjectId={subjectId}
+            currentEndDate={lease.end_date}
+          />
+        )}
         <EndLeaseButton leaseId={lease.id} subjectType={subjectType} subjectId={subjectId} />
         <DeleteLeaseButton leaseId={lease.id} subjectType={subjectType} subjectId={subjectId} />
       </div>

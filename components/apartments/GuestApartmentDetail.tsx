@@ -26,8 +26,8 @@ export default function GuestApartmentDetail({ apartmentId }: { apartmentId: str
   }, [apartmentId]);
 
   useEffect(() => {
-    reload();
-  }, [reload]);
+    getGuestApartment(apartmentId).then((found) => setApartment(found ?? null));
+  }, [apartmentId]);
 
   const handleUpdateMetadata = useCallback(
     async (_prevState: unknown, formData: FormData) => {

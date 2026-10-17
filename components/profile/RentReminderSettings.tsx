@@ -6,6 +6,14 @@ import { Button } from "@/components/ui/button";
 
 type Status = "unsupported" | "denied" | "unsubscribed" | "subscribed";
 
+async function getInitialStatus(): Promise<Status> {
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) return "unsupported";
+  if (Notification.permission === "denied") return "denied";
+  const registration = await navigator.serviceWorker.ready;
+  const sub = await registration.pushManager.getSubscription();
+  return sub ? "subscribed" : "unsubscribed";
+}
+
 function urlBase64ToUint8Array(base64: string) {
   const padding = "=".repeat((4 - (base64.length % 4)) % 4);
   const base64Safe = (base64 + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -20,18 +28,7 @@ export default function RentReminderSettings() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-      setStatus("unsupported");
-      return;
-    }
-    if (Notification.permission === "denied") {
-      setStatus("denied");
-      return;
-    }
-    navigator.serviceWorker.ready.then(async (registration) => {
-      const sub = await registration.pushManager.getSubscription();
-      setStatus(sub ? "subscribed" : "unsubscribed");
-    });
+    getInitialStatus().then(setStatus);
   }, []);
 
   async function handleSubscribe() {
