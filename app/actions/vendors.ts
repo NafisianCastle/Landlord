@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
+import { validateForm, vendorRules } from "@/lib/validation/forms";
 
 function fieldsFromForm(formData: FormData) {
   return {
@@ -22,6 +23,10 @@ export async function createVendor(_prevState: unknown, formData: FormData) {
   const { user } = auth;
 
   const t = await getTranslations("VendorActions");
+
+  const validationError = validateForm(formData, vendorRules);
+  if (validationError) return { error: validationError };
+
   const fields = fieldsFromForm(formData);
   if (!fields.name) return { error: t("nameRequired") };
 
@@ -38,6 +43,10 @@ export async function updateVendor(vendorId: string, _prevState: unknown, formDa
   if (!auth) redirect("/login");
 
   const t = await getTranslations("VendorActions");
+
+  const validationError = validateForm(formData, vendorRules);
+  if (validationError) return { error: validationError };
+
   const fields = fieldsFromForm(formData);
   if (!fields.name) return { error: t("nameRequired") };
 

@@ -5,9 +5,12 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
+import { validateProperty, validateForm } from "@/lib/validation/forms";
+import { validateGuestProperties } from "@/lib/validation/guests";
 import type { Polygon } from "geojson";
 import type { LatLng } from "@/lib/geo";
 import { isSimplePolygon, pointsToPolygon } from "@/lib/geo";
+import { validBoundaryPoints } from "@/lib/validation/geometry";
 
 /**
  * village/mutation_number/purchase_price/purchase_date/current_estimated_value/notes
@@ -67,9 +70,8 @@ export async function createPlot(_prevState: unknown, formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const t = await getTranslations("PlotActions");
   if (!name) return { error: t("plotNameRequired") };
-
-  const { data: sessionCheck } = await supabase.auth.getSession();
-  console.log("[createPlot] user.id", user.id, "session.user.id", sessionCheck.session?.user.id, "has session", !!sessionCheck.session);
+  const validationError = validateProperty(formData);
+  if (validationError) return { error: validationError };
 
   const { data, error } = await supabase
     .from("land_plots")
@@ -119,7 +121,10 @@ export interface GuestPlotPayload {
 export async function migrateGuestPlots(plots: GuestPlotPayload[]) {
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
-  if (!auth.hasAccess || plots.length === 0) return { migrated: 0 };
+  if (!auth.hasAccess) return { migrated: 0 };
+  const error = validateGuestProperties(plots);
+  if (error) return { migrated: 0, error };
+  if (plots.length === 0) return { migrated: 0 };
 
   const supabase = await createClient();
   let migrated = 0;
@@ -176,6 +181,9 @@ export async function updatePlotMetadata(
   const t = await getTranslations("PlotActions");
   if (!auth.hasAccess) return { error: t("trialEnded") };
 
+  const validationError = validateProperty(formData);
+  if (validationError) return { error: validationError };
+
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -218,10 +226,10 @@ export async function savePlotBoundary(plotId: string, points: LatLng[]) {
   const t = await getTranslations("PlotActions");
   if (!auth.hasAccess) return { error: t("trialEnded") };
 
-  if (points.length < 3) {
+  if (!Array.isArray(points) || points.length < 3) {
     return { error: t("needThreePoints") };
   }
-  if (!isSimplePolygon(points)) {
+  if (!validBoundaryPoints(points) || !isSimplePolygon(points)) {
     return { error: t("invalidPolygon") };
   }
 
@@ -254,6 +262,8 @@ export async function inviteCollaborator(
   const role = String(formData.get("role") ?? "editor");
   if (!email) return { error: t("emailRequired") };
   if (role !== "viewer" && role !== "editor") return { error: t("invalidRole") };
+  const validationError = validateForm(formData, { email: { kind: "email", max: 254, required: true }, role: { choices: ["viewer", "editor"] } });
+  if (validationError) return { error: validationError };
 
   const supabase = await createClient();
   const { data: collaboratorId, error: lookupError } = await supabase.rpc(

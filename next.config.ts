@@ -5,7 +5,10 @@ import { withSentryConfig } from "@sentry/nextjs";
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    // 20 MiB document + AES-GCM tag and multipart overhead.
+    serverActions: { bodySizeLimit: "21mb" },
+  },
 };
 
 export default withSentryConfig(withNextIntl(nextConfig), {

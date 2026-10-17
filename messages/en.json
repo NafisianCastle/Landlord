@@ -382,6 +382,8 @@
     "next": "Next"
   },
   "DocumentActions": {
+    "invalidPdfContent": "The file does not contain a valid PDF header and end marker.",
+    "invalidEncryption": "Invalid encrypted attachment metadata or content type.",
     "notSignedIn": "Not signed in",
     "trialEnded": "Your trial has ended — please upgrade to continue.",
     "choosePdf": "Choose a PDF file",

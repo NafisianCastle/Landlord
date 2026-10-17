@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
+import { validateProperty, validateForm } from "@/lib/validation/forms";
+import { validateGuestProperties } from "@/lib/validation/guests";
 
 /**
  * building_name/unit_number/purchase_price/purchase_date/current_estimated_value/notes
@@ -62,6 +64,8 @@ export async function createApartment(_prevState: unknown, formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const t = await getTranslations("ApartmentActions");
   if (!name) return { error: t("apartmentNameRequired") };
+  const validationError = validateProperty(formData);
+  if (validationError) return { error: validationError };
 
   const { data, error } = await supabase
     .from("apartments")
@@ -107,7 +111,10 @@ export interface GuestApartmentPayload {
 export async function migrateGuestApartments(apartments: GuestApartmentPayload[]) {
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
-  if (!auth.hasAccess || apartments.length === 0) return { migrated: 0 };
+  if (!auth.hasAccess) return { migrated: 0 };
+  const error = validateGuestProperties(apartments);
+  if (error) return { migrated: 0, error };
+  if (apartments.length === 0) return { migrated: 0 };
 
   const supabase = await createClient();
   let migrated = 0;
@@ -148,6 +155,9 @@ export async function updateApartmentMetadata(
   if (!auth) redirect("/login");
   const t = await getTranslations("ApartmentActions");
   if (!auth.hasAccess) return { error: t("trialEnded") };
+
+  const validationError = validateProperty(formData);
+  if (validationError) return { error: validationError };
 
   const supabase = await createClient();
 
@@ -195,6 +205,8 @@ export async function inviteApartmentCollaborator(
   const role = String(formData.get("role") ?? "editor");
   if (!email) return { error: t("emailRequired") };
   if (role !== "viewer" && role !== "editor") return { error: t("invalidRole") };
+  const validationError = validateForm(formData, { email: { kind: "email", max: 254, required: true }, role: { choices: ["viewer", "editor"] } });
+  if (validationError) return { error: validationError };
 
   const supabase = await createClient();
   const { data: collaboratorId, error: lookupError } = await supabase.rpc(

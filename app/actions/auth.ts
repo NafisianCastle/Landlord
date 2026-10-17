@@ -5,9 +5,16 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { validateForm } from "@/lib/validation/forms";
 
 export async function signUp(_prevState: unknown, formData: FormData) {
-  const email = String(formData.get("email"));
+  const validationError = validateForm(formData, {
+    email: { kind: "email", max: 254, required: true },
+    password: { max: 1024, required: true, preserveWhitespace: true },
+    fullName: { max: 200 },
+  });
+  if (validationError) return { error: validationError };
+  const email = String(formData.get("email")).trim();
   const password = String(formData.get("password"));
   const fullName = String(formData.get("fullName") ?? "");
   const t = await getTranslations("AuthActions");
@@ -33,7 +40,13 @@ export async function signUp(_prevState: unknown, formData: FormData) {
 }
 
 export async function signIn(_prevState: unknown, formData: FormData) {
-  const email = String(formData.get("email"));
+  const validationError = validateForm(formData, {
+    email: { kind: "email", max: 254, required: true },
+    password: { max: 1024, required: true, preserveWhitespace: true },
+    fullName: { max: 200 },
+  });
+  if (validationError) return { error: validationError };
+  const email = String(formData.get("email")).trim();
   const password = String(formData.get("password"));
 
   const supabase = await createClient();
@@ -70,6 +83,9 @@ export async function signOut() {
 }
 
 export async function updateProfile(_prevState: unknown, formData: FormData) {
+  const validationError = validateForm(formData, { fullName: { max: 200 } });
+  if (validationError) return { error: validationError };
+
   const fullName = String(formData.get("fullName") ?? "").trim();
   const t = await getTranslations("AuthActions");
 
@@ -94,6 +110,9 @@ export async function updateProfile(_prevState: unknown, formData: FormData) {
 }
 
 export async function changePassword(_prevState: unknown, formData: FormData) {
+  const validationError = validateForm(formData, { currentPassword: { max: 1024, preserveWhitespace: true }, newPassword: { max: 1024, preserveWhitespace: true }, confirmPassword: { max: 1024, preserveWhitespace: true } });
+  if (validationError) return { error: validationError };
+
   const currentPassword = String(formData.get("currentPassword") ?? "");
   const newPassword = String(formData.get("newPassword") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
