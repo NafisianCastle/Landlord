@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProfileForm from "@/components/profile/ProfileForm";
 import ChangePasswordForm from "@/components/profile/ChangePasswordForm";
@@ -10,9 +11,7 @@ import ReferralSettings from "@/components/profile/ReferralSettings";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login");

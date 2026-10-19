@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import PageContainer from "@/components/system/PageContainer";
 import PageHeader from "@/components/system/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -8,9 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default async function LeasesPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   const t = await getTranslations("LeasesPage");
 
@@ -22,7 +21,7 @@ export default async function LeasesPage() {
     );
   }
 
-  await supabase.rpc("ensure_all_lease_payments");
+  const paymentsReady = Promise.resolve(supabase.rpc("ensure_all_lease_payments"));
 
   const [{ data: leases, error }, { data: unpaidPayments }, { data: rentStats }, { data: expenseStats }] =
     await Promise.all([
@@ -33,12 +32,12 @@ export default async function LeasesPage() {
       )
       .eq("status", "active")
       .order("created_at", { ascending: false }),
-    supabase
+    paymentsReady.then(() => supabase
       .from("lease_payments")
       .select("lease_id, due_date")
       .eq("paid", false)
-      .order("due_date", { ascending: true }),
-    supabase.from("lease_payment_stats").select("*").single(),
+      .order("due_date", { ascending: true })),
+    paymentsReady.then(() => supabase.from("lease_payment_stats").select("*").single()),
     supabase.from("expense_stats").select("*").single(),
   ]);
 

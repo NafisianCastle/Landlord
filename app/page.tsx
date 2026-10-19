@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { MapPin, Building2, Wallet, Bell, Wrench, ShieldCheck, WifiOff, FileSpreadsheet } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { SITE_URL } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,10 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const FEATURE_ICONS = [MapPin, Building2, Wallet, Bell, Wrench, ShieldCheck, WifiOff, FileSpreadsheet] as const;
 
 export default async function LandingPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (user) redirect("/dashboard");
 
   const t = await getTranslations("LandingPage");

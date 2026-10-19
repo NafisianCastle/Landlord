@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Polygon } from "geojson";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { Button } from "@/components/ui/button";
 import PlotsMapClient from "./PlotsMapClient";
 import GuestPlotsList from "@/components/plots/GuestPlotsList";
@@ -11,9 +12,7 @@ import PageHeader from "@/components/system/PageHeader";
 
 export default async function PlotsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return <GuestPlotsList />;

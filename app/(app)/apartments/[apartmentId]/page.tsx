@@ -1,6 +1,9 @@
+import { Suspense } from "react";
+import SectionLoading from "@/components/system/SectionLoading";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { updateApartmentMetadata } from "@/app/actions/apartments";
 import { Card, CardContent } from "@/components/ui/card";
 import ApartmentMetadataForm from "@/components/apartments/ApartmentMetadataForm";
@@ -21,9 +24,7 @@ export default async function ApartmentDetailPage({
 }) {
   const { apartmentId } = await params;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return <GuestApartmentDetail apartmentId={apartmentId} />;
@@ -132,18 +133,26 @@ export default async function ApartmentDetailPage({
         collaborators={collaborators ?? []}
       />
 
-      <ApartmentAuditLog apartmentId={apartment.id} isOwner={apartment.user_id === user.id} />
+      <Suspense fallback={<SectionLoading />}>
+        <ApartmentAuditLog apartmentId={apartment.id} isOwner={apartment.user_id === user.id} />
+      </Suspense>
 
       {apartment.user_id === user.id && (
-        <LeaseSection subjectType="apartment" subjectId={apartment.id} />
+        <Suspense fallback={<SectionLoading />}>
+          <LeaseSection subjectType="apartment" subjectId={apartment.id} />
+        </Suspense>
       )}
 
       {apartment.user_id === user.id && (
-        <MaintenanceSection subjectType="apartment" subjectId={apartment.id} />
+        <Suspense fallback={<SectionLoading />}>
+          <MaintenanceSection subjectType="apartment" subjectId={apartment.id} />
+        </Suspense>
       )}
 
       {apartment.user_id === user.id && (
-        <ExpenseSection subjectType="apartment" subjectId={apartment.id} />
+        <Suspense fallback={<SectionLoading />}>
+          <ExpenseSection subjectType="apartment" subjectId={apartment.id} />
+        </Suspense>
       )}
 
       {apartment.user_id === user.id && (
