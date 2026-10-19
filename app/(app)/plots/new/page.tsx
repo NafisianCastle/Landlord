@@ -1,15 +1,12 @@
 import { getTranslations } from "next-intl/server";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createPlot } from "@/app/actions/plots";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PlotMetadataForm from "@/components/plots/PlotMetadataForm";
 import GuestPlotForm from "@/components/plots/GuestPlotForm";
 
 export default async function NewPlotPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   const t = await getTranslations("NewPlotPage");
 
   return (

@@ -1,5 +1,7 @@
 "use client";
 
+import "maplibre-gl/dist/maplibre-gl.css";
+
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { FeatureCollection, Polygon } from "geojson";

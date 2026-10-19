@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createVendor } from "@/app/actions/vendors";
 import PageContainer from "@/components/system/PageContainer";
 import PageHeader from "@/components/system/PageHeader";
@@ -9,9 +10,7 @@ import VendorsList, { type VendorRow } from "@/components/vendors/VendorsList";
 
 export default async function VendorsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   const t = await getTranslations("VendorsPage");
 

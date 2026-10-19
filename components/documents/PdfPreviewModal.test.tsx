@@ -3,6 +3,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithIntl as render } from "@/test/i18n";
 import PdfPreviewModal from "./PdfPreviewModal";
+import ApartmentPdfPreviewModal from "@/components/apartment-documents/ApartmentPdfPreviewModal";
 
 const getDocumentPreviewUrlMock = vi.fn();
 const decryptBytesMock = vi.fn();
@@ -11,6 +12,9 @@ const getSessionDEKMock = vi.fn();
 vi.mock("@/lib/pdfWorker", () => ({}));
 vi.mock("@/app/actions/documents", () => ({
   getDocumentPreviewUrl: (...args: unknown[]) => getDocumentPreviewUrlMock(...args),
+}));
+vi.mock("@/app/actions/apartmentDocuments", () => ({
+  getApartmentDocumentPreviewUrl: (...args: unknown[]) => getDocumentPreviewUrlMock(...args),
 }));
 vi.mock("@/lib/crypto/encryption", () => ({
   decryptBytes: (...args: unknown[]) => decryptBytesMock(...args),
@@ -37,10 +41,19 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("PdfPreviewModal — plaintext document", () => {
+describe.each([
+  ["plot", PdfPreviewModal],
+  ["apartment", ApartmentPdfPreviewModal],
+] as const)("%s PDF preview — plaintext document", (_subject, PreviewModal) => {
+  it("does not render a PDF engine or request a signed URL before preview", () => {
+    render(<PreviewModal storagePath="u1/p1/deed.pdf" fileName="deed.pdf" />);
+    expect(screen.getByRole("button", { name: "Preview" })).toBeInTheDocument();
+    expect(screen.queryByTestId("pdf-document")).not.toBeInTheDocument();
+    expect(getDocumentPreviewUrlMock).not.toHaveBeenCalled();
+  });
   it("opens the modal, loads the signed url, and renders the PDF document", async () => {
     getDocumentPreviewUrlMock.mockResolvedValue({ url: "https://signed/deed.pdf" });
-    render(<PdfPreviewModal storagePath="u1/p1/deed.pdf" fileName="deed.pdf" />);
+    render(<PreviewModal storagePath="u1/p1/deed.pdf" fileName="deed.pdf" />);
     await userEvent.click(screen.getByRole("button", { name: "Preview" }));
     expect(await screen.findByTestId("pdf-document")).toBeInTheDocument();
     expect(screen.getByText("deed.pdf")).toBeInTheDocument();
@@ -48,14 +61,14 @@ describe("PdfPreviewModal — plaintext document", () => {
 
   it("shows the error message when fetching the signed url fails", async () => {
     getDocumentPreviewUrlMock.mockResolvedValue({ error: "not found" });
-    render(<PdfPreviewModal storagePath="u1/p1/deed.pdf" fileName="deed.pdf" />);
+    render(<PreviewModal storagePath="u1/p1/deed.pdf" fileName="deed.pdf" />);
     await userEvent.click(screen.getByRole("button", { name: "Preview" }));
     expect(await screen.findByText("not found")).toBeInTheDocument();
   });
 
   it("closes and resets state when Close is clicked", async () => {
     getDocumentPreviewUrlMock.mockResolvedValue({ url: "https://signed/deed.pdf" });
-    render(<PdfPreviewModal storagePath="u1/p1/deed.pdf" fileName="deed.pdf" />);
+    render(<PreviewModal storagePath="u1/p1/deed.pdf" fileName="deed.pdf" />);
     await userEvent.click(screen.getByRole("button", { name: "Preview" }));
     await screen.findByTestId("pdf-document");
     await userEvent.click(screen.getByRole("button", { name: "Close" }));
@@ -63,11 +76,14 @@ describe("PdfPreviewModal — plaintext document", () => {
   });
 });
 
-describe("PdfPreviewModal — encrypted document", () => {
+describe.each([
+  ["plot", PdfPreviewModal],
+  ["apartment", ApartmentPdfPreviewModal],
+] as const)("%s PDF preview — encrypted document", (_subject, PreviewModal) => {
   it("shows a lock message when opened without an unlocked session", async () => {
     getSessionDEKMock.mockReturnValue(null);
     render(
-      <PdfPreviewModal
+      <PreviewModal
         storagePath="u1/p1/deed.pdf"
         fileName="deed.pdf"
         isEncrypted
@@ -91,7 +107,7 @@ describe("PdfPreviewModal — encrypted document", () => {
     );
 
     render(
-      <PdfPreviewModal
+      <PreviewModal
         storagePath="u1/p1/deed.pdf"
         fileName="deed.pdf"
         isEncrypted
@@ -113,7 +129,7 @@ describe("PdfPreviewModal — encrypted document", () => {
     );
 
     render(
-      <PdfPreviewModal
+      <PreviewModal
         storagePath="u1/p1/deed.pdf"
         fileName="deed.pdf"
         isEncrypted
@@ -130,7 +146,7 @@ describe("PdfPreviewModal — encrypted document", () => {
     getSessionDEKMock.mockReturnValue({ fake: "dek" });
     getDocumentPreviewUrlMock.mockResolvedValue({ error: "expired" });
     render(
-      <PdfPreviewModal
+      <PreviewModal
         storagePath="u1/p1/deed.pdf"
         fileName="deed.pdf"
         isEncrypted

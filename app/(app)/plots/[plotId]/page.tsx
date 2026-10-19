@@ -1,7 +1,10 @@
+import { Suspense } from "react";
+import SectionLoading from "@/components/system/SectionLoading";
 import { notFound } from "next/navigation";
 import type { Polygon } from "geojson";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { updatePlotMetadata } from "@/app/actions/plots";
 import { convertArea } from "@/lib/units";
 import { polygonCentroid, googleMapsDirectionsUrl } from "@/lib/geo";
@@ -27,9 +30,7 @@ export default async function PlotDetailPage({
 }) {
   const { plotId } = await params;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return <GuestPlotDetail plotId={plotId} />;
@@ -199,16 +200,26 @@ export default async function PlotDetailPage({
         collaborators={collaborators ?? []}
       />
 
-      <PlotAuditLog plotId={plot.id} isOwner={plot.user_id === user.id} />
-
-      {plot.user_id === user.id && <LeaseSection subjectType="plot" subjectId={plot.id} />}
+      <Suspense fallback={<SectionLoading />}>
+        <PlotAuditLog plotId={plot.id} isOwner={plot.user_id === user.id} />
+      </Suspense>
 
       {plot.user_id === user.id && (
-        <MaintenanceSection subjectType="plot" subjectId={plot.id} />
+        <Suspense fallback={<SectionLoading />}>
+          <LeaseSection subjectType="plot" subjectId={plot.id} />
+        </Suspense>
       )}
 
       {plot.user_id === user.id && (
-        <ExpenseSection subjectType="plot" subjectId={plot.id} />
+        <Suspense fallback={<SectionLoading />}>
+          <MaintenanceSection subjectType="plot" subjectId={plot.id} />
+        </Suspense>
+      )}
+
+      {plot.user_id === user.id && (
+        <Suspense fallback={<SectionLoading />}>
+          <ExpenseSection subjectType="plot" subjectId={plot.id} />
+        </Suspense>
       )}
 
       {plot.user_id === user.id && (

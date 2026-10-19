@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { hasActiveAccess } from "@/lib/access";
 import { getAppSettings } from "@/lib/settings";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,10 +18,7 @@ export default async function PaywallPage({
   searchParams: Promise<{ status?: string }>;
 }) {
   const { status } = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect("/login");
 
   // Access already active (trial or paid) — nothing to pay for, send them in.

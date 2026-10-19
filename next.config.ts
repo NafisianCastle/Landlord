@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
 
 export default withSentryConfig(withNextIntl(nextConfig), {
   silent: true,
+  // Keep local/CI builds from sending optional Sentry build telemetry.
+  telemetry: false,
   // Unset until a real Sentry project exists — see NEXT_PUBLIC_SENTRY_DSN in .env.local.example.
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
