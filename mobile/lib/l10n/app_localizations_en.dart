@@ -914,4 +914,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get billsNeedConnection => 'Bills need an internet connection.';
+
+  @override
+  String get locationTitle => 'Apartment location';
+
+  @override
+  String get locationHint =>
+      'Save a pin for the building. Search or tap the map, drag the pin, use GPS, or enter coordinates. Changes are saved only when you choose Save location.';
+
+  @override
+  String get locationViewHint => 'The saved building location.';
+
+  @override
+  String get noLocation => 'No location saved yet.';
+
+  @override
+  String get latitude => 'Latitude';
+
+  @override
+  String get longitude => 'Longitude';
+
+  @override
+  String get useGps => 'Use my current location';
+
+  @override
+  String get locating => 'Finding your location…';
+
+  @override
+  String get saveLocation => 'Save location';
+
+  @override
+  String get removeLocation => 'Remove location';
+
+  @override
+  String get locationSaved => 'Location saved.';
+
+  @override
+  String get gpsUnavailable =>
+      'Could not get your location. Check browser permission or choose a point manually.';
+
+  @override
+  String get invalidCoordinates =>
+      'Enter latitude between −90 and 90 and longitude between −180 and 180.';
+
+  @override
+  String get searchPlace => 'Search for a place';
+
+  @override
+  String get searchPlaceholder => 'Area, address or building name';
+
+  @override
+  String get searching => 'Searching…';
+
+  @override
+  String get searchFailed =>
+      'Place search is unavailable. Tap the map or enter coordinates instead.';
+
+  @override
+  String get setLocation => 'Set location';
+
+  @override
+  String get editLocation => 'Edit location';
+
+  @override
+  String get locationHintMobile =>
+      'Search, tap the map to drop the pin, use GPS, or enter coordinates. Changes are saved only when you choose Save location.';
+
+  @override
+  String savedCoordinates(String lat, String lng) {
+    return 'Saved: $lat, $lng';
+  }
 }

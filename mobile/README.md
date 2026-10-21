@@ -15,6 +15,15 @@ encrypted fields stay in sync between the two.
 | **Offline data** | Everything is cached in SQLite. Changes made offline wait in a queue (`lib/core/offline/`) and upload when you're back online. If two edits conflict, the last one saved wins. Uploading and opening documents still needs a connection. |
 | **Offline maps** | Save the satellite tiles for any area, up to 3,000 tiles (same limit as the web). Areas you've already looked at are cached too. |
 
+## Apartment location pins
+
+As on the web (`docs/apartment-location.md`), each apartment page shows its
+building pin, with directions. Owners and editors can set or move the pin.
+They can search places (Photon), tap the map, enter coordinates, or press
+**Use my current location**. That button averages several GPS readings,
+weighted by their accuracy, rather than taking a single fix. Viewers only see
+the pin. Saving works offline and syncs later.
+
 ## Tenant bills
 
 As on the web (`docs/tenant-billing.md`):

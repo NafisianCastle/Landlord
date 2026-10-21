@@ -115,6 +115,7 @@ class Repository {
         tenantShares,
         bills,
         billProofs,
+        apartmentCollaborators,
         profile,
         plotStats,
         rentStats,
@@ -140,6 +141,8 @@ class Repository {
         // Drafts without a file are never shown (same filter as the web).
         _client.from('apartment_bills').select(_billColumns).not('file_name', 'is', null),
         _client.from('apartment_bill_proofs').select(_proofColumns).order('created_at', ascending: false),
+        // Only this user's own memberships, to know where they're an editor.
+        _client.from('apartment_collaborators').select('apartment_id, role').eq('user_id', _userId),
         _client.from('profiles').select(_profileColumns).eq('id', _userId),
         _client.from('plot_stats').select(),
         _client.from('lease_payment_stats').select(),
@@ -157,6 +160,7 @@ class Repository {
       await _db.replaceTable('apartment_tenants', tenantShares);
       await _db.replaceTable('apartment_bills', bills);
       await _db.replaceTable('apartment_bill_proofs', billProofs);
+      await _db.replaceTable('apartment_collaborators', apartmentCollaborators, idKey: 'apartment_id');
       await _db.replaceTable('profiles', profile);
       await _db.replaceTable('plot_stats', plotStats);
       await _db.replaceTable('lease_payment_stats', rentStats);
@@ -731,6 +735,27 @@ class Repository {
     await _write([
       OutboxOp(kind: 'update', target: 'expenses', rowId: id, payload: {'visible_to_tenants': visible})
     ]);
+  }
+
+  // ---- Apartment location pin ----------------------------------------------
+
+  /// Owners and editor collaborators can move the pin; viewers only see it
+  /// (same rule as the web apartment page; RLS enforces it server-side).
+  Future<bool> canEditApartment(DbRow apartment) async {
+    if (apartment['user_id'] == _userId) return true;
+    final membership = await _db.row('apartment_collaborators', apartment['id'] as String);
+    return membership?['role'] == 'editor';
+  }
+
+  /// saveApartmentLocation: both coordinates set, or both cleared. Goes
+  /// through the outbox, so a pin dropped on site saves when back online.
+  Future<void> saveApartmentLocation(String apartmentId, LatLng? point) async {
+    if (point != null && !validApartmentLocation(point)) {
+      throw ArgumentError('Invalid coordinates');
+    }
+    final payload = {'latitude': point?.latitude, 'longitude': point?.longitude};
+    await _db.upsertRow('apartments', apartmentId, payload);
+    await _write([OutboxOp(kind: 'update', target: 'apartments', rowId: apartmentId, payload: payload)]);
   }
 
   Future<void> signOut() async {

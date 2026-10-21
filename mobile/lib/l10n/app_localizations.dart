@@ -1711,6 +1711,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Bills need an internet connection.'**
   String get billsNeedConnection;
+
+  /// No description provided for @locationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment location'**
+  String get locationTitle;
+
+  /// No description provided for @locationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a pin for the building. Search or tap the map, drag the pin, use GPS, or enter coordinates. Changes are saved only when you choose Save location.'**
+  String get locationHint;
+
+  /// No description provided for @locationViewHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved building location.'**
+  String get locationViewHint;
+
+  /// No description provided for @noLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'No location saved yet.'**
+  String get noLocation;
+
+  /// No description provided for @latitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get latitude;
+
+  /// No description provided for @longitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get longitude;
+
+  /// No description provided for @useGps.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my current location'**
+  String get useGps;
+
+  /// No description provided for @locating.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location…'**
+  String get locating;
+
+  /// No description provided for @saveLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Save location'**
+  String get saveLocation;
+
+  /// No description provided for @removeLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove location'**
+  String get removeLocation;
+
+  /// No description provided for @locationSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Location saved.'**
+  String get locationSaved;
+
+  /// No description provided for @gpsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get your location. Check browser permission or choose a point manually.'**
+  String get gpsUnavailable;
+
+  /// No description provided for @invalidCoordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter latitude between −90 and 90 and longitude between −180 and 180.'**
+  String get invalidCoordinates;
+
+  /// No description provided for @searchPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a place'**
+  String get searchPlace;
+
+  /// No description provided for @searchPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Area, address or building name'**
+  String get searchPlaceholder;
+
+  /// No description provided for @searching.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching…'**
+  String get searching;
+
+  /// No description provided for @searchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Place search is unavailable. Tap the map or enter coordinates instead.'**
+  String get searchFailed;
+
+  /// No description provided for @setLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Set location'**
+  String get setLocation;
+
+  /// No description provided for @editLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit location'**
+  String get editLocation;
+
+  /// No description provided for @locationHintMobile.
+  ///
+  /// In en, this message translates to:
+  /// **'Search, tap the map to drop the pin, use GPS, or enter coordinates. Changes are saved only when you choose Save location.'**
+  String get locationHintMobile;
+
+  /// No description provided for @savedCoordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved: {lat}, {lng}'**
+  String savedCoordinates(String lat, String lng);
 }
 
 class _AppLocalizationsDelegate

@@ -18,6 +18,7 @@ import '../expenses/expense_screens.dart';
 import '../leases/lease_screens.dart';
 import '../maintenance/maintenance_screens.dart';
 import '../map/base_map.dart';
+import 'apartment_location.dart';
 import 'property_form_screen.dart';
 
 class PropertyDetailScreen extends ConsumerWidget {
@@ -57,6 +58,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(16),
                 children: [
                   if (kind == PropertyKind.plot) _BoundaryCard(plotId: id, row: row),
+                  if (kind == PropertyKind.apartment) ApartmentLocationCard(apartment: row),
                   SectionHeader(l.details),
                   _Fields(kind: kind, row: row),
                   DocumentsSection(kind: kind, propertyId: id),

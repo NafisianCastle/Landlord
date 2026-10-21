@@ -132,3 +132,10 @@ bool validBoundaryPoints(List<LatLng> points) =>
         p.longitude.isFinite &&
         p.latitude.abs() <= 90 &&
         p.longitude.abs() <= 180);
+
+/// Mirrors lib/apartmentLocation.ts and the apartments_location_valid check.
+bool validApartmentLocation(LatLng point) =>
+    point.latitude.isFinite &&
+    point.longitude.isFinite &&
+    point.latitude.abs() <= 90 &&
+    point.longitude.abs() <= 180;

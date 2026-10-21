@@ -431,5 +431,36 @@
   "noTenants": "No tenants yet.",
   "takePhoto": "Take photo",
   "chooseFile": "Choose file",
-  "billsNeedConnection": "Bills need an internet connection."
+  "billsNeedConnection": "Bills need an internet connection.",
+  "locationTitle": "Apartment location",
+  "locationHint": "Save a pin for the building. Search or tap the map, drag the pin, use GPS, or enter coordinates. Changes are saved only when you choose Save location.",
+  "locationViewHint": "The saved building location.",
+  "noLocation": "No location saved yet.",
+  "latitude": "Latitude",
+  "longitude": "Longitude",
+  "useGps": "Use my current location",
+  "locating": "Finding your location…",
+  "saveLocation": "Save location",
+  "removeLocation": "Remove location",
+  "locationSaved": "Location saved.",
+  "gpsUnavailable": "Could not get your location. Check browser permission or choose a point manually.",
+  "invalidCoordinates": "Enter latitude between −90 and 90 and longitude between −180 and 180.",
+  "searchPlace": "Search for a place",
+  "searchPlaceholder": "Area, address or building name",
+  "searching": "Searching…",
+  "searchFailed": "Place search is unavailable. Tap the map or enter coordinates instead.",
+  "setLocation": "Set location",
+  "editLocation": "Edit location",
+  "locationHintMobile": "Search, tap the map to drop the pin, use GPS, or enter coordinates. Changes are saved only when you choose Save location.",
+  "savedCoordinates": "Saved: {lat}, {lng}",
+  "@savedCoordinates": {
+    "placeholders": {
+      "lat": {
+        "type": "String"
+      },
+      "lng": {
+        "type": "String"
+      }
+    }
+  }
 }

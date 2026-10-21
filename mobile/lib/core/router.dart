@@ -10,6 +10,7 @@ import '../features/dashboard/dashboard_screen.dart';
 import '../features/expenses/expense_screens.dart';
 import '../features/leases/lease_screens.dart';
 import '../features/maintenance/maintenance_screens.dart';
+import '../features/properties/apartment_location.dart';
 import '../features/properties/property_detail_screen.dart';
 import '../features/properties/property_form_screen.dart';
 import '../features/properties/property_list_screen.dart';
@@ -72,6 +73,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (_, s) =>
                             PropertyFormScreen(kind: kind, id: s.pathParameters['id']),
                       ),
+                      if (kind == PropertyKind.apartment)
+                        GoRoute(
+                          path: 'location',
+                          builder: (_, s) =>
+                              ApartmentLocationScreen(apartmentId: s.pathParameters['id']!),
+                        ),
                       if (kind == PropertyKind.apartment)
                         GoRoute(
                           path: 'bills/new',

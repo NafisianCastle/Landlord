@@ -909,4 +909,74 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get billsNeedConnection => 'বিলের জন্য ইন্টারনেট সংযোগ প্রয়োজন।';
+
+  @override
+  String get locationTitle => 'অ্যাপার্টমেন্টের অবস্থান';
+
+  @override
+  String get locationHint =>
+      'ভবনের জন্য একটি পিন সংরক্ষণ করুন। ম্যাপে খুঁজুন বা ট্যাপ করুন, পিন টানুন, GPS ব্যবহার করুন অথবা স্থানাঙ্ক লিখুন। অবস্থান সংরক্ষণ চাপলে পরিবর্তন সংরক্ষিত হবে।';
+
+  @override
+  String get locationViewHint => 'ভবনের সংরক্ষিত অবস্থান।';
+
+  @override
+  String get noLocation => 'এখনও অবস্থান সংরক্ষিত নেই।';
+
+  @override
+  String get latitude => 'অক্ষাংশ';
+
+  @override
+  String get longitude => 'দ্রাঘিমাংশ';
+
+  @override
+  String get useGps => 'আমার বর্তমান অবস্থান ব্যবহার করুন';
+
+  @override
+  String get locating => 'আপনার অবস্থান খোঁজা হচ্ছে…';
+
+  @override
+  String get saveLocation => 'অবস্থান সংরক্ষণ';
+
+  @override
+  String get removeLocation => 'অবস্থান সরান';
+
+  @override
+  String get locationSaved => 'অবস্থান সংরক্ষিত হয়েছে।';
+
+  @override
+  String get gpsUnavailable =>
+      'আপনার অবস্থান পাওয়া যায়নি। ব্রাউজারের অনুমতি দেখুন অথবা নিজে অবস্থান বেছে নিন।';
+
+  @override
+  String get invalidCoordinates =>
+      'অক্ষাংশ −৯০ থেকে ৯০ এবং দ্রাঘিমাংশ −১৮০ থেকে ১৮০ এর মধ্যে লিখুন।';
+
+  @override
+  String get searchPlace => 'স্থান খুঁজুন';
+
+  @override
+  String get searchPlaceholder => 'এলাকা, ঠিকানা বা ভবনের নাম';
+
+  @override
+  String get searching => 'খোঁজা হচ্ছে…';
+
+  @override
+  String get searchFailed =>
+      'স্থান খোঁজা যাচ্ছে না। ম্যাপে ট্যাপ করুন অথবা স্থানাঙ্ক লিখুন।';
+
+  @override
+  String get setLocation => 'অবস্থান নির্ধারণ করুন';
+
+  @override
+  String get editLocation => 'অবস্থান সম্পাদনা করুন';
+
+  @override
+  String get locationHintMobile =>
+      'খুঁজুন, ম্যাপে ট্যাপ করে পিন বসান, GPS ব্যবহার করুন অথবা স্থানাঙ্ক লিখুন। অবস্থান সংরক্ষণ চাপলে পরিবর্তন সংরক্ষিত হবে।';
+
+  @override
+  String savedCoordinates(String lat, String lng) {
+    return 'সংরক্ষিত: $lat, $lng';
+  }
 }
