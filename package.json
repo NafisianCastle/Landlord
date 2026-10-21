@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "postinstall": "node scripts/copy-pdf-worker.mjs && node scripts/copy-maplibre-worker.mjs",
-    "seed:demo": "node --env-file=.env.local scripts/seed-demo-user.mjs"
+    "seed:demo": "node --env-file=.env.local scripts/seed-demo-user.mjs",
+    "setup:push": "node scripts/setup-web-push.mjs"
   },
   "overrides": {
     "postcss": "^8.5.23",

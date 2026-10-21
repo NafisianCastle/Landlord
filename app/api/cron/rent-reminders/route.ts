@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPush } from "@/lib/webPush";
+import { getRentReminderPublicKey } from "@/lib/pushConfig";
 
 const bdt = new Intl.NumberFormat("en-BD", {
   style: "currency",
@@ -14,8 +15,16 @@ const bdt = new Intl.NumberFormat("en-BD", {
 // channel — reaches the landlord's own devices, not the tenant.
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const cronSecret = process.env.CRON_SECRET?.trim();
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!getRentReminderPublicKey()) {
+    return NextResponse.json(
+      { error: "Push notifications are not configured" },
+      { status: 503 },
+    );
   }
 
   const admin = createAdminClient();
@@ -59,7 +68,9 @@ export async function GET(request: Request) {
     const userSubs = subsByUser.get(payment.user_id);
     if (!userSubs || userSubs.length === 0) continue;
 
-    const lease = Array.isArray(payment.leases) ? payment.leases[0] : payment.leases;
+    const lease = Array.isArray(payment.leases)
+      ? payment.leases[0]
+      : payment.leases;
     const overdue = payment.due_date < today;
     const title = overdue ? "Rent overdue" : "Rent due soon";
     const body = `${lease?.tenant_name ?? "Tenant"} · ${bdt.format(payment.amount)} · due ${payment.due_date}`;
@@ -67,7 +78,7 @@ export async function GET(request: Request) {
     const results = await Promise.all(
       userSubs.map((sub) => sendPush(sub, { title, body, url: "/leases" })),
     );
-    if (results.some((r) => !r.expired)) {
+    if (results.some((r) => r.sent)) {
       sent += 1;
       remindedIds.push(payment.id);
     }
@@ -83,8 +94,14 @@ export async function GET(request: Request) {
       .in("id", remindedIds);
   }
   if (expiredEndpoints.length > 0) {
-    await admin.from("push_subscriptions").delete().in("endpoint", expiredEndpoints);
+    await admin
+      .from("push_subscriptions")
+      .delete()
+      .in("endpoint", expiredEndpoints);
   }
 
-  return NextResponse.json({ sent, expiredSubscriptionsRemoved: expiredEndpoints.length });
+  return NextResponse.json({
+    sent,
+    expiredSubscriptionsRemoved: expiredEndpoints.length,
+  });
 }
