@@ -16,6 +16,7 @@ import ApartmentAuditLog from "@/components/apartments/ApartmentAuditLog";
 import LeaseSection from "@/components/leases/LeaseSection";
 import MaintenanceSection from "@/components/maintenance/MaintenanceSection";
 import ExpenseSection from "@/components/expenses/ExpenseSection";
+import ApartmentBillSection from "@/components/bills/ApartmentBillSection";
 
 export default async function ApartmentDetailPage({
   params,
@@ -58,6 +59,9 @@ export default async function ApartmentDetailPage({
   }
 
   if (!apartment) notFound();
+  const { data: tenants } = apartment.user_id === user.id
+    ? await supabase.from("apartment_tenants").select("id, invited_email").eq("apartment_id", apartment.id)
+    : { data: [] };
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
@@ -131,6 +135,7 @@ export default async function ApartmentDetailPage({
         apartmentId={apartment.id}
         isOwner={apartment.user_id === user.id}
         collaborators={collaborators ?? []}
+        tenants={(tenants ?? []).map(tenant => ({ ...tenant, role: "tenant" }))}
       />
 
       <Suspense fallback={<SectionLoading />}>
@@ -146,6 +151,12 @@ export default async function ApartmentDetailPage({
       {apartment.user_id === user.id && (
         <Suspense fallback={<SectionLoading />}>
           <MaintenanceSection subjectType="apartment" subjectId={apartment.id} />
+        </Suspense>
+      )}
+
+      {apartment.user_id === user.id && (
+        <Suspense fallback={<SectionLoading />}>
+          <ApartmentBillSection apartmentId={apartment.id} />
         </Suspense>
       )}
 

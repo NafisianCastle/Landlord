@@ -50,7 +50,7 @@ afterEach(() => {
 
 async function enable() {
   await userEvent.click(
-    await screen.findByRole("button", { name: "Enable rent reminders" }),
+    await screen.findByRole("button", { name: "Enable reminders" }),
   );
 }
 
@@ -58,7 +58,7 @@ describe("RentReminderSettings", () => {
   it("explains missing setup and never prompts for permission when unconfigured", async () => {
     render(<RentReminderSettings publicKey={null} />);
     expect(
-      await screen.findByRole("button", { name: "Enable rent reminders" }),
+      await screen.findByRole("button", { name: "Enable reminders" }),
     ).toBeDisabled();
     expect(
       screen.getByText(/aren’t available on this site yet/),
@@ -71,7 +71,7 @@ describe("RentReminderSettings", () => {
     render(<RentReminderSettings publicKey={publicKey} />);
     await enable();
     expect(
-      await screen.findByRole("button", { name: "Disable rent reminders" }),
+      await screen.findByRole("button", { name: "Disable reminders" }),
     ).toBeEnabled();
     expect(subscribe).toHaveBeenCalledWith({
       userVisibleOnly: true,
@@ -91,7 +91,7 @@ describe("RentReminderSettings", () => {
       "You can try again",
     );
     expect(
-      screen.getByRole("button", { name: "Enable rent reminders" }),
+      screen.getByRole("button", { name: "Enable reminders" }),
     ).toBeEnabled();
     expect(subscribe).not.toHaveBeenCalled();
   });
@@ -115,14 +115,14 @@ describe("RentReminderSettings", () => {
     );
     expect(unsubscribe).toHaveBeenCalledOnce();
     expect(
-      screen.queryByRole("button", { name: "Disable rent reminders" }),
+      screen.queryByRole("button", { name: "Disable reminders" }),
     ).not.toBeInTheDocument();
   });
 
   it("does not unsubscribe an existing browser subscription when its server save fails", async () => {
     fetchMock.mockResolvedValue({ ok: false });
     render(<RentReminderSettings publicKey={publicKey} />);
-    await screen.findByRole("button", { name: "Enable rent reminders" });
+    await screen.findByRole("button", { name: "Enable reminders" });
     getSubscription.mockResolvedValue(subscription);
     await enable();
     expect(await screen.findByRole("alert")).toHaveTextContent(
@@ -136,14 +136,14 @@ describe("RentReminderSettings", () => {
     fetchMock.mockResolvedValue({ ok: false });
     render(<RentReminderSettings publicKey={publicKey} />);
     await userEvent.click(
-      await screen.findByRole("button", { name: "Disable rent reminders" }),
+      await screen.findByRole("button", { name: "Disable reminders" }),
     );
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Couldn't disable reminders",
     );
     expect(unsubscribe).not.toHaveBeenCalled();
     expect(
-      screen.getByRole("button", { name: "Disable rent reminders" }),
+      screen.getByRole("button", { name: "Disable reminders" }),
     ).toBeEnabled();
   });
 
@@ -154,10 +154,10 @@ describe("RentReminderSettings", () => {
       await screen.findByText("This device has a saved reminder subscription."),
     ).toBeInTheDocument();
     await userEvent.click(
-      screen.getByRole("button", { name: "Disable rent reminders" }),
+      screen.getByRole("button", { name: "Disable reminders" }),
     );
     expect(
-      await screen.findByRole("button", { name: "Enable rent reminders" }),
+      await screen.findByRole("button", { name: "Enable reminders" }),
     ).toBeDisabled();
     expect(unsubscribe).toHaveBeenCalledOnce();
   });
@@ -179,7 +179,7 @@ describe("RentReminderSettings", () => {
       await screen.findByRole("button", { name: "Try again" }),
     );
     expect(
-      await screen.findByRole("button", { name: "Enable rent reminders" }),
+      await screen.findByRole("button", { name: "Enable reminders" }),
     ).toBeEnabled();
   });
 
@@ -195,7 +195,7 @@ describe("RentReminderSettings", () => {
     render(<RentReminderSettings publicKey={publicKey} />);
     await act(async () => {});
     fireEvent.click(
-      screen.getByRole("button", { name: "Enable rent reminders" }),
+      screen.getByRole("button", { name: "Enable reminders" }),
     );
     await act(async () => {
       await vi.advanceTimersByTimeAsync(10_000);
@@ -204,7 +204,7 @@ describe("RentReminderSettings", () => {
       "Couldn't enable reminders",
     );
     expect(
-      screen.getByRole("button", { name: "Enable rent reminders" }),
+      screen.getByRole("button", { name: "Enable reminders" }),
     ).toBeEnabled();
   });
 });

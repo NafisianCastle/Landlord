@@ -21,7 +21,7 @@ const GUEST_ALLOWED_PATHS = ["/", "/dashboard", "/plots"];
 export async function updateSession(request: NextRequest) {
   // Cron handlers authenticate their own bearer secret, without browser cookies.
   if (
-    ["/api/cron/rent-reminders", "/api/cron/lease-expiry"].includes(
+    ["/api/cron/rent-reminders", "/api/cron/lease-expiry", "/api/cron/bill-reminders"].includes(
       request.nextUrl.pathname,
     )
   ) {
