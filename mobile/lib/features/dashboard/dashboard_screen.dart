@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/geo/units.dart';
 import '../../core/l10n.dart';
@@ -15,7 +16,13 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     return Scaffold(
-      appBar: AppBar(title: Text(l.navDashboard)),
+      appBar: AppBar(title: Text(l.navDashboard), actions: [
+        IconButton(
+          tooltip: l.analytics,
+          icon: const Icon(Icons.insights_outlined),
+          onPressed: () => context.go('/dashboard/analytics'),
+        ),
+      ]),
       body: AsyncBody(
         value: ref.watch(statsProvider),
         builder: (stats) {
@@ -61,6 +68,15 @@ class DashboardScreen extends ConsumerWidget {
               icon: Icons.savings_outlined,
               label: l.receivedThisMonth,
               value: formatBdt(context, rent['received_this_month_amount'] ?? 0),
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.insights_outlined),
+                title: Text(l.analytics),
+                subtitle: Text(l.analyticsHint),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.go('/dashboard/analytics'),
+              ),
             ),
           ]);
         },

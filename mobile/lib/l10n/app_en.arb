@@ -462,5 +462,37 @@
         "type": "String"
       }
     }
-  }
+  },
+  "analytics": "Analytics",
+  "analyticsHint": "Occupancy, 12-month profit, income vs. expense and ROI.",
+  "occupancyRate": "Occupancy rate",
+  "unitsLeased": "{leased} of {total} units leased",
+  "@unitsLeased": {
+    "placeholders": {
+      "leased": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "portfolioProfit12mo": "Profit (last 12 months)",
+  "incomeVsExpense": "Income vs. expense",
+  "roiPerProperty": "ROI per property",
+  "roiValue": "{value}% / yr",
+  "@roiValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPropertiesYet": "No properties yet.",
+  "income": "Income",
+  "expense": "Expense",
+  "chartLabel": "Monthly income and expense trend",
+  "month": "Month",
+  "table": "Table",
+  "chart": "Chart"
 }

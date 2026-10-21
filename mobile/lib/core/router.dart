@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../features/analytics/analytics_screen.dart';
 import '../features/auth/auth_screens.dart';
 import '../features/bills/bill_screens.dart';
 import '../features/boundary/boundary_screen.dart';
@@ -51,7 +52,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, _, shell) => HomeShell(shell: shell),
         branches: [
           StatefulShellBranch(routes: [
-            GoRoute(path: '/dashboard', builder: (_, _) => const DashboardScreen()),
+            GoRoute(
+              path: '/dashboard',
+              builder: (_, _) => const DashboardScreen(),
+              routes: [GoRoute(path: 'analytics', builder: (_, _) => const AnalyticsScreen())],
+            ),
           ]),
           for (final kind in PropertyKind.values)
             StatefulShellBranch(routes: [

@@ -984,4 +984,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String savedCoordinates(String lat, String lng) {
     return 'Saved: $lat, $lng';
   }
+
+  @override
+  String get analytics => 'Analytics';
+
+  @override
+  String get analyticsHint =>
+      'Occupancy, 12-month profit, income vs. expense and ROI.';
+
+  @override
+  String get occupancyRate => 'Occupancy rate';
+
+  @override
+  String unitsLeased(String leased, String total) {
+    return '$leased of $total units leased';
+  }
+
+  @override
+  String get portfolioProfit12mo => 'Profit (last 12 months)';
+
+  @override
+  String get incomeVsExpense => 'Income vs. expense';
+
+  @override
+  String get roiPerProperty => 'ROI per property';
+
+  @override
+  String roiValue(String value) {
+    return '$value% / yr';
+  }
+
+  @override
+  String get noPropertiesYet => 'No properties yet.';
+
+  @override
+  String get income => 'Income';
+
+  @override
+  String get expense => 'Expense';
+
+  @override
+  String get chartLabel => 'Monthly income and expense trend';
+
+  @override
+  String get month => 'Month';
+
+  @override
+  String get table => 'Table';
+
+  @override
+  String get chart => 'Chart';
 }

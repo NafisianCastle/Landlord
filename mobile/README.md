@@ -15,6 +15,17 @@ encrypted fields stay in sync between the two.
 | **Offline data** | Everything is cached in SQLite. Changes made offline wait in a queue (`lib/core/offline/`) and upload when you're back online. If two edits conflict, the last one saved wins. Uploading and opening documents still needs a connection. |
 | **Offline maps** | Save the satellite tiles for any area, up to 3,000 tiles (same limit as the web). Areas you've already looked at are cached too. |
 
+## Analytics
+
+Open it from the dashboard: occupancy rate, 12-month profit, a monthly
+income-vs-expense chart (tap a month for its values, or switch to the table),
+and ROI per property. The data comes from the same database views as the web's
+/analytics page.
+
+One difference: with encryption unlocked, ROI uses each property's decrypted
+purchase price. Encrypted properties therefore get an ROI here, where the web
+shows "—".
+
 ## Apartment location pins
 
 As on the web (`docs/apartment-location.md`), each apartment page shows its

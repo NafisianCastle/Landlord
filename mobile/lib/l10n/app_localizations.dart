@@ -1837,6 +1837,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved: {lat}, {lng}'**
   String savedCoordinates(String lat, String lng);
+
+  /// No description provided for @analytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics'**
+  String get analytics;
+
+  /// No description provided for @analyticsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Occupancy, 12-month profit, income vs. expense and ROI.'**
+  String get analyticsHint;
+
+  /// No description provided for @occupancyRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Occupancy rate'**
+  String get occupancyRate;
+
+  /// No description provided for @unitsLeased.
+  ///
+  /// In en, this message translates to:
+  /// **'{leased} of {total} units leased'**
+  String unitsLeased(String leased, String total);
+
+  /// No description provided for @portfolioProfit12mo.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit (last 12 months)'**
+  String get portfolioProfit12mo;
+
+  /// No description provided for @incomeVsExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Income vs. expense'**
+  String get incomeVsExpense;
+
+  /// No description provided for @roiPerProperty.
+  ///
+  /// In en, this message translates to:
+  /// **'ROI per property'**
+  String get roiPerProperty;
+
+  /// No description provided for @roiValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}% / yr'**
+  String roiValue(String value);
+
+  /// No description provided for @noPropertiesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No properties yet.'**
+  String get noPropertiesYet;
+
+  /// No description provided for @income.
+  ///
+  /// In en, this message translates to:
+  /// **'Income'**
+  String get income;
+
+  /// No description provided for @expense.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense'**
+  String get expense;
+
+  /// No description provided for @chartLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly income and expense trend'**
+  String get chartLabel;
+
+  /// No description provided for @month.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get month;
+
+  /// No description provided for @table.
+  ///
+  /// In en, this message translates to:
+  /// **'Table'**
+  String get table;
+
+  /// No description provided for @chart.
+  ///
+  /// In en, this message translates to:
+  /// **'Chart'**
+  String get chart;
 }
 
 class _AppLocalizationsDelegate

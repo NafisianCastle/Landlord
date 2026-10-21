@@ -289,5 +289,20 @@
   "setLocation": "অবস্থান নির্ধারণ করুন",
   "editLocation": "অবস্থান সম্পাদনা করুন",
   "locationHintMobile": "খুঁজুন, ম্যাপে ট্যাপ করে পিন বসান, GPS ব্যবহার করুন অথবা স্থানাঙ্ক লিখুন। অবস্থান সংরক্ষণ চাপলে পরিবর্তন সংরক্ষিত হবে।",
-  "savedCoordinates": "সংরক্ষিত: {lat}, {lng}"
+  "savedCoordinates": "সংরক্ষিত: {lat}, {lng}",
+  "analytics": "বিশ্লেষণ",
+  "analyticsHint": "দখল হার, ১২ মাসের লাভ, আয় বনাম খরচ ও ROI।",
+  "occupancyRate": "দখল হার",
+  "unitsLeased": "{total}টির মধ্যে {leased}টি ইউনিট ভাড়া দেওয়া",
+  "portfolioProfit12mo": "লাভ (গত ১২ মাস)",
+  "incomeVsExpense": "আয় বনাম খরচ",
+  "roiPerProperty": "সম্পত্তি অনুযায়ী ROI",
+  "roiValue": "{value}% / বছর",
+  "noPropertiesYet": "এখনো কোনো সম্পত্তি নেই।",
+  "income": "আয়",
+  "expense": "খরচ",
+  "chartLabel": "মাসিক আয় ও খরচের প্রবণতা",
+  "month": "মাস",
+  "table": "টেবিল",
+  "chart": "চার্ট"
 }

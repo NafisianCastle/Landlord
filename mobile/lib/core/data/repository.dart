@@ -116,6 +116,9 @@ class Repository {
         bills,
         billProofs,
         apartmentCollaborators,
+        occupancy,
+        monthly,
+        financials,
         profile,
         plotStats,
         rentStats,
@@ -143,6 +146,9 @@ class Repository {
         _client.from('apartment_bill_proofs').select(_proofColumns).order('created_at', ascending: false),
         // Only this user's own memberships, to know where they're an editor.
         _client.from('apartment_collaborators').select('apartment_id, role').eq('user_id', _userId),
+        _client.from('occupancy_stats').select(),
+        _client.from('portfolio_monthly_stats').select(),
+        _client.from('property_financial_stats').select(),
         _client.from('profiles').select(_profileColumns).eq('id', _userId),
         _client.from('plot_stats').select(),
         _client.from('lease_payment_stats').select(),
@@ -161,6 +167,9 @@ class Repository {
       await _db.replaceTable('apartment_bills', bills);
       await _db.replaceTable('apartment_bill_proofs', billProofs);
       await _db.replaceTable('apartment_collaborators', apartmentCollaborators, idKey: 'apartment_id');
+      await _db.replaceTable('occupancy_stats', occupancy);
+      await _db.replaceTable('portfolio_monthly_stats', monthly, idKey: 'month');
+      await _db.replaceTable('property_financial_stats', financials, idKey: 'subject_id');
       await _db.replaceTable('profiles', profile);
       await _db.replaceTable('plot_stats', plotStats);
       await _db.replaceTable('lease_payment_stats', rentStats);
@@ -226,6 +235,15 @@ class Repository {
   Future<DbRow?> profile() async {
     final rows = await _db.rows('profiles');
     return rows.isEmpty ? null : rows.first;
+  }
+
+  Future<({DbRow? occupancy, List<DbRow> monthly, List<DbRow> financials})> analytics() async {
+    final occupancy = await _db.rows('occupancy_stats');
+    return (
+      occupancy: occupancy.firstOrNull,
+      monthly: await _db.rows('portfolio_monthly_stats'),
+      financials: await _db.rows('property_financial_stats'),
+    );
   }
 
   Future<({DbRow? plots, DbRow? rent})> stats() async {

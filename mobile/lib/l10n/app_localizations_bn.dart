@@ -979,4 +979,53 @@ class AppLocalizationsBn extends AppLocalizations {
   String savedCoordinates(String lat, String lng) {
     return 'সংরক্ষিত: $lat, $lng';
   }
+
+  @override
+  String get analytics => 'বিশ্লেষণ';
+
+  @override
+  String get analyticsHint => 'দখল হার, ১২ মাসের লাভ, আয় বনাম খরচ ও ROI।';
+
+  @override
+  String get occupancyRate => 'দখল হার';
+
+  @override
+  String unitsLeased(String leased, String total) {
+    return '$totalটির মধ্যে $leasedটি ইউনিট ভাড়া দেওয়া';
+  }
+
+  @override
+  String get portfolioProfit12mo => 'লাভ (গত ১২ মাস)';
+
+  @override
+  String get incomeVsExpense => 'আয় বনাম খরচ';
+
+  @override
+  String get roiPerProperty => 'সম্পত্তি অনুযায়ী ROI';
+
+  @override
+  String roiValue(String value) {
+    return '$value% / বছর';
+  }
+
+  @override
+  String get noPropertiesYet => 'এখনো কোনো সম্পত্তি নেই।';
+
+  @override
+  String get income => 'আয়';
+
+  @override
+  String get expense => 'খরচ';
+
+  @override
+  String get chartLabel => 'মাসিক আয় ও খরচের প্রবণতা';
+
+  @override
+  String get month => 'মাস';
+
+  @override
+  String get table => 'টেবিল';
+
+  @override
+  String get chart => 'চার্ট';
 }
