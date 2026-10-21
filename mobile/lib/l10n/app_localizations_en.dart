@@ -1077,4 +1077,121 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get role_editor => 'Editor';
+
+  @override
+  String get adminTitle => 'Admin overview';
+
+  @override
+  String get adminOverview => 'Overview';
+
+  @override
+  String get adminSettings => 'Settings';
+
+  @override
+  String get adminCoupons => 'Coupons';
+
+  @override
+  String get adminUsers => 'Users';
+
+  @override
+  String get totalUsers => 'Total users';
+
+  @override
+  String get activeTrials => 'Active trials';
+
+  @override
+  String get paidUsers => 'Paid users';
+
+  @override
+  String get totalRevenue => 'Total revenue';
+
+  @override
+  String get referredSignups => 'Referred signups';
+
+  @override
+  String get lifetimePriceBdt => 'Lifetime price (BDT)';
+
+  @override
+  String get trialDays => 'Trial length (days)';
+
+  @override
+  String get trialDaysHint =>
+      'Applies to new signups going forward — existing trials keep their original end date.';
+
+  @override
+  String get adminSaved => 'Saved.';
+
+  @override
+  String get couponCode => 'Code';
+
+  @override
+  String get discountType => 'Discount type';
+
+  @override
+  String get discountPercent => 'Percent off';
+
+  @override
+  String get discountFixed => 'Fixed amount off (BDT)';
+
+  @override
+  String get discountValue => 'Discount value';
+
+  @override
+  String get maxRedemptions => 'Max redemptions (optional)';
+
+  @override
+  String get couponExpiresAt => 'Expires on (optional)';
+
+  @override
+  String get createCoupon => 'Create coupon';
+
+  @override
+  String get deactivate => 'Deactivate';
+
+  @override
+  String get activate => 'Activate';
+
+  @override
+  String get noCouponsYet => 'No coupons yet.';
+
+  @override
+  String get searchByEmail => 'Search by email';
+
+  @override
+  String get userAdmin => 'admin';
+
+  @override
+  String get userPaid => 'paid';
+
+  @override
+  String get userTrialActive => 'trial active';
+
+  @override
+  String get userTrialExpired => 'trial expired';
+
+  @override
+  String get noUsersFound => 'No users found.';
+
+  @override
+  String get grantAccess => 'Grant lifetime access';
+
+  @override
+  String get accessGranted => 'Access granted';
+
+  @override
+  String couponRedeemed(String count, String max) {
+    return '$count/$max redeemed';
+  }
+
+  @override
+  String couponExpires(String date) {
+    return 'expires $date';
+  }
+
+  @override
+  String get adminHint => 'Users, coupons, pricing and trial settings.';
+
+  @override
+  String get adminNotConfigured =>
+      'Admin needs the web app address in this build (WEB_URL).';
 }

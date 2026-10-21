@@ -2005,6 +2005,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Editor'**
   String get role_editor;
+
+  /// No description provided for @adminTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin overview'**
+  String get adminTitle;
+
+  /// No description provided for @adminOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get adminOverview;
+
+  /// No description provided for @adminSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get adminSettings;
+
+  /// No description provided for @adminCoupons.
+  ///
+  /// In en, this message translates to:
+  /// **'Coupons'**
+  String get adminCoupons;
+
+  /// No description provided for @adminUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get adminUsers;
+
+  /// No description provided for @totalUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Total users'**
+  String get totalUsers;
+
+  /// No description provided for @activeTrials.
+  ///
+  /// In en, this message translates to:
+  /// **'Active trials'**
+  String get activeTrials;
+
+  /// No description provided for @paidUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid users'**
+  String get paidUsers;
+
+  /// No description provided for @totalRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Total revenue'**
+  String get totalRevenue;
+
+  /// No description provided for @referredSignups.
+  ///
+  /// In en, this message translates to:
+  /// **'Referred signups'**
+  String get referredSignups;
+
+  /// No description provided for @lifetimePriceBdt.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifetime price (BDT)'**
+  String get lifetimePriceBdt;
+
+  /// No description provided for @trialDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial length (days)'**
+  String get trialDays;
+
+  /// No description provided for @trialDaysHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies to new signups going forward — existing trials keep their original end date.'**
+  String get trialDaysHint;
+
+  /// No description provided for @adminSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved.'**
+  String get adminSaved;
+
+  /// No description provided for @couponCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get couponCode;
+
+  /// No description provided for @discountType.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount type'**
+  String get discountType;
+
+  /// No description provided for @discountPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Percent off'**
+  String get discountPercent;
+
+  /// No description provided for @discountFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed amount off (BDT)'**
+  String get discountFixed;
+
+  /// No description provided for @discountValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount value'**
+  String get discountValue;
+
+  /// No description provided for @maxRedemptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Max redemptions (optional)'**
+  String get maxRedemptions;
+
+  /// No description provided for @couponExpiresAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires on (optional)'**
+  String get couponExpiresAt;
+
+  /// No description provided for @createCoupon.
+  ///
+  /// In en, this message translates to:
+  /// **'Create coupon'**
+  String get createCoupon;
+
+  /// No description provided for @deactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get deactivate;
+
+  /// No description provided for @activate.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate'**
+  String get activate;
+
+  /// No description provided for @noCouponsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No coupons yet.'**
+  String get noCouponsYet;
+
+  /// No description provided for @searchByEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by email'**
+  String get searchByEmail;
+
+  /// No description provided for @userAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'admin'**
+  String get userAdmin;
+
+  /// No description provided for @userPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'paid'**
+  String get userPaid;
+
+  /// No description provided for @userTrialActive.
+  ///
+  /// In en, this message translates to:
+  /// **'trial active'**
+  String get userTrialActive;
+
+  /// No description provided for @userTrialExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'trial expired'**
+  String get userTrialExpired;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found.'**
+  String get noUsersFound;
+
+  /// No description provided for @grantAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant lifetime access'**
+  String get grantAccess;
+
+  /// No description provided for @accessGranted.
+  ///
+  /// In en, this message translates to:
+  /// **'Access granted'**
+  String get accessGranted;
+
+  /// No description provided for @couponRedeemed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/{max} redeemed'**
+  String couponRedeemed(String count, String max);
+
+  /// No description provided for @couponExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'expires {date}'**
+  String couponExpires(String date);
+
+  /// No description provided for @adminHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Users, coupons, pricing and trial settings.'**
+  String get adminHint;
+
+  /// No description provided for @adminNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin needs the web app address in this build (WEB_URL).'**
+  String get adminNotConfigured;
 }
 
 class _AppLocalizationsDelegate

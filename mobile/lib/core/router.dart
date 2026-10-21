@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../features/admin/admin_screen.dart';
 import '../features/analytics/analytics_screen.dart';
 import '../features/auth/auth_screens.dart';
 import '../features/bills/bill_screens.dart';
@@ -139,6 +140,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               builder: (_, _) => const SettingsScreen(),
               routes: [
                 GoRoute(path: 'offline-maps', builder: (_, _) => const OfflineMapsScreen()),
+                GoRoute(path: 'admin', builder: (_, _) => const AdminScreen()),
                 GoRoute(
                   path: 'vendors',
                   builder: (_, _) => const VendorsScreen(),

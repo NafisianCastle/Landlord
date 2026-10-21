@@ -1071,4 +1071,121 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get role_editor => 'সম্পাদক';
+
+  @override
+  String get adminTitle => 'অ্যাডমিন ওভারভিউ';
+
+  @override
+  String get adminOverview => 'ওভারভিউ';
+
+  @override
+  String get adminSettings => 'সেটিংস';
+
+  @override
+  String get adminCoupons => 'কুপন';
+
+  @override
+  String get adminUsers => 'ব্যবহারকারী';
+
+  @override
+  String get totalUsers => 'মোট ব্যবহারকারী';
+
+  @override
+  String get activeTrials => 'সক্রিয় ট্রায়াল';
+
+  @override
+  String get paidUsers => 'পেইড ব্যবহারকারী';
+
+  @override
+  String get totalRevenue => 'মোট আয়';
+
+  @override
+  String get referredSignups => 'রেফার করা সাইনআপ';
+
+  @override
+  String get lifetimePriceBdt => 'লাইফটাইম মূল্য (টাকা)';
+
+  @override
+  String get trialDays => 'ট্রায়ালের মেয়াদ (দিন)';
+
+  @override
+  String get trialDaysHint =>
+      'এখন থেকে নতুন সাইনআপের জন্য প্রযোজ্য — বিদ্যমান ট্রায়ালের মেয়াদ অপরিবর্তিত থাকবে।';
+
+  @override
+  String get adminSaved => 'সংরক্ষিত হয়েছে।';
+
+  @override
+  String get couponCode => 'কোড';
+
+  @override
+  String get discountType => 'ছাড়ের ধরন';
+
+  @override
+  String get discountPercent => 'শতাংশ ছাড়';
+
+  @override
+  String get discountFixed => 'নির্দিষ্ট পরিমাণ ছাড় (টাকা)';
+
+  @override
+  String get discountValue => 'ছাড়ের পরিমাণ';
+
+  @override
+  String get maxRedemptions => 'সর্বোচ্চ ব্যবহার (ঐচ্ছিক)';
+
+  @override
+  String get couponExpiresAt => 'মেয়াদ শেষ (ঐচ্ছিক)';
+
+  @override
+  String get createCoupon => 'কুপন তৈরি করুন';
+
+  @override
+  String get deactivate => 'নিষ্ক্রিয় করুন';
+
+  @override
+  String get activate => 'সক্রিয় করুন';
+
+  @override
+  String get noCouponsYet => 'এখনো কোনো কুপন নেই।';
+
+  @override
+  String get searchByEmail => 'ইমেইল দিয়ে খুঁজুন';
+
+  @override
+  String get userAdmin => 'অ্যাডমিন';
+
+  @override
+  String get userPaid => 'পেইড';
+
+  @override
+  String get userTrialActive => 'ট্রায়াল সক্রিয়';
+
+  @override
+  String get userTrialExpired => 'ট্রায়াল শেষ';
+
+  @override
+  String get noUsersFound => 'কোনো ব্যবহারকারী পাওয়া যায়নি।';
+
+  @override
+  String get grantAccess => 'লাইফটাইম অ্যাক্সেস দিন';
+
+  @override
+  String get accessGranted => 'অ্যাক্সেস দেওয়া হয়েছে';
+
+  @override
+  String couponRedeemed(String count, String max) {
+    return '$count/$max ব্যবহৃত';
+  }
+
+  @override
+  String couponExpires(String date) {
+    return 'মেয়াদ শেষ $date';
+  }
+
+  @override
+  String get adminHint => 'ব্যবহারকারী, কুপন, মূল্য ও ট্রায়াল সেটিংস।';
+
+  @override
+  String get adminNotConfigured =>
+      'অ্যাডমিনের জন্য এই বিল্ডে ওয়েব অ্যাপের ঠিকানা (WEB_URL) প্রয়োজন।';
 }

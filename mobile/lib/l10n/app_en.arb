@@ -521,5 +521,59 @@
         "type": "String"
       }
     }
+  },
+  "adminTitle": "Admin overview",
+  "adminOverview": "Overview",
+  "adminSettings": "Settings",
+  "adminCoupons": "Coupons",
+  "adminUsers": "Users",
+  "totalUsers": "Total users",
+  "activeTrials": "Active trials",
+  "paidUsers": "Paid users",
+  "totalRevenue": "Total revenue",
+  "referredSignups": "Referred signups",
+  "lifetimePriceBdt": "Lifetime price (BDT)",
+  "trialDays": "Trial length (days)",
+  "trialDaysHint": "Applies to new signups going forward — existing trials keep their original end date.",
+  "adminSaved": "Saved.",
+  "couponCode": "Code",
+  "discountType": "Discount type",
+  "discountPercent": "Percent off",
+  "discountFixed": "Fixed amount off (BDT)",
+  "discountValue": "Discount value",
+  "maxRedemptions": "Max redemptions (optional)",
+  "couponExpiresAt": "Expires on (optional)",
+  "createCoupon": "Create coupon",
+  "deactivate": "Deactivate",
+  "activate": "Activate",
+  "noCouponsYet": "No coupons yet.",
+  "searchByEmail": "Search by email",
+  "userAdmin": "admin",
+  "userPaid": "paid",
+  "userTrialActive": "trial active",
+  "userTrialExpired": "trial expired",
+  "noUsersFound": "No users found.",
+  "grantAccess": "Grant lifetime access",
+  "accessGranted": "Access granted",
+  "couponRedeemed": "{count}/{max} redeemed",
+  "couponExpires": "expires {date}",
+  "adminHint": "Users, coupons, pricing and trial settings.",
+  "adminNotConfigured": "Admin needs the web app address in this build (WEB_URL).",
+  "@couponRedeemed": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "@couponExpires": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }

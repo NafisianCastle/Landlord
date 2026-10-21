@@ -15,6 +15,22 @@ encrypted fields stay in sync between the two.
 | **Offline data** | Everything is cached in SQLite. Changes made offline wait in a queue (`lib/core/offline/`) and upload when you're back online. If two edits conflict, the last one saved wins. Uploading and opening documents still needs a connection. |
 | **Offline maps** | Save the satellite tiles for any area, up to 3,000 tiles (same limit as the web). Areas you've already looked at are cached too. |
 
+## Admin
+
+Admins (`profiles.is_admin`) see **Settings → Admin**, which has four tabs:
+overview stats, users (search and grant lifetime access), coupons (create,
+activate, deactivate) and pricing/trial settings.
+
+The service-role key never ships in the app. The app calls the web app's
+`/api/admin/*` routes with the user's own Supabase access token. The server
+checks the token and `is_admin` on every request, then runs the same code as
+the web admin pages (`lib/adminData.ts`, `lib/adminOps.ts`). Builds need the
+web app's address:
+
+```sh
+--dart-define=WEB_URL=https://your-landlord-domain
+```
+
 ## Sharing
 
 As on the web, each plot and apartment has a **Shared with** section:
