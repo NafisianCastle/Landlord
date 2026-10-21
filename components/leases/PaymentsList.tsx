@@ -78,7 +78,7 @@ export default function PaymentsList({
               <span className="truncate font-medium">{row.dueDate}</span>
               <span className="truncate text-xs text-muted-foreground">
                 {row.paid
-                  ? t("receivedOn", { date: row.paidDate ?? "" })
+                  ? (row.paidDate ? t("receivedOn", { date: row.paidDate }) : t("paidDateUnknown"))
                   : isOverdue(row)
                     ? t("overdue")
                     : t("upcoming")}

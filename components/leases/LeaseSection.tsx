@@ -8,6 +8,8 @@ import EndLeaseButton from "@/components/leases/EndLeaseButton";
 import DeleteLeaseButton from "@/components/leases/DeleteLeaseButton";
 import RenewLeaseButton from "@/components/leases/RenewLeaseButton";
 
+import RentHistoryForm from "@/components/leases/RentHistoryForm";
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 function endsWithinDays(endDate: string, days: number) {
@@ -93,6 +95,11 @@ export default async function LeaseSection({
 
       <div>
         <h3 className="mb-2 font-medium">{t("payments")}</h3>
+        {lease.frequency === "monthly" && (
+          <RentHistoryForm leaseId={lease.id} subjectType={subjectType} subjectId={subjectId}
+            startDate={lease.start_date} endDate={lease.end_date} payments={rows}
+            currentMonth={new Date().toISOString().slice(0, 7)} />
+        )}
         <PaymentsList payments={rows} subjectType={subjectType} subjectId={subjectId} />
       </div>
 
