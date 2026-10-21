@@ -1,12 +1,15 @@
 import { validateProperty, propertyRules } from "./forms";
 import { validBoundaryPoints } from "./geometry";
 import { isSimplePolygon } from "@/lib/geo";
+import { validApartmentLocation } from "@/lib/apartmentLocation";
 
 /** Validate the entire batch before writing anything, including direct action calls. */
 export function validateGuestProperties(items: unknown): string | null {
   if (!Array.isArray(items) || items.length > 100) return "Import at most 100 properties at a time.";
   for (const item of items) {
     if (!item || typeof item !== "object") return "Invalid imported property.";
+    if ((item.latitude != null || item.longitude != null) &&
+        !validApartmentLocation({lat: item.latitude, lng: item.longitude})) return "Invalid imported location.";
     const form = new FormData();
     for (const key of Object.keys(propertyRules)) {
       const value = item[key];

@@ -11,6 +11,8 @@ import ApartmentDocumentUploader from "@/components/apartment-documents/Apartmen
 import ApartmentDocumentRow from "@/components/apartment-documents/ApartmentDocumentRow";
 import DeleteApartmentButton from "@/components/apartments/DeleteApartmentButton";
 import GuestApartmentDetail from "@/components/apartments/GuestApartmentDetail";
+import ApartmentLocation from "@/components/apartments/ApartmentLocation";
+import { saveApartmentLocation } from "@/app/actions/apartments";
 import ApartmentCollaborators from "@/components/apartments/ApartmentCollaborators";
 import ApartmentAuditLog from "@/components/apartments/ApartmentAuditLog";
 import LeaseSection from "@/components/leases/LeaseSection";
@@ -78,6 +80,14 @@ export default async function ApartmentDetailPage({
           </CardContent>
         </Card>
       )}
+
+      <ApartmentLocation
+        key={`${apartment.id}:${apartment.latitude}:${apartment.longitude}`}
+        latitude={apartment.latitude}
+        longitude={apartment.longitude}
+        canEdit={apartment.user_id === user.id || (collaborators ?? []).some(c => c.role === "editor")}
+        onSave={saveApartmentLocation.bind(null, apartment.id)}
+      />
 
       <div>
         <h2 className="mb-2 font-medium">{t("details")}</h2>

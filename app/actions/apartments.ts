@@ -5,8 +5,9 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
-import { validateProperty, validateForm } from "@/lib/validation/forms";
+import { UUID, validateProperty, validateForm } from "@/lib/validation/forms";
 import { validateGuestProperties } from "@/lib/validation/guests";
+import { apartmentLocation, validApartmentLocation, type ApartmentCoordinates } from "@/lib/apartmentLocation";
 
 /**
  * building_name/unit_number/purchase_price/purchase_date/current_estimated_value/notes
@@ -101,6 +102,8 @@ export interface GuestApartmentPayload {
   purchaseDate: string | null;
   currentEstimatedValue: number | null;
   notes: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 /**
@@ -120,6 +123,7 @@ export async function migrateGuestApartments(apartments: GuestApartmentPayload[]
   let migrated = 0;
 
   for (const a of apartments) {
+    const location = apartmentLocation(a.latitude, a.longitude);
     const { error } = await supabase.from("apartments").insert({
       user_id: auth.user.id,
       name: a.name,
@@ -135,6 +139,8 @@ export async function migrateGuestApartments(apartments: GuestApartmentPayload[]
       purchase_date: a.purchaseDate,
       current_estimated_value: a.currentEstimatedValue,
       notes: a.notes,
+      latitude: location?.lat ?? null,
+      longitude: location?.lng ?? null,
     });
 
     if (error) continue;
@@ -189,6 +195,23 @@ export async function deleteApartment(apartmentId: string) {
   const { error } = await supabase.from("apartments").delete().eq("id", apartmentId);
   if (error) return { error: error.message };
   redirect("/apartments");
+}
+
+export async function saveApartmentLocation(apartmentId: string, point: ApartmentCoordinates | null) {
+  const t = await getTranslations("ApartmentLocation");
+  const auth = await getUserWithAccess();
+  if (!auth?.hasAccess) return { error: t("accessDenied") };
+  if (typeof apartmentId !== "string" || !UUID.test(apartmentId) || !validApartmentLocation(point))
+    return { error: t("invalidCoordinates") };
+  const supabase = await createClient();
+  // Apartment UPDATE/SELECT RLS enforces owner/editor access, including forged calls.
+  const { data, error } = await supabase.from("apartments")
+    .update({ latitude: point?.lat ?? null, longitude: point?.lng ?? null })
+    .eq("id", apartmentId).select("id").single();
+  if (error || !data) return { error: t("saveFailed") };
+  revalidatePath(`/apartments/${apartmentId}`);
+  revalidatePath("/apartments");
+  return { success: true };
 }
 
 export async function inviteApartmentCollaborator(
