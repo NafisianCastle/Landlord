@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Autocomplete } from "@/components/ui/autocomplete";
 import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -214,54 +215,36 @@ export default function ApartmentMetadataForm({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="division">{t("division")}</Label>
-          <Input
+          <Autocomplete
             id="division"
             name="division"
-            list="apt-division-options"
-            autoComplete="off"
             placeholder={t("selectDivision")}
             value={divisionName}
-            onChange={(e) => selectDivision(e.target.value)}
+            onValueChange={selectDivision}
+            options={DIVISIONS.map(item => item.name)}
           />
-          <datalist id="apt-division-options">
-            {DIVISIONS.map((d) => (
-              <option key={d.id} value={d.name} />
-            ))}
-          </datalist>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="district">{t("district")}</Label>
-          <Input
+          <Autocomplete
             id="district"
             name="district"
-            list="apt-district-options"
-            autoComplete="off"
             placeholder={t("selectDistrict")}
             value={districtName}
-            onChange={(e) => selectDistrict(e.target.value)}
+            onValueChange={selectDistrict}
+            options={districtOptions.map(item => item.name)}
           />
-          <datalist id="apt-district-options">
-            {districtOptions.map((d) => (
-              <option key={d.id} value={d.name} />
-            ))}
-          </datalist>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="upazila">{t("upazila")}</Label>
-          <Input
+          <Autocomplete
             id="upazila"
             name="upazila"
-            list="apt-upazila-options"
-            autoComplete="off"
             placeholder={t("selectUpazila")}
             value={upazilaName}
-            onChange={(e) => selectUpazila(e.target.value)}
+            onValueChange={selectUpazila}
+            options={upazilaOptions.map(item => item.name)}
           />
-          <datalist id="apt-upazila-options">
-            {upazilaOptions.map((u) => (
-              <option key={u.id} value={u.name} />
-            ))}
-          </datalist>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="floor">{t("floor")}</Label>

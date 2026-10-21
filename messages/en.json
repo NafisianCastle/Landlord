@@ -1,7 +1,8 @@
 {
   "Common": {
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "noSuggestions": "No suggestions. You can enter your own value."
   },
   "Nav": {
     "dashboard": "Dashboard",
@@ -592,7 +593,8 @@
     "markPaid": "Mark as paid",
     "undo": "Undo",
     "updating": "Updating...",
-    "noPaymentsYet": "No payments scheduled yet."
+    "noPaymentsYet": "No payments scheduled yet.",
+    "paidDateUnknown": "Paid · payment date not recorded"
   },
   "LandingPage": {
     "metaTitle": "Landlord — Your property, in order",
@@ -962,5 +964,34 @@
     "mapLabel": "Apartment location map",
     "satellite": "Satellite",
     "streets": "Streets"
+  },
+  "RentHistory": {
+    "title": "Record past paid rent",
+    "description": "Add one or more month ranges, each with its own monthly rent. Both the first and last month are included. Existing unpaid entries will be marked paid at the amount you enter. Current lease rent stays unchanged.",
+    "leaseHint": "For this tenant only. The lease starts on {start}; update its start date above first if this tenant moved in earlier.",
+    "range": "Range {number}",
+    "from": "From month",
+    "to": "Through month",
+    "amount": "Monthly rent (৳)",
+    "remove": "Remove",
+    "removeRange": "Remove range {number}",
+    "addRange": "Add another range",
+    "preview": "{count, plural, one {# month} other {# months}} will be marked paid · {total}",
+    "skipPreview": "{count, plural, one {# already-paid month will be kept unchanged.} other {# already-paid months will be kept unchanged.}}",
+    "dateHint": "Exact payment dates are left blank. These records will not count as rent received this month.",
+    "save": "Record selected months as paid",
+    "saving": "Recording…",
+    "saved": "Recorded {recorded, plural, one {# month} other {# months}}. Kept {skipped, plural, one {# already-paid month} other {# already-paid months}} unchanged.",
+    "invalidRanges": "Add between 1 and 50 ranges.",
+    "invalidMonth": "Choose a start and end month for every range.",
+    "invalidAmount": "Enter a positive monthly rent with no more than two decimal places (up to ৳1,000,000,000,000).",
+    "reversedRange": "The end month must be the same as or after the start month.",
+    "overlap": "Ranges cannot overlap. Each month can appear only once.",
+    "outsideLease": "Choose months within this tenant’s lease dates.",
+    "futureMonth": "Choose the current month or earlier.",
+    "tooManyMonths": "Record up to 600 months at a time.",
+    "accessRequired": "Sign in to record rent history.",
+    "monthlyOnly": "Rent ranges are available for monthly leases.",
+    "saveFailed": "Could not record rent history. Refresh and check the lease dates and selected months. A month with multiple payment entries must be resolved first."
   }
 }
