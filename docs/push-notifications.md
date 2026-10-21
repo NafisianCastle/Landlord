@@ -46,6 +46,10 @@ A browser subscription is considered enabled by the control after its server sav
 
 Keep the VAPID key pair stable across redeployments. Replacing it can require devices to unsubscribe and subscribe again. Never generate a fresh pair on every build or server start.
 
+## Native push for the mobile app
+
+The Flutter app (`mobile/`) receives the same reminders through Firebase Cloud Messaging. Apply `20261021160000_device_push_tokens.sql`, then set `FCM_SERVICE_ACCOUNT_JSON` on the deployment to a Firebase service-account key (the JSON on one line, server-only). The cron routes send to every row in `device_push_tokens` as well as to browser subscriptions, and remove tokens that FCM reports as unregistered. A reminder counts as delivered when any channel accepts it. The routes run when either channel is configured: browser push (VAPID) or FCM. App-side setup is in `mobile/README.md`.
+
 ## Troubleshooting
 
 - Availability message before enabling: check the key pair, contact subject, cron credential, and service-role setting in the deployed environment. A preview build and the production site may have different settings.

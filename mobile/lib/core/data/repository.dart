@@ -1,0 +1,851 @@
+import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:cryptography/cryptography.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
+
+import '../crypto/encryption.dart';
+import '../geo/geo.dart';
+import '../offline/local_db.dart';
+import '../offline/sync.dart';
+import '../validation/bills.dart';
+import '../validation/documents.dart';
+import 'property_kind.dart';
+
+typedef DbRow = Map<String, dynamic>;
+
+class RefreshResult {
+  const RefreshResult({required this.offline, required this.rejected});
+  final bool offline;
+  final List<String> rejected;
+}
+
+class LockedException implements Exception {}
+
+/// Failures of the online-only operations (bills, sharing), named like the
+/// web's Bills / collaborator messages.
+enum ActionError {
+  notFound,
+  chooseFile,
+  fileTooLarge,
+  fileType,
+  saveFailed,
+  uploadFailed,
+  alreadyPending,
+  reviewFailed,
+  noAccountFound,
+  cannotInviteSelf,
+  removeBroadAccess,
+  alreadyShared,
+}
+
+class ActionException implements Exception {
+  const ActionException(this.error);
+  final ActionError error;
+}
+
+class DocumentValidationException implements Exception {
+  const DocumentValidationException(this.error);
+  final DocumentError error;
+}
+
+const _uuid = Uuid();
+
+// Every column except the PostGIS `boundary` (boundary_geojson mirrors it).
+const _plotColumns =
+    'id,user_id,name,village,upazila,district,division,mutation_number,purchase_price,'
+    'purchase_date,current_estimated_value,notes,area_sq_meters,boundary_geojson,'
+    'dolil_area,dolil_area_unit,actual_area,actual_area_unit,sensitive_encrypted,'
+    'sensitive_iv,created_at,updated_at';
+const _profileColumns =
+    'id,full_name,preferred_language,encryption_enabled,dek_salt,dek_wrapped_by_passphrase,'
+    'dek_wrapped_by_passphrase_iv,recovery_salt,dek_wrapped_by_recovery,dek_wrapped_by_recovery_iv';
+
+const _billColumns =
+    'id,apartment_id,owner_id,tenant_share_id,tenant_email,title,amount,due_date,'
+    'visible_to_tenant,storage_path,file_name,paid_at,created_at';
+const _proofColumns = 'id,bill_id,user_id,storage_path,file_name,status,review_note,created_at';
+const _billsBucket = 'apartment-bills';
+const _collaboratorColumns = 'id,user_id,invited_email,role,created_at';
+
+String _today() => DateTime.now().toIso8601String().substring(0, 10);
+
+/// Single access point for app data. Reads come from the on-device cache;
+/// writes land in the cache immediately and go to Supabase through the
+/// outbox, so everything except document upload/download works offline.
+class Repository {
+  Repository(this._client, this._db, this._sync, this._onChanged);
+
+  final SupabaseClient _client;
+  final LocalDb _db;
+  final SyncService _sync;
+  final void Function() _onChanged;
+  final _rejections = StreamController<String>.broadcast();
+
+  /// Writes the server refused (RLS, constraints) after being queued.
+  Stream<String> get rejections => _rejections.stream;
+
+  String get _userId => _client.auth.currentUser!.id;
+
+  Future<int> pendingCount() async => (await _db.pendingOps()).length;
+
+  /// Pushes queued writes, then — only if nothing is still queued, so local
+  /// edits are never overwritten — replaces the cache with server state.
+  Future<RefreshResult> refresh() async {
+    final flushed = await _sync.flush();
+    flushed.rejected.forEach(_rejections.add);
+    if (flushed.remaining > 0) {
+      _onChanged();
+      return RefreshResult(offline: true, rejected: flushed.rejected);
+    }
+    try {
+      await _client.rpc('ensure_all_lease_payments');
+      final [
+        plots,
+        apartments,
+        leases,
+        payments,
+        plotDocs,
+        aptDocs,
+        expenses,
+        maintenance,
+        vendors,
+        sharedExpenses,
+        tenantShares,
+        bills,
+        billProofs,
+        plotCollaborators,
+        apartmentCollaborators,
+        occupancy,
+        monthly,
+        financials,
+        profile,
+        plotStats,
+        rentStats,
+      ] = await Future.wait<List<DbRow>>([
+        _client.from('land_plots').select(_plotColumns).order('created_at', ascending: false),
+        _client.from('apartments').select().order('created_at', ascending: false),
+        _client.from('leases').select().order('start_date', ascending: false),
+        _client.from('lease_payments').select().order('due_date'),
+        _client.from('plot_documents').select().order('uploaded_at', ascending: false),
+        _client.from('apartment_documents').select().order('uploaded_at', ascending: false),
+        // Tenants can also read expenses an owner shares with them
+        // (visible_to_tenants); the app manages only the user's own.
+        _client.from('expenses').select().eq('user_id', _userId),
+        _client.from('maintenance_requests').select(),
+        _client.from('vendors').select().order('name'),
+        // Expenses an owner shared with this user as a tenant (reference only).
+        _client
+            .from('expenses')
+            .select('id, apartment_id, category, amount, expense_date, notes')
+            .eq('visible_to_tenants', true)
+            .neq('user_id', _userId),
+        _client.from('apartment_tenants').select(),
+        // Drafts without a file are never shown (same filter as the web).
+        _client.from('apartment_bills').select(_billColumns).not('file_name', 'is', null),
+        _client.from('apartment_bill_proofs').select(_proofColumns).order('created_at', ascending: false),
+        // RLS returns the sharing rows of properties the user owns, plus
+        // their own memberships elsewhere.
+        _client.from('plot_collaborators').select('plot_id,$_collaboratorColumns'),
+        _client.from('apartment_collaborators').select('apartment_id,$_collaboratorColumns'),
+        _client.from('occupancy_stats').select(),
+        _client.from('portfolio_monthly_stats').select(),
+        _client.from('property_financial_stats').select(),
+        _client.from('profiles').select(_profileColumns).eq('id', _userId),
+        _client.from('plot_stats').select(),
+        _client.from('lease_payment_stats').select(),
+      ]);
+      await _db.replaceTable('land_plots', plots);
+      await _db.replaceTable('apartments', apartments);
+      await _db.replaceTable('leases', leases);
+      await _db.replaceTable('lease_payments', payments);
+      await _db.replaceTable('plot_documents', plotDocs);
+      await _db.replaceTable('apartment_documents', aptDocs);
+      await _db.replaceTable('expenses', expenses);
+      await _db.replaceTable('maintenance_requests', maintenance);
+      await _db.replaceTable('vendors', vendors);
+      await _db.replaceTable('shared_expenses', sharedExpenses);
+      await _db.replaceTable('apartment_tenants', tenantShares);
+      await _db.replaceTable('apartment_bills', bills);
+      await _db.replaceTable('apartment_bill_proofs', billProofs);
+      await _db.replaceTable('plot_collaborators', plotCollaborators);
+      await _db.replaceTable('apartment_collaborators', apartmentCollaborators);
+      await _db.replaceTable('occupancy_stats', occupancy);
+      await _db.replaceTable('portfolio_monthly_stats', monthly, idKey: 'month');
+      await _db.replaceTable('property_financial_stats', financials, idKey: 'subject_id');
+      await _db.replaceTable('profiles', profile);
+      await _db.replaceTable('plot_stats', plotStats);
+      await _db.replaceTable('lease_payment_stats', rentStats);
+    } catch (e) {
+      if (!isOfflineError(e)) rethrow;
+      return RefreshResult(offline: true, rejected: flushed.rejected);
+    } finally {
+      _onChanged();
+    }
+    return RefreshResult(offline: false, rejected: flushed.rejected);
+  }
+
+  Future<void> _write(List<OutboxOp> ops) async {
+    for (final op in ops) {
+      await _db.enqueue(op);
+    }
+    _onChanged();
+    // Best effort; if offline the ops wait for the next refresh.
+    unawaited(refresh().then((_) {}, onError: (Object e) => _rejections.add('$e')));
+  }
+
+  // ---- Reads ---------------------------------------------------------------
+
+  Future<List<DbRow>> properties(PropertyKind kind) async {
+    final rows = await _db.rows(kind.table);
+    rows.sort((a, b) =>
+        (b['created_at'] as String? ?? '').compareTo(a['created_at'] as String? ?? ''));
+    return rows;
+  }
+
+  Future<DbRow?> property(PropertyKind kind, String id) => _db.row(kind.table, id);
+
+  Future<List<DbRow>> leases(PropertyKind kind, String propertyId) async =>
+      (await _db.rows('leases')).where((l) => l[kind.foreignKey] == propertyId).toList()
+        ..sort((a, b) => (b['start_date'] as String).compareTo(a['start_date'] as String));
+
+  Future<DbRow?> lease(String id) => _db.row('leases', id);
+
+  Future<List<DbRow>> payments(String leaseId) async =>
+      (await _db.rows('lease_payments')).where((p) => p['lease_id'] == leaseId).toList()
+        ..sort((a, b) => (a['due_date'] as String).compareTo(b['due_date'] as String));
+
+  Future<List<DbRow>> documents(PropertyKind kind, String propertyId) async =>
+      (await _db.rows(kind.documentTable))
+          .where((d) => d[kind.foreignKey] == propertyId)
+          .toList();
+
+  Future<List<DbRow>> expenses(PropertyKind kind, String propertyId) async =>
+      (await _db.rows('expenses')).where((e) => e[kind.foreignKey] == propertyId).toList()
+        ..sort((a, b) => (b['expense_date'] as String).compareTo(a['expense_date'] as String));
+
+  Future<List<DbRow>> maintenance(PropertyKind kind, String propertyId) async =>
+      (await _db.rows('maintenance_requests'))
+          .where((m) => m[kind.foreignKey] == propertyId)
+          .toList()
+        ..sort((a, b) => (b['reported_date'] as String).compareTo(a['reported_date'] as String));
+
+  Future<List<DbRow>> vendors() async => (await _db.rows('vendors'))
+    ..sort((a, b) => (a['name'] as String).toLowerCase().compareTo((b['name'] as String).toLowerCase()));
+
+  Future<DbRow?> vendor(String id) => _db.row('vendors', id);
+
+  Future<DbRow?> profile() async {
+    final rows = await _db.rows('profiles');
+    return rows.isEmpty ? null : rows.first;
+  }
+
+  Future<({DbRow? occupancy, List<DbRow> monthly, List<DbRow> financials})> analytics() async {
+    final occupancy = await _db.rows('occupancy_stats');
+    return (
+      occupancy: occupancy.firstOrNull,
+      monthly: await _db.rows('portfolio_monthly_stats'),
+      financials: await _db.rows('property_financial_stats'),
+    );
+  }
+
+  Future<({DbRow? plots, DbRow? rent})> stats() async {
+    final plots = await _db.rows('plot_stats');
+    final rent = await _db.rows('lease_payment_stats');
+    return (plots: plots.firstOrNull, rent: rent.firstOrNull);
+  }
+
+  /// The sensitive fields of [row] keyed like the web forms, decrypting when
+  /// needed. Returns null when they're encrypted and [dek] isn't available.
+  Future<Map<String, dynamic>?> sensitiveValues(
+      PropertyKind kind, DbRow row, SecretKey? dek) async {
+    final encrypted = row['sensitive_encrypted'] as String?;
+    if (encrypted == null) {
+      return {
+        for (final f in kind.fields.where((f) => f.sensitive)) f.key: row[f.column]
+      };
+    }
+    if (dek == null) return null;
+    return decryptJSON(
+        fromPgBytea(encrypted), fromPgBytea(row['sensitive_iv'] as String), dek);
+  }
+
+  // ---- Property writes -----------------------------------------------------
+
+  /// Saves form [values] (camelCase keys, as typed). Mirrors the web server
+  /// actions: with the key unlocked, sensitive fields go into one encrypted
+  /// blob and their plaintext columns are cleared; otherwise the reverse.
+  /// When the record is encrypted but the key is locked the sensitive
+  /// columns are left untouched.
+  Future<String> saveProperty(
+    PropertyKind kind,
+    String? id,
+    Map<String, String> values, {
+    required SecretKey? dek,
+    required bool sensitiveLocked,
+  }) async {
+    Object? parse(FieldSpec f) {
+      final v = values[f.key]?.trim() ?? '';
+      if (v.isEmpty) return null;
+      return f.type == FieldType.number ? num.parse(v) : v;
+    }
+
+    final payload = <String, dynamic>{
+      for (final f in kind.fields.where((f) => !f.sensitive)) f.column: parse(f),
+    };
+    if (!sensitiveLocked) {
+      final sensitive = kind.fields.where((f) => f.sensitive);
+      if (dek != null) {
+        final sealed = await encryptJSON({for (final f in sensitive) f.key: parse(f)}, dek);
+        payload['sensitive_encrypted'] = toPgBytea(sealed.ciphertext);
+        payload['sensitive_iv'] = toPgBytea(sealed.iv);
+        for (final f in sensitive) {
+          payload[f.column] = null;
+        }
+      } else {
+        payload['sensitive_encrypted'] = null;
+        payload['sensitive_iv'] = null;
+        for (final f in sensitive) {
+          payload[f.column] = parse(f);
+        }
+      }
+    }
+
+    if (id == null) {
+      id = _uuid.v4();
+      final row = {...payload, 'id': id, 'user_id': _userId};
+      await _db.upsertRow(
+          kind.table, id, {...row, 'created_at': DateTime.now().toUtc().toIso8601String()});
+      await _write([OutboxOp(kind: 'insert', target: kind.table, rowId: id, payload: row)]);
+    } else {
+      await _db.upsertRow(kind.table, id, payload);
+      await _write([OutboxOp(kind: 'update', target: kind.table, rowId: id, payload: payload)]);
+    }
+    return id;
+  }
+
+  Future<void> deleteProperty(PropertyKind kind, String id) async {
+    await _db.deleteRow(kind.table, id);
+    await _write([OutboxOp(kind: 'delete', target: kind.table, rowId: id)]);
+  }
+
+  /// Same RPC as the web's savePlotBoundary. The cached area is a local
+  /// estimate until the server's PostGIS value comes back on refresh.
+  Future<void> saveBoundary(String plotId, List<LatLng> points) async {
+    final polygon = pointsToPolygon(points);
+    await _db.upsertRow('land_plots', plotId,
+        {'boundary_geojson': polygon, 'area_sq_meters': polygonAreaSqMeters(points)});
+    await _write([
+      OutboxOp(
+          kind: 'rpc',
+          target: 'upsert_plot_boundary',
+          payload: {'p_plot_id': plotId, 'p_geojson': polygon}),
+    ]);
+  }
+
+  // ---- Leases --------------------------------------------------------------
+
+  Future<void> saveLease(PropertyKind kind, String propertyId, String? leaseId,
+      Map<String, String> values) async {
+    String? opt(String k) => (values[k]?.trim().isEmpty ?? true) ? null : values[k]!.trim();
+    final payload = {
+      'tenant_name': values['tenantName']!.trim(),
+      'tenant_phone': opt('tenantPhone'),
+      'tenant_email': opt('tenantEmail'),
+      'rent_amount': num.parse(values['rentAmount']!),
+      'frequency': values['frequency'] ?? 'monthly',
+      'start_date': values['startDate'],
+      'end_date': opt('endDate'),
+      'notes': opt('notes'),
+    };
+    final id = leaseId ?? _uuid.v4();
+    final ensurePayments =
+        OutboxOp(kind: 'rpc', target: 'ensure_lease_payments', payload: {'p_lease_id': id});
+    if (leaseId == null) {
+      final row = {
+        ...payload,
+        'id': id,
+        'user_id': _userId,
+        'plot_id': kind == PropertyKind.plot ? propertyId : null,
+        'apartment_id': kind == PropertyKind.apartment ? propertyId : null,
+      };
+      await _db.upsertRow('leases', id, {...row, 'status': 'active'});
+      await _write([
+        OutboxOp(kind: 'insert', target: 'leases', rowId: id, payload: row),
+        ensurePayments,
+      ]);
+    } else {
+      await _db.upsertRow('leases', id, payload);
+      await _write([
+        OutboxOp(kind: 'update', target: 'leases', rowId: id, payload: payload),
+        ensurePayments,
+      ]);
+    }
+  }
+
+  Future<void> endLease(DbRow lease) async {
+    final payload = {'status': 'ended', 'end_date': lease['end_date'] ?? _today()};
+    await _db.upsertRow('leases', lease['id'] as String, payload);
+    await _write([
+      OutboxOp(kind: 'update', target: 'leases', rowId: lease['id'] as String, payload: payload)
+    ]);
+  }
+
+  Future<void> deleteLease(String id) async {
+    await _db.deleteRow('leases', id);
+    await _write([OutboxOp(kind: 'delete', target: 'leases', rowId: id)]);
+  }
+
+  Future<void> setPaymentPaid(DbRow payment, bool paid) async {
+    final payload = paid
+        ? {'paid': true, 'paid_date': _today(), 'paid_amount': payment['amount']}
+        : {'paid': false, 'paid_date': null, 'paid_amount': null};
+    final id = payment['id'] as String;
+    await _db.upsertRow('lease_payments', id, payload);
+    await _write([OutboxOp(kind: 'update', target: 'lease_payments', rowId: id, payload: payload)]);
+  }
+
+  // ---- Expenses & maintenance (create/delete, plus status for maintenance,
+  // as on the web) ------------------------------------------------------------
+
+  Map<String, String?> _subject(PropertyKind kind, String propertyId) => {
+        'plot_id': kind == PropertyKind.plot ? propertyId : null,
+        'apartment_id': kind == PropertyKind.apartment ? propertyId : null,
+      };
+
+  Future<void> _insert(String table, Map<String, dynamic> row) async {
+    final id = _uuid.v4();
+    final full = {...row, 'id': id, 'user_id': _userId};
+    await _db.upsertRow(table, id, full);
+    await _write([OutboxOp(kind: 'insert', target: table, rowId: id, payload: full)]);
+  }
+
+  Future<void> _delete(String table, String id) async {
+    await _db.deleteRow(table, id);
+    await _write([OutboxOp(kind: 'delete', target: table, rowId: id)]);
+  }
+
+  Future<void> addExpense(
+      PropertyKind kind, String propertyId, Map<String, String> values) {
+    final notes = values['notes']?.trim() ?? '';
+    return _insert('expenses', {
+      ..._subject(kind, propertyId),
+      'category': values['category'] ?? 'other',
+      'amount': num.parse(values['amount']!),
+      'expense_date': (values['expenseDate'] ?? '').isEmpty ? _today() : values['expenseDate'],
+      'notes': notes.isEmpty ? null : notes,
+    });
+  }
+
+  Future<void> deleteExpense(String id) => _delete('expenses', id);
+
+  Future<void> addMaintenance(
+      PropertyKind kind, String propertyId, Map<String, String> values) {
+    final description = values['description']?.trim() ?? '';
+    final cost = values['cost']?.trim() ?? '';
+    final vendorId = values['vendorId'] ?? '';
+    return _insert('maintenance_requests', {
+      ..._subject(kind, propertyId),
+      'title': values['title']!.trim(),
+      'description': description.isEmpty ? null : description,
+      'cost': cost.isEmpty ? null : num.parse(cost),
+      'reported_date':
+          (values['reportedDate'] ?? '').isEmpty ? _today() : values['reportedDate'],
+      'status': 'open',
+      'vendor_id': vendorId.isEmpty ? null : vendorId,
+    });
+  }
+
+  /// Mirrors updateMaintenanceStatus: resolving stamps today's date.
+  Future<void> setMaintenanceStatus(String id, String status) async {
+    final payload = {
+      'status': status,
+      'resolved_date': status == 'resolved' ? _today() : null,
+    };
+    await _db.upsertRow('maintenance_requests', id, payload);
+    await _write([
+      OutboxOp(kind: 'update', target: 'maintenance_requests', rowId: id, payload: payload)
+    ]);
+  }
+
+  Future<void> deleteMaintenance(String id) => _delete('maintenance_requests', id);
+
+  // ---- Vendors (shared across properties, like the web /vendors page) ------
+
+  Future<void> saveVendor(String? id, Map<String, String> values) async {
+    String? opt(String k) => (values[k]?.trim().isEmpty ?? true) ? null : values[k]!.trim();
+    final payload = {
+      'name': values['name']!.trim(),
+      'trade': opt('trade'),
+      'phone': opt('phone'),
+      'notes': opt('notes'),
+    };
+    if (id == null) return _insert('vendors', payload);
+    await _db.upsertRow('vendors', id, payload);
+    await _write([OutboxOp(kind: 'update', target: 'vendors', rowId: id, payload: payload)]);
+  }
+
+  /// The FK is `on delete set null`; mirror that in the cache so requests
+  /// stop showing the vendor before the next refresh.
+  Future<void> deleteVendor(String id) async {
+    for (final m in await _db.rows('maintenance_requests')) {
+      if (m['vendor_id'] == id) {
+        await _db.upsertRow('maintenance_requests', m['id'] as String, {'vendor_id': null});
+      }
+    }
+    await _delete('vendors', id);
+  }
+
+  Future<void> setLanguage(String code) async {
+    await _db.upsertRow('profiles', _userId, {'preferred_language': code});
+    await _write([
+      OutboxOp(
+          kind: 'update', target: 'profiles', rowId: _userId, payload: {'preferred_language': code})
+    ]);
+  }
+
+  // ---- Documents (need a connection) ---------------------------------------
+
+  /// Same storage layout and row shape as the web's uploadDocument, so files
+  /// uploaded here open on the web and vice versa.
+  Future<void> uploadDocument(PropertyKind kind, String propertyId, String fileName,
+      Uint8List bytes, SecretKey? dek) async {
+    final name = safePdfName(fileName);
+    final error = validatePdf(name, bytes);
+    if (error != null) throw DocumentValidationException(error);
+
+    final storagePath = '$_userId/$propertyId/${_uuid.v4()}.pdf';
+    var body = bytes;
+    String? ivHex;
+    if (dek != null) {
+      final sealed = await encryptBytes(bytes, dek);
+      body = sealed.ciphertext;
+      ivHex = toPgBytea(sealed.iv);
+    }
+    final storage = _client.storage.from(kind.bucket);
+    await storage.uploadBinary(storagePath, body,
+        fileOptions: FileOptions(
+            contentType: dek != null ? 'application/octet-stream' : 'application/pdf'));
+    try {
+      await _client.from(kind.documentTable).insert({
+        kind.foreignKey: propertyId,
+        'user_id': _userId,
+        'storage_path': storagePath,
+        'file_name': name,
+        'file_size_bytes': body.length,
+        'mime_type': 'application/pdf',
+        'is_encrypted': dek != null,
+        'encryption_iv': ivHex,
+      });
+    } catch (_) {
+      await storage.remove([storagePath]);
+      rethrow;
+    }
+    await refresh();
+  }
+
+  Future<Uint8List> downloadDocument(PropertyKind kind, DbRow doc, SecretKey? dek) async {
+    final bytes = await _client.storage.from(kind.bucket).download(doc['storage_path'] as String);
+    if (doc['is_encrypted'] != true) return bytes;
+    if (dek == null) throw LockedException();
+    return decryptBytes(bytes, fromPgBytea(doc['encryption_iv'] as String), dek);
+  }
+
+  Future<void> deleteDocument(PropertyKind kind, DbRow doc) async {
+    await _client.storage.from(kind.bucket).remove([doc['storage_path'] as String]);
+    await _client.from(kind.documentTable).delete().eq('id', doc['id'] as String);
+    await _db.deleteRow(kind.documentTable, doc['id'] as String);
+    _onChanged();
+  }
+
+  // ---- Tenant bills & payment proofs ---------------------------------------
+  // Mirrors app/actions/bills.ts. These need a connection: each is a
+  // multi-step server operation (row + immutable storage object) that the
+  // database guards with RLS and triggers, so it can't be queued offline.
+
+  String get userId => _userId;
+
+  Future<List<DbRow>> tenantShares(String apartmentId) async =>
+      (await _db.rows('apartment_tenants')).where((t) => t['apartment_id'] == apartmentId).toList();
+
+  /// Bills for one apartment (owner view), newest due date first.
+  Future<List<DbRow>> apartmentBills(String apartmentId) async =>
+      (await _db.rows('apartment_bills')).where((b) => b['apartment_id'] == apartmentId).toList()
+        ..sort((a, b) => (b['due_date'] as String).compareTo(a['due_date'] as String));
+
+  /// Every bill the user can see: as owner, and as tenant.
+  Future<List<DbRow>> allBills() async => (await _db.rows('apartment_bills'))
+    ..sort((a, b) => (b['due_date'] as String).compareTo(a['due_date'] as String));
+
+  Future<List<DbRow>> billProofs() async => (await _db.rows('apartment_bill_proofs'))
+    ..sort((a, b) => (b['created_at'] as String).compareTo(a['created_at'] as String));
+
+  /// Shares where this user is the tenant (to label bills with the apartment).
+  Future<List<DbRow>> myTenancies() async =>
+      (await _db.rows('apartment_tenants')).where((t) => t['user_id'] == _userId).toList();
+
+  Future<List<DbRow>> sharedExpenses() async => (await _db.rows('shared_expenses'))
+    ..sort((a, b) => (b['expense_date'] as String).compareTo(a['expense_date'] as String));
+
+  /// inviteApartmentCollaborator with role "tenant".
+  Future<void> inviteTenant(String apartmentId, String apartmentName, String email) async {
+    final tenantId = await _client.rpc('find_apartment_tenant_account',
+        params: {'p_apartment_id': apartmentId, 'p_email': email}) as String?;
+    if (tenantId == null) throw const ActionException(ActionError.noAccountFound);
+    if (tenantId == _userId) throw const ActionException(ActionError.cannotInviteSelf);
+    // A tenant label must not imply privacy while viewer/editor access remains.
+    final existing = await _client
+        .from('apartment_collaborators')
+        .select('id')
+        .eq('apartment_id', apartmentId)
+        .eq('user_id', tenantId)
+        .limit(1);
+    if (existing.isNotEmpty) throw const ActionException(ActionError.removeBroadAccess);
+    try {
+      await _client.from('apartment_tenants').insert({
+        'apartment_id': apartmentId,
+        'owner_id': _userId,
+        'user_id': tenantId,
+        'invited_email': email,
+        'apartment_label': apartmentName,
+      });
+    } on PostgrestException catch (e) {
+      if (e.code == '23505') throw const ActionException(ActionError.alreadyShared);
+      rethrow;
+    }
+    await refresh();
+  }
+
+  Future<void> removeTenant(DbRow share) async {
+    await _client
+        .from('apartment_tenants')
+        .delete()
+        .eq('id', share['id'] as String)
+        .eq('owner_id', _userId);
+    await refresh();
+  }
+
+  BillFile _checkFile(String name, Uint8List bytes) => switch (validateBillFile(name, bytes)) {
+        final BillFile file => file,
+        BillFileError.chooseFile => throw const ActionException(ActionError.chooseFile),
+        BillFileError.fileTooLarge => throw const ActionException(ActionError.fileTooLarge),
+        _ => throw const ActionException(ActionError.fileType),
+      };
+
+  /// createApartmentBill: insert the row, upload the copy under
+  /// `{bill}/bill/{owner}/…`, then publish it by setting storage_path. Any
+  /// failure removes the draft row (a stray private object may remain, as on
+  /// the web — clients can't delete evidence).
+  Future<void> createBill({
+    required String apartmentId,
+    required DbRow share,
+    required Map<String, String> values,
+    required bool visible,
+    required String fileName,
+    required Uint8List bytes,
+  }) async {
+    final file = _checkFile(fileName, bytes);
+    final id = _uuid.v4();
+    final bills = _client.from('apartment_bills');
+    try {
+      await bills.insert({
+        'id': id,
+        'apartment_id': apartmentId,
+        'owner_id': _userId,
+        'tenant_share_id': share['id'],
+        'tenant_email': share['invited_email'],
+        'title': values['title']!.trim(),
+        'amount': num.parse(values['amount']!.trim()),
+        'due_date': values['dueDate'],
+        'visible_to_tenant': visible,
+      });
+    } on PostgrestException {
+      throw const ActionException(ActionError.saveFailed);
+    }
+    final path = '$id/bill/$_userId/${_uuid.v4()}.${file.extension}';
+    try {
+      await _client.storage.from(_billsBucket).uploadBinary(path, bytes,
+          fileOptions: FileOptions(contentType: file.contentType, upsert: false));
+    } catch (e) {
+      await bills.delete().eq('id', id);
+      if (isOfflineError(e)) rethrow;
+      throw const ActionException(ActionError.uploadFailed);
+    }
+    try {
+      await bills.update({'storage_path': path, 'file_name': fileName}).eq('id', id).select('id').single();
+    } catch (e) {
+      await bills.delete().eq('id', id);
+      if (isOfflineError(e)) rethrow;
+      throw const ActionException(ActionError.saveFailed);
+    }
+    await refresh();
+  }
+
+  /// submitBillProof: upload under `{bill}/proof/{tenant}/…`, then insert the
+  /// pending proof. The database allows one pending proof per bill.
+  Future<void> submitProof(DbRow bill, String fileName, Uint8List bytes) async {
+    if (bill['paid_at'] != null) throw const ActionException(ActionError.notFound);
+    final pending = await _client
+        .from('apartment_bill_proofs')
+        .select('id')
+        .eq('bill_id', bill['id'] as String)
+        .eq('status', 'pending')
+        .limit(1);
+    if (pending.isNotEmpty) throw const ActionException(ActionError.alreadyPending);
+    final file = _checkFile(fileName, bytes);
+    final path = '${bill['id']}/proof/$_userId/${_uuid.v4()}.${file.extension}';
+    try {
+      await _client.storage.from(_billsBucket).uploadBinary(path, bytes,
+          fileOptions: FileOptions(contentType: file.contentType, upsert: false));
+    } catch (e) {
+      if (isOfflineError(e)) rethrow;
+      throw const ActionException(ActionError.uploadFailed);
+    }
+    try {
+      await _client.from('apartment_bill_proofs').insert({
+        'bill_id': bill['id'],
+        'user_id': _userId,
+        'storage_path': path,
+        'file_name': fileName,
+      });
+    } on PostgrestException catch (e) {
+      throw ActionException(e.code == '23505' ? ActionError.alreadyPending : ActionError.saveFailed);
+    }
+    await refresh();
+  }
+
+  /// Approve (marks the bill paid in the same transaction) or reject with a
+  /// reason, via the same RPC as the web.
+  Future<void> reviewProof(String proofId, bool approve, String? note) async {
+    try {
+      await _client.rpc('review_apartment_bill_proof', params: {
+        'p_proof_id': proofId,
+        'p_approve': approve,
+        'p_note': (note?.trim().isEmpty ?? true) ? null : note!.trim(),
+      });
+    } on PostgrestException {
+      throw const ActionException(ActionError.reviewFailed);
+    }
+    await refresh();
+  }
+
+  Future<void> setBillVisibility(String billId, bool visible) async {
+    try {
+      await _client
+          .from('apartment_bills')
+          .update({'visible_to_tenant': visible})
+          .eq('id', billId)
+          .eq('owner_id', _userId)
+          .select('id')
+          .single();
+    } on PostgrestException {
+      throw const ActionException(ActionError.saveFailed);
+    }
+    await refresh();
+  }
+
+  /// Bill copies and proofs, read through Storage RLS (the web proxies the
+  /// same check through /api/bills/files).
+  Future<Uint8List> downloadBillFile(String storagePath) =>
+      _client.storage.from(_billsBucket).download(storagePath);
+
+  /// setExpenseTenantVisibility: apartment expenses only, owner only.
+  Future<void> setExpenseVisibility(DbRow expense, bool visible) async {
+    final id = expense['id'] as String;
+    await _db.upsertRow('expenses', id, {'visible_to_tenants': visible});
+    await _write([
+      OutboxOp(kind: 'update', target: 'expenses', rowId: id, payload: {'visible_to_tenants': visible})
+    ]);
+  }
+
+  // ---- Apartment location pin ----------------------------------------------
+
+  /// Owners and editor collaborators can move the pin; viewers only see it
+  /// (same rule as the web apartment page; RLS enforces it server-side).
+  Future<bool> canEditApartment(DbRow apartment) async =>
+      await myRole(PropertyKind.apartment, apartment) != 'viewer';
+
+  /// saveApartmentLocation: both coordinates set, or both cleared. Goes
+  /// through the outbox, so a pin dropped on site saves when back online.
+  Future<void> saveApartmentLocation(String apartmentId, LatLng? point) async {
+    if (point != null && !validApartmentLocation(point)) {
+      throw ArgumentError('Invalid coordinates');
+    }
+    final payload = {'latitude': point?.latitude, 'longitude': point?.longitude};
+    await _db.upsertRow('apartments', apartmentId, payload);
+    await _write([OutboxOp(kind: 'update', target: 'apartments', rowId: apartmentId, payload: payload)]);
+  }
+
+  // ---- Viewer/editor sharing (mirrors invite/removeCollaborator) ------------
+
+  bool isOwner(DbRow property) => property['user_id'] == _userId;
+
+  /// 'owner', 'editor' or 'viewer' for the signed-in user on this property.
+  Future<String> myRole(PropertyKind kind, DbRow property) async {
+    if (isOwner(property)) return 'owner';
+    final mine = (await _db.rows(kind.collaboratorTable)).where(
+        (c) => c[kind.foreignKey] == property['id'] && c['user_id'] == _userId);
+    return mine.firstOrNull?['role'] as String? ?? 'viewer';
+  }
+
+  Future<List<DbRow>> collaborators(PropertyKind kind, String propertyId) async =>
+      (await _db.rows(kind.collaboratorTable))
+          .where((c) => c[kind.foreignKey] == propertyId)
+          .toList()
+        ..sort((a, b) => (a['created_at'] as String? ?? '').compareTo(b['created_at'] as String? ?? ''));
+
+  Future<void> _audit(PropertyKind kind, String propertyId, String action, Map<String, dynamic> detail) async {
+    try {
+      await _client.rpc(kind.auditRpc,
+          params: {kind.auditParam: propertyId, 'p_action': action, 'p_detail': detail});
+    } catch (_) {
+      // Same as the web: a failed audit entry doesn't undo the change.
+    }
+  }
+
+  Future<void> inviteCollaborator(
+      PropertyKind kind, String propertyId, String email, String role) async {
+    assert(role == 'viewer' || role == 'editor');
+    final userId = await _client.rpc('find_user_id_by_email', params: {'p_email': email}) as String?;
+    if (userId == null) throw const ActionException(ActionError.noAccountFound);
+    if (userId == _userId) throw const ActionException(ActionError.cannotInviteSelf);
+    if (kind == PropertyKind.apartment) {
+      // A billing-only tenant can't also hold viewer/editor access.
+      final tenant = await _client
+          .from('apartment_tenants')
+          .select('id')
+          .eq('apartment_id', propertyId)
+          .eq('user_id', userId)
+          .limit(1);
+      if (tenant.isNotEmpty) throw const ActionException(ActionError.alreadyShared);
+    }
+    try {
+      await _client.from(kind.collaboratorTable).insert({
+        kind.foreignKey: propertyId,
+        'user_id': userId,
+        'invited_email': email,
+        'role': role,
+        'invited_by': _userId,
+      });
+    } on PostgrestException catch (e) {
+      if (e.code == '23505') throw const ActionException(ActionError.alreadyShared);
+      rethrow;
+    }
+    await _audit(kind, propertyId, 'collaborator_invited', {'email': email, 'role': role});
+    await refresh();
+  }
+
+  Future<void> removeCollaborator(PropertyKind kind, DbRow collaborator) async {
+    final propertyId = collaborator[kind.foreignKey] as String;
+    await _client.from(kind.collaboratorTable).delete().eq('id', collaborator['id'] as String);
+    await _audit(kind, propertyId, 'collaborator_removed', {'email': collaborator['invited_email']});
+    await refresh();
+  }
+
+  Future<void> signOut() async {
+    await _db.clear();
+    await _client.auth.signOut();
+  }
+}

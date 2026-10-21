@@ -1,0 +1,525 @@
+{
+  "@@locale": "en",
+  "appTitle": "Landlord",
+  "navDashboard": "Dashboard",
+  "navPlots": "Plots",
+  "navApartments": "Apartments",
+  "navSettings": "Settings",
+  "email": "Email",
+  "password": "Password",
+  "fullName": "Full name",
+  "logIn": "Log in",
+  "signUp": "Sign up",
+  "noAccount": "Don't have an account?",
+  "haveAccount": "Already have an account?",
+  "continueWithGoogle": "Continue with Google",
+  "forgotPassword": "Forgot password?",
+  "resetEmailSent": "Check your email for a reset link.",
+  "passwordTooShort": "Password must be at least 10 characters.",
+  "checkEmailToConfirm": "Check your email to confirm your account, then log in.",
+  "referralCode": "Referral code (optional)",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "retry": "Retry",
+  "required": "Required",
+  "confirmDelete": "Delete this permanently?",
+  "offlineBanner": "Offline — showing saved data",
+  "pendingChanges": "{count, plural, =1{1 change waiting to sync} other{{count} changes waiting to sync}}",
+  "@pendingChanges": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRejected": "The server rejected a change: {message}",
+  "@syncRejected": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "errorMessage": "Something went wrong: {message}",
+  "@errorMessage": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "totalPlots": "Total plots",
+  "totalArea": "Total area",
+  "totalPurchasePrice": "Total purchase price",
+  "totalCurrentValue": "Total current value",
+  "overdueRent": "Overdue rent",
+  "upcomingRent": "Due in 30 days",
+  "receivedThisMonth": "Received this month",
+  "decimalValue": "{value} decimal",
+  "@decimalValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "areaSub": "{bigha} bigha · {acre} acre",
+  "@areaSub": {
+    "placeholders": {
+      "bigha": {
+        "type": "String"
+      },
+      "acre": {
+        "type": "String"
+      }
+    }
+  },
+  "addPlot": "Add plot",
+  "addApartment": "Add apartment",
+  "noPlots": "No plots yet.",
+  "noApartments": "No apartments yet.",
+  "field_name": "Name",
+  "field_village": "Village",
+  "field_upazila": "Upazila",
+  "field_district": "District",
+  "field_division": "Division",
+  "field_mutationNumber": "Mutation number",
+  "field_dolilArea": "Area (per dolil)",
+  "field_actualArea": "Area (actual)",
+  "field_purchasePrice": "Purchase price (BDT)",
+  "field_purchaseDate": "Purchase date",
+  "field_currentEstimatedValue": "Current estimated value (BDT)",
+  "field_notes": "Notes",
+  "field_buildingName": "Building name",
+  "field_unitNumber": "Unit number",
+  "field_floor": "Floor",
+  "field_size": "Size",
+  "unit": "Unit",
+  "unit_decimal": "Decimal",
+  "unit_katha": "Katha",
+  "unit_bigha": "Bigha",
+  "unit_acre": "Acre",
+  "unit_sqft": "Sq ft",
+  "unit_sqmeter": "Sq meter",
+  "sensitiveLocked": "Village, mutation number, prices and notes are encrypted. Unlock encryption in Settings to view or edit them.",
+  "willEncrypt": "Sensitive fields will be encrypted on this device before upload.",
+  "encrypted": "Encrypted",
+  "area": "Area",
+  "directions": "Directions",
+  "details": "Details",
+  "notFound": "Not found. It may have been deleted.",
+  "boundary": "Boundary",
+  "noBoundary": "No boundary yet.",
+  "captureBoundary": "Capture boundary",
+  "redrawBoundary": "Redraw boundary",
+  "gpsAccuracy": "GPS ±{meters} m",
+  "@gpsAccuracy": {
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "waitingForGps": "Waiting for GPS…",
+  "gpsTooWeak": "GPS signal too weak — move to open sky",
+  "markCorner": "Mark corner here",
+  "markingCorner": "Hold still… averaging {count} fixes",
+  "@markingCorner": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cornerAdded": "Corner added (±{meters} m)",
+  "@cornerAdded": {
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "autoTrace": "Trace as I walk",
+  "boundaryHelp": "Walk to each corner and tap \"Mark corner\", or turn on tracing and walk the edge. You can also tap the map to add points.",
+  "undo": "Undo",
+  "clear": "Clear",
+  "saveBoundary": "Save boundary",
+  "needThreePoints": "A boundary needs at least 3 points.",
+  "invalidPolygon": "The boundary edges cross each other. Adjust the points.",
+  "pointsAndArea": "{count} points · ~{area} decimal",
+  "@pointsAndArea": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "area": {
+        "type": "String"
+      }
+    }
+  },
+  "locationPermissionDenied": "Location permission is needed to walk a boundary.",
+  "trackingNotificationTitle": "Recording boundary",
+  "trackingNotificationText": "Landlord is using GPS while you walk the plot.",
+  "satellite": "Satellite",
+  "streets": "Streets",
+  "documents": "Documents",
+  "noDocuments": "No documents yet.",
+  "scanDocument": "Scan",
+  "pickPdf": "Upload PDF",
+  "uploading": "Uploading…",
+  "uploaded": "Uploaded.",
+  "documentsNeedConnection": "Documents need an internet connection.",
+  "documentLocked": "This document is encrypted. Unlock encryption in Settings to open it.",
+  "docError_onlyPdf": "Only PDF files are allowed.",
+  "docError_choosePdf": "Choose a PDF file.",
+  "docError_fileTooLarge": "File is larger than 20 MB.",
+  "docError_invalidPdfContent": "This file isn't a valid PDF.",
+  "leases": "Leases",
+  "addLease": "Add lease",
+  "editLease": "Edit lease",
+  "noLeases": "No leases yet.",
+  "tenantName": "Tenant name",
+  "tenantPhone": "Tenant phone",
+  "tenantEmail": "Tenant email",
+  "rentAmount": "Rent amount (BDT)",
+  "frequency": "Payment cycle",
+  "frequency_monthly": "Monthly",
+  "frequency_quarterly": "Quarterly",
+  "frequency_yearly": "Yearly",
+  "startDate": "Start date",
+  "endDate": "End date",
+  "endDateHint": "Leave empty for an ongoing lease.",
+  "status_active": "Active",
+  "status_ended": "Ended",
+  "endLease": "End lease",
+  "payments": "Payments",
+  "paymentsAfterSync": "Payment schedule appears once synced.",
+  "markPaid": "Mark paid",
+  "paidOn": "Paid {date}",
+  "@paidOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "dueOn": "Due {date}",
+  "@dueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "overdue": "Overdue",
+  "settings": "Settings",
+  "language": "Language",
+  "encryption": "Encryption",
+  "encryptionNotSetUp": "Encryption isn't set up. Set it up from your profile on the web app; it will then unlock here too.",
+  "passphrase": "Passphrase",
+  "recoveryCode": "Recovery code",
+  "useRecoveryCode": "Use recovery code instead",
+  "unlock": "Unlock",
+  "lock": "Lock",
+  "unlockedNotice": "Unlocked. Sensitive data is encrypted on this device before it leaves it.",
+  "lockedNotice": "Encryption is on but locked. Enter your passphrase to view or edit sensitive data.",
+  "wrongPassphrase": "Wrong passphrase.",
+  "biometricLock": "Biometric lock",
+  "biometricLockHint": "Require fingerprint or face to open the app, and keep the encryption key in this device's secure keystore.",
+  "biometricUnavailable": "No fingerprint or face unlock is set up on this device.",
+  "biometricReason": "Unlock Landlord",
+  "appLocked": "Landlord is locked",
+  "offlineMaps": "Offline maps",
+  "offlineMapsHint": "Download satellite imagery for an area so maps work without a connection in the field.",
+  "downloadVisibleArea": "Download visible area",
+  "downloadProgress": "Downloading {done}/{total}",
+  "@downloadProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadDone": "Saved {count} tiles for offline use.",
+  "@downloadDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "areaTooLarge": "That area needs {count} tiles, over the 3000 limit — zoom in first.",
+  "@areaTooLarge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cacheSize": "Stored: {size} MB",
+  "@cacheSize": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "clearCache": "Clear offline maps",
+  "notifications": "Rent reminders",
+  "notificationsHint": "Get notified on this phone when rent is due or a lease is about to expire.",
+  "notificationsUnavailable": "Push notifications aren't configured in this build.",
+  "signOut": "Sign out",
+  "expenses": "Expenses",
+  "addExpense": "Add expense",
+  "noExpenses": "No expenses yet.",
+  "expensesTotal": "Total: {amount}",
+  "@expensesTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "category": "Category",
+  "category_tax": "Tax",
+  "category_insurance": "Insurance",
+  "category_utility": "Utility",
+  "category_repair": "Repair",
+  "category_management_fee": "Management fee",
+  "category_other": "Other",
+  "amount": "Amount (BDT)",
+  "expenseDate": "Expense date",
+  "maintenance": "Maintenance",
+  "addMaintenanceRequest": "Add request",
+  "noMaintenance": "No maintenance requests yet.",
+  "maintenanceTitle": "Title",
+  "maintenanceDescription": "Description",
+  "cost": "Cost (BDT)",
+  "reportedDate": "Reported date",
+  "reportedOn": "Reported {date}",
+  "@reportedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "maintenanceStatus_open": "Open",
+  "maintenanceStatus_in_progress": "In progress",
+  "maintenanceStatus_resolved": "Resolved",
+  "markInProgress": "Mark in progress",
+  "markResolved": "Mark resolved",
+  "reopen": "Reopen",
+  "vendors": "Vendors",
+  "addVendor": "Add vendor",
+  "editVendor": "Edit vendor",
+  "noVendors": "No vendors yet.",
+  "vendorsHint": "Plumbers, electricians and other contacts you can assign to maintenance requests.",
+  "manageVendors": "Manage vendors",
+  "vendorTrade": "Trade",
+  "vendorTradeHint": "e.g. Plumber, Electrician",
+  "phone": "Phone",
+  "call": "Call",
+  "vendor": "Vendor",
+  "noVendor": "No vendor",
+  "navBills": "Bills",
+  "bills": "Apartment bills",
+  "billsPortalHint": "Review bills, upload payment proof and see expenses your apartment owner has shared.",
+  "billsOwnerHint": "Add a bill copy, amount and due date each month. Approve a tenant’s payment proof to mark the bill paid. Bill collections are separate from rent and expense totals.",
+  "billTitle": "Bill title",
+  "billTitlePlaceholder": "Electricity · October 2026",
+  "billTenant": "Tenant",
+  "billAmount": "Amount (BDT)",
+  "billDueDate": "Due date",
+  "billCopy": "Bill copy",
+  "paymentProof": "Payment proof",
+  "billFileHint": "JPEG, PNG, WebP or PDF · up to 10 MB.",
+  "billVisible": "Share this bill with the selected tenant",
+  "billInviteFirst": "Add a tenant above (Tenant — bills only), then create a bill. The tenant needs a Landlord account.",
+  "createBill": "Add monthly bill",
+  "submitProof": "Upload payment proof",
+  "billCreated": "Bill saved.",
+  "proofSubmitted": "Proof submitted for owner review.",
+  "billApprovalHint": "Uploading proof does not mark a bill paid. The owner will review and approve it.",
+  "viewBill": "View bill copy",
+  "viewProof": "View payment proof",
+  "approveProof": "Approve & mark paid",
+  "rejectProof": "Reject proof",
+  "rejectionReason": "Reason for rejection",
+  "reviewNote": "Owner’s review: {note}",
+  "@reviewNote": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "billDue": "Due {date}",
+  "@billDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "billStatus_paid": "Paid",
+  "billStatus_pending": "Awaiting review",
+  "billStatus_overdue": "Overdue",
+  "billStatus_unpaid": "Unpaid",
+  "proofStatus_pending": "Pending review",
+  "proofStatus_approved": "Approved",
+  "proofStatus_rejected": "Rejected",
+  "billShared": "Visible to tenant",
+  "billPrivate": "Private",
+  "billHide": "Hide from tenant",
+  "billShare": "Share with tenant",
+  "billTenantRemoved": "Tenant access removed. Historical bill and proof remain available to you.",
+  "noBills": "No bills yet. Owners can add monthly bills from an apartment’s details.",
+  "sharedExpenses": "Other shared expenses",
+  "sharedExpensesHint": "These are for reference. A shared expense is not an additional bill to pay.",
+  "noSharedExpenses": "Your owner has not shared any other expenses.",
+  "shareExpense": "Share with tenants",
+  "hideExpense": "Make private",
+  "expenseVisibilityHint": "Expenses are private by default. Sharing makes the amount, date, category and notes visible to all current tenants of this apartment.",
+  "reviewAlert": "{count, plural, one {{count} bill has payment proof awaiting your review.} other {{count} bills have payment proof awaiting your review.}}",
+  "@reviewAlert": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dueAlert": "{count, plural, one{You have {count} bill due soon or overdue.} other{You have {count} bills due soon or overdue.}}",
+  "@dueAlert": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "billError_notFound": "This bill or tenant is no longer available.",
+  "billError_chooseFile": "Choose a bill copy or payment proof.",
+  "billError_fileTooLarge": "The file must be 10 MB or smaller.",
+  "billError_fileType": "Choose a valid JPEG, PNG, WebP image or PDF.",
+  "billError_saveFailed": "Could not save. Please refresh and try again.",
+  "billError_uploadFailed": "Could not upload the file. Please try again.",
+  "billError_alreadyPending": "A payment proof is already awaiting review.",
+  "billError_reviewFailed": "Could not review this proof. It may have already been reviewed. Refresh and try again.",
+  "billError_noAccountFound": "No Landlord account found for that email.",
+  "billError_cannotInviteSelf": "You can't invite yourself.",
+  "billError_removeBroadAccess": "Remove this account’s Viewer or Editor access before inviting them as a tenant.",
+  "billError_alreadyShared": "This property is already shared with that person.",
+  "tenants": "Tenants",
+  "inviteTenant": "Invite tenant",
+  "roleTenant": "Tenant — bills only",
+  "tenantHelp": "Tenants open the Bills tab. They can see assigned bills and expenses you share, without ownership records or private documents. Viewer and Editor roles have broader access.",
+  "removeTenantConfirm": "Remove {email}? Their bill, proof and shared-expense access ends; history stays with you.",
+  "@removeTenantConfirm": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "Remove",
+  "invite": "Invite",
+  "noTenants": "No tenants yet.",
+  "takePhoto": "Take photo",
+  "chooseFile": "Choose file",
+  "locationTitle": "Apartment location",
+  "locationHint": "Save a pin for the building. Search or tap the map, drag the pin, use GPS, or enter coordinates. Changes are saved only when you choose Save location.",
+  "locationViewHint": "The saved building location.",
+  "noLocation": "No location saved yet.",
+  "latitude": "Latitude",
+  "longitude": "Longitude",
+  "useGps": "Use my current location",
+  "locating": "Finding your location…",
+  "saveLocation": "Save location",
+  "removeLocation": "Remove location",
+  "locationSaved": "Location saved.",
+  "gpsUnavailable": "Could not get your location. Check browser permission or choose a point manually.",
+  "invalidCoordinates": "Enter latitude between −90 and 90 and longitude between −180 and 180.",
+  "searchPlace": "Search for a place",
+  "searchPlaceholder": "Area, address or building name",
+  "searching": "Searching…",
+  "searchFailed": "Place search is unavailable. Tap the map or enter coordinates instead.",
+  "setLocation": "Set location",
+  "editLocation": "Edit location",
+  "locationHintMobile": "Search, tap the map to drop the pin, use GPS, or enter coordinates. Changes are saved only when you choose Save location.",
+  "savedCoordinates": "Saved: {lat}, {lng}",
+  "@savedCoordinates": {
+    "placeholders": {
+      "lat": {
+        "type": "String"
+      },
+      "lng": {
+        "type": "String"
+      }
+    }
+  },
+  "analytics": "Analytics",
+  "analyticsHint": "Occupancy, 12-month profit, income vs. expense and ROI.",
+  "occupancyRate": "Occupancy rate",
+  "unitsLeased": "{leased} of {total} units leased",
+  "@unitsLeased": {
+    "placeholders": {
+      "leased": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "portfolioProfit12mo": "Profit (last 12 months)",
+  "incomeVsExpense": "Income vs. expense",
+  "roiPerProperty": "ROI per property",
+  "roiValue": "{value}% / yr",
+  "@roiValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "noPropertiesYet": "No properties yet.",
+  "income": "Income",
+  "expense": "Expense",
+  "chartLabel": "Monthly income and expense trend",
+  "month": "Month",
+  "table": "Table",
+  "chart": "Chart",
+  "needsConnection": "This needs an internet connection.",
+  "sharedWith": "Shared with",
+  "inviteEmail": "Email address",
+  "collaboratorRole": "Role",
+  "roleViewer": "Viewer (read-only)",
+  "roleEditor": "Editor (can edit and draw boundary)",
+  "invited": "Invited",
+  "noCollaborators": "Not shared with anyone yet.",
+  "sharedByOwner": "Shared with you by the plot owner.",
+  "sharedAsRole": "Your role: {role}",
+  "removeCollaboratorConfirm": "Remove {email}? They will lose access to this property.",
+  "inviteCollaborator": "Share",
+  "role_viewer": "Viewer",
+  "role_editor": "Editor",
+  "@sharedAsRole": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "@removeCollaboratorConfirm": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  }
+}
