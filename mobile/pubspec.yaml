@@ -40,7 +40,20 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   sqflite_common_ffi: ^2.4.4
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   generate: true
   uses-material-design: true
+
+# Launcher icon from the brand assets (brand/, public/icons/). Regenerate the
+# mipmaps after changing these with: dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: assets/icon/landlord-symbol.png
+  adaptive_icon_background: "#164B3F"
+  adaptive_icon_foreground: assets/icon/landlord-adaptive.png
+  # The maskable source already keeps the glyph inside the safe zone.
+  adaptive_icon_foreground_inset: 0
+  min_sdk_android: 24
