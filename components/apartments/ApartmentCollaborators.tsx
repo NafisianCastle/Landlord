@@ -23,10 +23,12 @@ export default function ApartmentCollaborators({
   apartmentId,
   isOwner,
   collaborators,
+  tenants = [],
 }: {
   apartmentId: string;
   isOwner: boolean;
   collaborators: Collaborator[];
+  tenants?: Collaborator[];
 }) {
   const t = useTranslations("PlotCollaborators");
   const tCommon = useTranslations("Common");
@@ -42,10 +44,10 @@ export default function ApartmentCollaborators({
     if (state?.success) formRef.current?.reset();
   }, [state]);
 
-  function handleRemove(collaboratorId: string) {
+  function handleRemove(collaboratorId: string, role: string) {
     setRemoveError(null);
     startRemoving(async () => {
-      const result = await removeApartmentCollaborator(apartmentId, collaboratorId);
+      const result = await removeApartmentCollaborator(apartmentId, collaboratorId, role);
       if (result?.error) setRemoveError(result.error);
     });
   }
@@ -68,10 +70,10 @@ export default function ApartmentCollaborators({
       <h2 className="mb-2 font-medium">{t("title")}</h2>
       <div className="flex flex-col gap-3 rounded-lg border border-border p-3">
         <ul className="flex flex-col divide-y divide-border">
-          {collaborators.map((c) => (
-            <li key={c.id} className="flex items-center justify-between gap-2 py-2 text-sm">
-              <span className="flex items-center gap-2 truncate">
-                {c.invited_email} <Badge>{c.role}</Badge>
+          {[...collaborators, ...tenants].map((c) => (
+            <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm">
+              <span className="flex min-w-0 flex-wrap items-center gap-2">
+                <span className="break-all">{c.invited_email}</span> <Badge>{c.role === "tenant" ? t("roleTenant") : c.role}</Badge>
               </span>
               <ConfirmDialog
                 trigger={
@@ -89,11 +91,11 @@ export default function ApartmentCollaborators({
                 description={t("removeConfirm", { email: c.invited_email })}
                 confirmLabel={t("remove")}
                 cancelLabel={tCommon("cancel")}
-                onConfirm={() => handleRemove(c.id)}
+                onConfirm={() => handleRemove(c.id, c.role)}
               />
             </li>
           ))}
-          {collaborators.length === 0 && (
+          {collaborators.length === 0 && tenants.length === 0 && (
             <li className="py-2 text-sm text-muted-foreground">{t("noCollaborators")}</li>
           )}
         </ul>
@@ -108,16 +110,18 @@ export default function ApartmentCollaborators({
             <Select
               id="apt-collaborator-role"
               name="role"
-              defaultValue="editor"
+              defaultValue="tenant"
             >
               <option value="viewer">{t("roleViewer")}</option>
               <option value="editor">{t("roleEditor")}</option>
+              <option value="tenant">{t("roleTenant")}</option>
             </Select>
           </div>
           <Button type="submit" disabled={pending}>
             {pending ? t("inviting") : t("invite")}
           </Button>
         </form>
+        <p className="text-xs text-muted-foreground">{t("tenantHelp")}</p>
         {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
         {state?.success && <p className="text-sm text-muted-foreground">{t("invited")}</p>}
         {removeError && <p className="text-sm text-destructive">{removeError}</p>}

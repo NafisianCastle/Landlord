@@ -5,8 +5,9 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
-import { validateProperty, validateForm } from "@/lib/validation/forms";
+import { UUID, validateProperty, validateForm } from "@/lib/validation/forms";
 import { validateGuestProperties } from "@/lib/validation/guests";
+import { apartmentLocation, validApartmentLocation, type ApartmentCoordinates } from "@/lib/apartmentLocation";
 
 /**
  * building_name/unit_number/purchase_price/purchase_date/current_estimated_value/notes
@@ -101,6 +102,8 @@ export interface GuestApartmentPayload {
   purchaseDate: string | null;
   currentEstimatedValue: number | null;
   notes: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 /**
@@ -120,6 +123,7 @@ export async function migrateGuestApartments(apartments: GuestApartmentPayload[]
   let migrated = 0;
 
   for (const a of apartments) {
+    const location = apartmentLocation(a.latitude, a.longitude);
     const { error } = await supabase.from("apartments").insert({
       user_id: auth.user.id,
       name: a.name,
@@ -135,6 +139,8 @@ export async function migrateGuestApartments(apartments: GuestApartmentPayload[]
       purchase_date: a.purchaseDate,
       current_estimated_value: a.currentEstimatedValue,
       notes: a.notes,
+      latitude: location?.lat ?? null,
+      longitude: location?.lng ?? null,
     });
 
     if (error) continue;
@@ -191,6 +197,23 @@ export async function deleteApartment(apartmentId: string) {
   redirect("/apartments");
 }
 
+export async function saveApartmentLocation(apartmentId: string, point: ApartmentCoordinates | null) {
+  const t = await getTranslations("ApartmentLocation");
+  const auth = await getUserWithAccess();
+  if (!auth?.hasAccess) return { error: t("accessDenied") };
+  if (typeof apartmentId !== "string" || !UUID.test(apartmentId) || !validApartmentLocation(point))
+    return { error: t("invalidCoordinates") };
+  const supabase = await createClient();
+  // Apartment UPDATE/SELECT RLS enforces owner/editor access, including forged calls.
+  const { data, error } = await supabase.from("apartments")
+    .update({ latitude: point?.lat ?? null, longitude: point?.lng ?? null })
+    .eq("id", apartmentId).select("id").single();
+  if (error || !data) return { error: t("saveFailed") };
+  revalidatePath(`/apartments/${apartmentId}`);
+  revalidatePath("/apartments");
+  return { success: true };
+}
+
 export async function inviteApartmentCollaborator(
   apartmentId: string,
   _prevState: unknown,
@@ -204,11 +227,35 @@ export async function inviteApartmentCollaborator(
   const email = String(formData.get("email") ?? "").trim();
   const role = String(formData.get("role") ?? "editor");
   if (!email) return { error: t("emailRequired") };
-  if (role !== "viewer" && role !== "editor") return { error: t("invalidRole") };
-  const validationError = validateForm(formData, { email: { kind: "email", max: 254, required: true }, role: { choices: ["viewer", "editor"] } });
+  if (!["viewer", "editor", "tenant"].includes(role)) return { error: t("invalidRole") };
+  const validationError = validateForm(formData, { email: { kind: "email", max: 254, required: true }, role: { choices: ["viewer", "editor", "tenant"] } });
   if (validationError) return { error: validationError };
 
   const supabase = await createClient();
+  // Billing invitations never grant viewer/editor access to ownership records.
+  if (role === "tenant") {
+    const { data: apartment } = await supabase.from("apartments").select("name")
+      .eq("id", apartmentId).eq("user_id", auth.user.id).single();
+    if (!apartment) return { error: t("invalidRole") };
+    const { data: tenantId, error: lookupError } = await supabase.rpc("find_apartment_tenant_account", { p_apartment_id: apartmentId, p_email: email });
+    if (lookupError) return { error: lookupError.message };
+    if (!tenantId) return { error: t("noAccountFound") };
+    if (tenantId === auth.user.id) return { error: t("cannotInviteSelf") };
+    // Require removing broader access first; a tenant label must not imply privacy
+    // while the same account still has a viewer/editor invitation.
+    const { data: existing, error: existingError } = await supabase.from("apartment_collaborators").select("id")
+      .eq("apartment_id", apartmentId).eq("user_id", tenantId).limit(1);
+    if (existingError) return { error: existingError.message };
+    if (existing?.length) return { error: t("removeBroadAccess") };
+    const { error } = await supabase.from("apartment_tenants").insert({
+      apartment_id: apartmentId, owner_id: auth.user.id, user_id: tenantId,
+      invited_email: email, apartment_label: apartment.name,
+    });
+    if (error) return { error: error.code === "23505" ? t("alreadyShared") : error.message };
+    revalidatePath(`/apartments/${apartmentId}`);
+    revalidatePath("/bills");
+    return { success: true };
+  }
   const { data: collaboratorId, error: lookupError } = await supabase.rpc(
     "find_user_id_by_email",
     { p_email: email },
@@ -216,6 +263,11 @@ export async function inviteApartmentCollaborator(
   if (lookupError) return { error: lookupError.message };
   if (!collaboratorId) return { error: t("noAccountFound") };
   if (collaboratorId === auth.user.id) return { error: t("cannotInviteSelf") };
+
+  const { data: tenantShare, error: tenantError } = await supabase.from("apartment_tenants").select("id")
+    .eq("apartment_id", apartmentId).eq("user_id", collaboratorId).limit(1);
+  if (tenantError) return { error: tenantError.message };
+  if (tenantShare?.length) return { error: t("alreadyShared") };
 
   const { error } = await supabase.from("apartment_collaborators").insert({
     apartment_id: apartmentId,
@@ -241,11 +293,19 @@ export async function inviteApartmentCollaborator(
   return { success: true };
 }
 
-export async function removeApartmentCollaborator(apartmentId: string, collaboratorId: string) {
+export async function removeApartmentCollaborator(apartmentId: string, collaboratorId: string, role?: string) {
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
 
   const supabase = await createClient();
+  if (role === "tenant") {
+    const { error } = await supabase.from("apartment_tenants").delete()
+      .eq("id", collaboratorId).eq("apartment_id", apartmentId).eq("owner_id", auth.user.id);
+    if (error) return { error: error.message };
+    revalidatePath(`/apartments/${apartmentId}`);
+    revalidatePath("/", "layout");
+    return { success: true };
+  }
   const { data: collaborator } = await supabase
     .from("apartment_collaborators")
     .select("invited_email")

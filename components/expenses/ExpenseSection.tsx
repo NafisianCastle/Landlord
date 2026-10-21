@@ -18,7 +18,7 @@ export default async function ExpenseSection({
 
   const { data: expenses } = await supabase
     .from("expenses")
-    .select("id, category, amount, expense_date, notes")
+    .select("id, category, amount, expense_date, notes, visible_to_tenants")
     .eq(column, subjectId)
     .order("expense_date", { ascending: false });
 
@@ -28,6 +28,7 @@ export default async function ExpenseSection({
     amount: e.amount,
     expenseDate: e.expense_date,
     notes: e.notes,
+    visibleToTenants: e.visible_to_tenants,
   }));
 
   return (

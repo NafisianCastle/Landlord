@@ -8,10 +8,12 @@ import {
   updateGuestApartmentMetadata,
   deleteGuestApartment,
   type GuestApartment,
+  saveGuestApartmentLocation,
 } from "@/lib/offline/guestApartments";
 import { Card, CardContent } from "@/components/ui/card";
 import ApartmentMetadataForm from "@/components/apartments/ApartmentMetadataForm";
 import DeleteApartmentButton from "@/components/apartments/DeleteApartmentButton";
+import ApartmentLocation from "@/components/apartments/ApartmentLocation";
 
 export default function GuestApartmentDetail({ apartmentId }: { apartmentId: string }) {
   const router = useRouter();
@@ -110,6 +112,13 @@ export default function GuestApartmentDetail({ apartmentId }: { apartmentId: str
           </CardContent>
         </Card>
       </div>
+
+      <ApartmentLocation latitude={apartment.latitude} longitude={apartment.longitude} canEdit
+        onSave={async point => {
+          const result = await saveGuestApartmentLocation(apartmentId,point);
+          await reload();
+          return result;
+        }} />
 
       <div>
         <h2 className="mb-2 font-medium">{t("documents")}</h2>
