@@ -59,6 +59,7 @@ export default async function RootLayout({
   const locale = await getLocale();
   const messages = await getMessages();
   const shellMessages = {
+    Common: messages.Common,
     ThemeToggle: messages.ThemeToggle,
     LocaleSwitcher: messages.LocaleSwitcher,
     ErrorPage: messages.ErrorPage,

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { inviteCollaborator, removeCollaborator } from "@/app/actions/plots";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
@@ -101,15 +102,14 @@ export default function PlotCollaborators({
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="collaborator-role">{t("role")}</Label>
-            <select
+            <Select
               id="collaborator-role"
               name="role"
               defaultValue="editor"
-              className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm"
             >
               <option value="viewer">{t("roleViewer")}</option>
               <option value="editor">{t("roleEditor")}</option>
-            </select>
+            </Select>
           </div>
           <Button type="submit" disabled={pending}>
             {pending ? t("inviting") : t("invite")}

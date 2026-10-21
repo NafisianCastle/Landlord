@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -69,18 +70,17 @@ export default function LeaseForm({ action, initial, submitLabel }: LeaseFormPro
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="frequency">{t("frequency")}</Label>
-          <select
+          <Select
             id="frequency"
             name="frequency"
             defaultValue={initial?.frequency ?? "monthly"}
-            className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm"
           >
             {FREQUENCIES.map((f) => (
               <option key={f} value={f}>
                 {t(`frequencyOption.${f}`)}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="startDate">{t("startDate")}</Label>

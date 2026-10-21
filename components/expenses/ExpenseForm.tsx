@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -22,10 +23,9 @@ export default function ExpenseForm({ action }: ExpenseFormProps) {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="category">{t("category")}</Label>
-          <select
+          <Select
             id="category"
             name="category"
-            className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
             defaultValue="other"
           >
             {CATEGORIES.map((c) => (
@@ -33,7 +33,7 @@ export default function ExpenseForm({ action }: ExpenseFormProps) {
                 {t(`categoryOption.${c}`)}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="amount">{t("amount")}</Label>

@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { encryptJSON, decryptJSON, toPgBytea, fromPgBytea } from "@/lib/crypto/encryption";
@@ -279,18 +280,19 @@ export default function ApartmentMetadataForm({
             defaultValue={initial?.size ?? ""}
             className="flex-1"
           />
-          <select
+          <Select
             id="sizeUnit"
+            aria-label={t("sizeUnit")}
+            className="w-28 shrink-0"
             name="sizeUnit"
             defaultValue={initial?.sizeUnit ?? "sqft"}
-            className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm"
           >
             {SIZE_UNITS.map((unit) => (
               <option key={unit} value={unit}>
                 {unit}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
