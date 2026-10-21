@@ -9,7 +9,7 @@ import '../env.dart';
 
 /// Native push (FCM; APNs on iOS through FCM) for the rent-due and
 /// lease-expiry reminders the web app sends via browser push. Tokens go in
-/// device_push_tokens (supabase/migrations/0035) and the cron routes fan out
+/// device_push_tokens (migration 20261021160000) and the cron routes fan out
 /// to them.
 ///
 /// Uses FCM registration tokens (getToken/onTokenRefresh), which the server's

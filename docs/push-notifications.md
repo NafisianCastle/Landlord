@@ -48,7 +48,7 @@ Keep the VAPID key pair stable across redeployments. Replacing it can require de
 
 ## Native push for the mobile app
 
-The Flutter app (`mobile/`) receives the same reminders through Firebase Cloud Messaging. Apply `0035_device_push_tokens.sql`, then set `FCM_SERVICE_ACCOUNT_JSON` on the deployment to a Firebase service-account key (the JSON on one line, server-only). The cron routes send to every row in `device_push_tokens` as well as to browser subscriptions, and remove tokens that FCM reports as unregistered. A reminder counts as delivered when any channel accepts it. The routes run when either channel is configured: browser push (VAPID) or FCM. App-side setup is in `mobile/README.md`.
+The Flutter app (`mobile/`) receives the same reminders through Firebase Cloud Messaging. Apply `20261021160000_device_push_tokens.sql`, then set `FCM_SERVICE_ACCOUNT_JSON` on the deployment to a Firebase service-account key (the JSON on one line, server-only). The cron routes send to every row in `device_push_tokens` as well as to browser subscriptions, and remove tokens that FCM reports as unregistered. A reminder counts as delivered when any channel accepts it. The routes run when either channel is configured: browser push (VAPID) or FCM. App-side setup is in `mobile/README.md`.
 
 ## Troubleshooting
 

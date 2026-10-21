@@ -11,7 +11,7 @@ encrypted fields stay in sync between the two.
 | **Walk the boundary with GPS** | You walk the plot and the app records it, including with the screen off (Android foreground service, iOS background location). Fixes worse than 10 m are dropped. **Mark corner** averages 8 fixes, weighting the more accurate ones higher (`lib/core/geo/gps_filter.dart`). **Trace as I walk** records the path, and Douglas–Peucker smoothing cleans it up before saving. You can also tap the map to add points. |
 | **Camera document scan** | The phone's own document scanner (ML Kit on Android, VisionKit on iOS) detects page edges and produces a PDF. It is then encrypted and uploaded the same way the web does it. |
 | **Biometric lock and secure keystore** | Fingerprint or face is required to open the app. The encryption key is kept in Keychain or Android secure storage, so you don't have to type the passphrase on every launch. |
-| **Native push** | Rent-due and lease-expiry reminders come through FCM. The existing cron routes now also send to `device_push_tokens` (migration `0035`). |
+| **Native push** | Rent-due and lease-expiry reminders come through FCM. The existing cron routes now also send to `device_push_tokens` (migration `20261021160000_device_push_tokens.sql`). |
 | **Offline data** | Everything is cached in SQLite. Changes made offline wait in a queue (`lib/core/offline/`) and upload when you're back online. If two edits conflict, the last one saved wins. Uploading and opening documents still needs a connection. |
 | **Offline maps** | Save the satellite tiles for any area, up to 3,000 tiles (same limit as the web). Areas you've already looked at are cached too. |
 
@@ -44,7 +44,7 @@ encrypted fields stay in sync between the two.
 3. Add `io.landlord.app://login-callback` in Supabase → Authentication →
    URL Configuration → Redirect URLs. Google sign-in and email confirmation
    need it.
-4. Apply migration `supabase/migrations/0035_device_push_tokens.sql`.
+4. Apply migration `supabase/migrations/20261021160000_device_push_tokens.sql`.
 
 ### Push notifications (optional)
 

@@ -92,7 +92,9 @@ class Repository {
         _client.from('lease_payments').select().order('due_date'),
         _client.from('plot_documents').select().order('uploaded_at', ascending: false),
         _client.from('apartment_documents').select().order('uploaded_at', ascending: false),
-        _client.from('expenses').select(),
+        // Tenants can also read expenses an owner shares with them
+        // (visible_to_tenants); the app manages only the user's own.
+        _client.from('expenses').select().eq('user_id', _userId),
         _client.from('maintenance_requests').select(),
         _client.from('vendors').select().order('name'),
         _client.from('profiles').select(_profileColumns).eq('id', _userId),
