@@ -204,11 +204,35 @@ export async function inviteApartmentCollaborator(
   const email = String(formData.get("email") ?? "").trim();
   const role = String(formData.get("role") ?? "editor");
   if (!email) return { error: t("emailRequired") };
-  if (role !== "viewer" && role !== "editor") return { error: t("invalidRole") };
-  const validationError = validateForm(formData, { email: { kind: "email", max: 254, required: true }, role: { choices: ["viewer", "editor"] } });
+  if (!["viewer", "editor", "tenant"].includes(role)) return { error: t("invalidRole") };
+  const validationError = validateForm(formData, { email: { kind: "email", max: 254, required: true }, role: { choices: ["viewer", "editor", "tenant"] } });
   if (validationError) return { error: validationError };
 
   const supabase = await createClient();
+  // Billing invitations never grant viewer/editor access to ownership records.
+  if (role === "tenant") {
+    const { data: apartment } = await supabase.from("apartments").select("name")
+      .eq("id", apartmentId).eq("user_id", auth.user.id).single();
+    if (!apartment) return { error: t("invalidRole") };
+    const { data: tenantId, error: lookupError } = await supabase.rpc("find_apartment_tenant_account", { p_apartment_id: apartmentId, p_email: email });
+    if (lookupError) return { error: lookupError.message };
+    if (!tenantId) return { error: t("noAccountFound") };
+    if (tenantId === auth.user.id) return { error: t("cannotInviteSelf") };
+    // Require removing broader access first; a tenant label must not imply privacy
+    // while the same account still has a viewer/editor invitation.
+    const { data: existing, error: existingError } = await supabase.from("apartment_collaborators").select("id")
+      .eq("apartment_id", apartmentId).eq("user_id", tenantId).limit(1);
+    if (existingError) return { error: existingError.message };
+    if (existing?.length) return { error: t("removeBroadAccess") };
+    const { error } = await supabase.from("apartment_tenants").insert({
+      apartment_id: apartmentId, owner_id: auth.user.id, user_id: tenantId,
+      invited_email: email, apartment_label: apartment.name,
+    });
+    if (error) return { error: error.code === "23505" ? t("alreadyShared") : error.message };
+    revalidatePath(`/apartments/${apartmentId}`);
+    revalidatePath("/bills");
+    return { success: true };
+  }
   const { data: collaboratorId, error: lookupError } = await supabase.rpc(
     "find_user_id_by_email",
     { p_email: email },
@@ -216,6 +240,11 @@ export async function inviteApartmentCollaborator(
   if (lookupError) return { error: lookupError.message };
   if (!collaboratorId) return { error: t("noAccountFound") };
   if (collaboratorId === auth.user.id) return { error: t("cannotInviteSelf") };
+
+  const { data: tenantShare, error: tenantError } = await supabase.from("apartment_tenants").select("id")
+    .eq("apartment_id", apartmentId).eq("user_id", collaboratorId).limit(1);
+  if (tenantError) return { error: tenantError.message };
+  if (tenantShare?.length) return { error: t("alreadyShared") };
 
   const { error } = await supabase.from("apartment_collaborators").insert({
     apartment_id: apartmentId,
@@ -241,11 +270,19 @@ export async function inviteApartmentCollaborator(
   return { success: true };
 }
 
-export async function removeApartmentCollaborator(apartmentId: string, collaboratorId: string) {
+export async function removeApartmentCollaborator(apartmentId: string, collaboratorId: string, role?: string) {
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
 
   const supabase = await createClient();
+  if (role === "tenant") {
+    const { error } = await supabase.from("apartment_tenants").delete()
+      .eq("id", collaboratorId).eq("apartment_id", apartmentId).eq("owner_id", auth.user.id);
+    if (error) return { error: error.message };
+    revalidatePath(`/apartments/${apartmentId}`);
+    revalidatePath("/", "layout");
+    return { success: true };
+  }
   const { data: collaborator } = await supabase
     .from("apartment_collaborators")
     .select("invited_email")

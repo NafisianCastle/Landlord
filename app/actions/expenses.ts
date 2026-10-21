@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
-import { validateForm, expenseRules } from "@/lib/validation/forms";
+import { UUID, validateForm, expenseRules } from "@/lib/validation/forms";
 
 export type ExpenseSubjectType = "plot" | "apartment";
 export type ExpenseCategory =
@@ -79,5 +79,19 @@ export async function deleteExpense(
 
   revalidatePath(subjectPath(subjectType, subjectId));
   revalidatePath("/analytics");
+  return { success: true };
+}
+
+export async function setExpenseTenantVisibility(expenseId: string, visible: boolean) {
+  const auth = await getUserWithAccess();
+  if (!auth?.hasAccess) return { error: "Access denied." };
+  if (!UUID.test(expenseId) || typeof visible !== "boolean") return { error: "Invalid expense." };
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("expenses").update({ visible_to_tenants: visible })
+    .eq("id", expenseId).eq("user_id", auth.user.id).not("apartment_id", "is", null)
+    .select("apartment_id").single();
+  if (error || !data) return { error: "Could not update expense visibility." };
+  revalidatePath(`/apartments/${data.apartment_id}`);
+  revalidatePath("/bills");
   return { success: true };
 }

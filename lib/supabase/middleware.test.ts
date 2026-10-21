@@ -24,7 +24,7 @@ describe("updateSession", () => {
   it("lets only the exact cron handlers perform their own bearer authentication", async () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     const { updateSession } = await import("./middleware");
-    for (const path of ["/api/cron/rent-reminders", "/api/cron/lease-expiry"]) {
+    for (const path of ["/api/cron/rent-reminders", "/api/cron/lease-expiry", "/api/cron/bill-reminders"]) {
       expect((await updateSession(makeRequest(path))).status).toBe(200);
     }
     expect(createServerClientMock).not.toHaveBeenCalled();
