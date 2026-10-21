@@ -1,12 +1,14 @@
 {
   "Common": {
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "Nav": {
     "dashboard": "Dashboard",
     "plots": "Plots",
     "profile": "Profile",
-    "apartments": "Apartments"
+    "apartments": "Apartments",
+    "navigation": "Main navigation"
   },
   "ThemeToggle": {
     "toggleAriaLabel": "Toggle light/dark mode",
@@ -14,7 +16,9 @@
     "light": "Light"
   },
   "LocaleSwitcher": {
-    "label": "Language"
+    "label": "Language",
+    "changing": "Changing language…",
+    "failed": "Could not change language. Please try again."
   },
   "ProtectedLayout": {
     "logOut": "Log out"
@@ -166,7 +170,9 @@
     "decryptError": "Couldn't decrypt with the current session key.",
     "willEncryptNotice": "Village, mutation number, prices, dates, and notes will be saved encrypted.",
     "saving": "Saving...",
-    "saved": "Saved"
+    "saved": "Saved",
+    "dolilAreaUnit": "Deed area unit",
+    "actualAreaUnit": "Measured area unit"
   },
   "ApartmentMetadataForm": {
     "apartmentName": "Apartment name",
@@ -191,7 +197,8 @@
     "decryptError": "Couldn't decrypt with the current session key.",
     "willEncryptNotice": "Building name, unit number, prices, dates, and notes will be saved encrypted.",
     "saving": "Saving...",
-    "saved": "Saved"
+    "saved": "Saved",
+    "sizeUnit": "Size unit"
   },
   "NewPlotPage": {
     "title": "Add a plot",

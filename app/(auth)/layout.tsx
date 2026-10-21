@@ -19,6 +19,7 @@ export default async function AuthLayout({
       "LoginPage",
       "SignupPage",
       "AuthActions",
+      "Common",
     ]
       .filter((key) => key in messages)
       .map((key) => [key, messages[key]]),
@@ -26,7 +27,7 @@ export default async function AuthLayout({
   return (
     <NextIntlClientProvider messages={authMessages}>
       <div className="flex min-h-screen flex-col">
-        <header className="flex items-center justify-between gap-3 p-5 sm:px-8">
+        <header className="flex flex-wrap items-center justify-between gap-3 p-5 sm:px-8">
           <Link
             href="/"
             className="flex items-center gap-2 text-lg font-semibold tracking-tight"

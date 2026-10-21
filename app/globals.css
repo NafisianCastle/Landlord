@@ -3,6 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  color-scheme: light;
   --background: #f8faf6;
   --foreground: #193d32;
   --card: #ffffff;
@@ -57,6 +58,7 @@
    classes, it wins regardless of system preference. */
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not(.dark) {
+    color-scheme: dark;
     --background: #10231c;
     --foreground: #e7eee5;
     --card: #10231c;
@@ -80,6 +82,7 @@
 }
 
 :root.dark {
+  color-scheme: dark;
   --background: #10231c;
   --foreground: #e7eee5;
   --card: #10231c;

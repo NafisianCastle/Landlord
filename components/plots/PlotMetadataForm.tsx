@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { encryptJSON, decryptJSON, toPgBytea, fromPgBytea } from "@/lib/crypto/encryption";
@@ -265,18 +266,19 @@ export default function PlotMetadataForm({
               defaultValue={initial?.dolilArea ?? ""}
               className="flex-1"
             />
-            <select
+            <Select
               id="dolilAreaUnit"
+              aria-label={t("dolilAreaUnit")}
+              className="w-28 shrink-0"
               name="dolilAreaUnit"
               defaultValue={initial?.dolilAreaUnit ?? "decimal"}
-              className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm"
             >
               {AREA_UNITS.map((unit) => (
                 <option key={unit} value={unit}>
                   {unit}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <p className="text-xs text-muted-foreground">{t("dolilAreaHint")}</p>
         </div>
@@ -292,18 +294,19 @@ export default function PlotMetadataForm({
               defaultValue={initial?.actualArea ?? ""}
               className="flex-1"
             />
-            <select
+            <Select
               id="actualAreaUnit"
+              aria-label={t("actualAreaUnit")}
+              className="w-28 shrink-0"
               name="actualAreaUnit"
               defaultValue={initial?.actualAreaUnit ?? "decimal"}
-              className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm"
             >
               {AREA_UNITS.map((unit) => (
                 <option key={unit} value={unit}>
                   {unit}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <p className="text-xs text-muted-foreground">{t("actualAreaHint")}</p>
         </div>
