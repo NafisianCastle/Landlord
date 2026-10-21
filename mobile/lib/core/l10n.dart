@@ -50,6 +50,21 @@ extension DynamicLabels on AppLocalizations {
   String statusLabel(String value) =>
       value == 'ended' ? status_ended : status_active;
 
+  String expenseCategory(String value) => switch (value) {
+        'tax' => category_tax,
+        'insurance' => category_insurance,
+        'utility' => category_utility,
+        'repair' => category_repair,
+        'management_fee' => category_management_fee,
+        _ => category_other,
+      };
+
+  String maintenanceStatus(String value) => switch (value) {
+        'in_progress' => maintenanceStatus_in_progress,
+        'resolved' => maintenanceStatus_resolved,
+        _ => maintenanceStatus_open,
+      };
+
   String documentError(DocumentError error) => switch (error) {
         DocumentError.onlyPdf => docError_onlyPdf,
         DocumentError.choosePdf => docError_choosePdf,

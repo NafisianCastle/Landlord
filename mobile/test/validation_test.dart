@@ -35,4 +35,13 @@ void main() {
     expect(validateLease({'tenantPhone': '+880 1711-000000'}), isNull);
     expect(validateLease({'tenantEmail': 'nope'}), 'Invalid tenantEmail.');
   });
+
+  test('expense and maintenance rules mirror the web', () {
+    expect(validateFields({'category': 'tax', 'amount': '500'}, expenseRules), isNull);
+    expect(validateFields({'category': 'bribe'}, expenseRules), 'Invalid category.');
+    expect(validateFields({'expenseDate': '2025-13-01'}, expenseRules), 'Invalid expenseDate.');
+    expect(validateFields({'title': 'x' * 201}, maintenanceRules), contains('too long'));
+    expect(validateFields({'title': 'Leak', 'cost': 'abc'}, maintenanceRules), 'Invalid cost.');
+    expect(validateFields({'title': 'Leak', 'cost': ''}, maintenanceRules), isNull);
+  });
 }

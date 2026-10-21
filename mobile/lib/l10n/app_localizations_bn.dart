@@ -539,4 +539,89 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get signOut => 'সাইন আউট';
+
+  @override
+  String get expenses => 'খরচ';
+
+  @override
+  String get addExpense => 'খরচ যোগ করুন';
+
+  @override
+  String get noExpenses => 'এখনো কোনো খরচ নেই।';
+
+  @override
+  String expensesTotal(String amount) {
+    return 'মোট: $amount';
+  }
+
+  @override
+  String get category => 'বিভাগ';
+
+  @override
+  String get category_tax => 'ট্যাক্স';
+
+  @override
+  String get category_insurance => 'বীমা';
+
+  @override
+  String get category_utility => 'ইউটিলিটি';
+
+  @override
+  String get category_repair => 'মেরামত';
+
+  @override
+  String get category_management_fee => 'ব্যবস্থাপনা ফি';
+
+  @override
+  String get category_other => 'অন্যান্য';
+
+  @override
+  String get amount => 'পরিমাণ (টাকা)';
+
+  @override
+  String get expenseDate => 'খরচের তারিখ';
+
+  @override
+  String get maintenance => 'মেরামত';
+
+  @override
+  String get addMaintenanceRequest => 'রিকোয়েস্ট যোগ করুন';
+
+  @override
+  String get noMaintenance => 'এখনো কোনো মেরামত রিকোয়েস্ট নেই।';
+
+  @override
+  String get maintenanceTitle => 'শিরোনাম';
+
+  @override
+  String get maintenanceDescription => 'বিবরণ';
+
+  @override
+  String get cost => 'খরচ (টাকা)';
+
+  @override
+  String get reportedDate => 'রিপোর্ট করার তারিখ';
+
+  @override
+  String reportedOn(String date) {
+    return 'রিপোর্ট করা হয়েছে $date';
+  }
+
+  @override
+  String get maintenanceStatus_open => 'খোলা';
+
+  @override
+  String get maintenanceStatus_in_progress => 'চলমান';
+
+  @override
+  String get maintenanceStatus_resolved => 'সমাধান হয়েছে';
+
+  @override
+  String get markInProgress => 'চলমান হিসেবে চিহ্নিত করুন';
+
+  @override
+  String get markResolved => 'সমাধান হয়েছে চিহ্নিত করুন';
+
+  @override
+  String get reopen => 'পুনরায় খুলুন';
 }

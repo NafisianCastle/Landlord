@@ -541,4 +541,89 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signOut => 'Sign out';
+
+  @override
+  String get expenses => 'Expenses';
+
+  @override
+  String get addExpense => 'Add expense';
+
+  @override
+  String get noExpenses => 'No expenses yet.';
+
+  @override
+  String expensesTotal(String amount) {
+    return 'Total: $amount';
+  }
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get category_tax => 'Tax';
+
+  @override
+  String get category_insurance => 'Insurance';
+
+  @override
+  String get category_utility => 'Utility';
+
+  @override
+  String get category_repair => 'Repair';
+
+  @override
+  String get category_management_fee => 'Management fee';
+
+  @override
+  String get category_other => 'Other';
+
+  @override
+  String get amount => 'Amount (BDT)';
+
+  @override
+  String get expenseDate => 'Expense date';
+
+  @override
+  String get maintenance => 'Maintenance';
+
+  @override
+  String get addMaintenanceRequest => 'Add request';
+
+  @override
+  String get noMaintenance => 'No maintenance requests yet.';
+
+  @override
+  String get maintenanceTitle => 'Title';
+
+  @override
+  String get maintenanceDescription => 'Description';
+
+  @override
+  String get cost => 'Cost (BDT)';
+
+  @override
+  String get reportedDate => 'Reported date';
+
+  @override
+  String reportedOn(String date) {
+    return 'Reported $date';
+  }
+
+  @override
+  String get maintenanceStatus_open => 'Open';
+
+  @override
+  String get maintenanceStatus_in_progress => 'In progress';
+
+  @override
+  String get maintenanceStatus_resolved => 'Resolved';
+
+  @override
+  String get markInProgress => 'Mark in progress';
+
+  @override
+  String get markResolved => 'Mark resolved';
+
+  @override
+  String get reopen => 'Reopen';
 }

@@ -72,6 +72,18 @@ final documentsProvider =
   return ref.read(repositoryProvider).documents(args.$1, args.$2);
 });
 
+final expensesProvider =
+    FutureProvider.family<List<DbRow>, (PropertyKind, String)>((ref, args) {
+  ref.watch(dataRevisionProvider);
+  return ref.read(repositoryProvider).expenses(args.$1, args.$2);
+});
+
+final maintenanceProvider =
+    FutureProvider.family<List<DbRow>, (PropertyKind, String)>((ref, args) {
+  ref.watch(dataRevisionProvider);
+  return ref.read(repositoryProvider).maintenance(args.$1, args.$2);
+});
+
 final profileProvider = FutureProvider<DbRow?>((ref) {
   ref.watch(dataRevisionProvider);
   return ref.read(repositoryProvider).profile();

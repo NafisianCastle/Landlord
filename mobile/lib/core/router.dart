@@ -6,7 +6,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../features/auth/auth_screens.dart';
 import '../features/boundary/boundary_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
+import '../features/expenses/expense_screens.dart';
 import '../features/leases/lease_screens.dart';
+import '../features/maintenance/maintenance_screens.dart';
 import '../features/properties/property_detail_screen.dart';
 import '../features/properties/property_form_screen.dart';
 import '../features/properties/property_list_screen.dart';
@@ -73,6 +75,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                           path: 'boundary',
                           builder: (_, s) => BoundaryScreen(plotId: s.pathParameters['id']!),
                         ),
+                      GoRoute(
+                        path: 'expenses/new',
+                        builder: (_, s) =>
+                            ExpenseFormScreen(kind: kind, propertyId: s.pathParameters['id']!),
+                      ),
+                      GoRoute(
+                        path: 'maintenance/new',
+                        builder: (_, s) =>
+                            MaintenanceFormScreen(kind: kind, propertyId: s.pathParameters['id']!),
+                      ),
                       GoRoute(
                         path: 'leases/new',
                         builder: (_, s) =>

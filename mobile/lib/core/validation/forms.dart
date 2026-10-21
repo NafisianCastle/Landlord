@@ -98,6 +98,24 @@ const leaseRules = <String, Rule>{
   'notes': Rule(max: 10000),
 };
 
+const expenseCategories = ['tax', 'insurance', 'utility', 'repair', 'management_fee', 'other'];
+const maintenanceStatuses = ['open', 'in_progress', 'resolved'];
+
+const expenseRules = <String, Rule>{
+  'category': Rule(choices: expenseCategories),
+  'amount': money,
+  'expenseDate': _date,
+  'notes': Rule(max: 10000),
+};
+
+// The web rules also carry vendorId; vendors aren't in the app yet.
+const maintenanceRules = <String, Rule>{
+  'title': Rule(max: 200),
+  'description': Rule(max: 10000),
+  'cost': money,
+  'reportedDate': _date,
+};
+
 String? validateLease(Map<String, String?> values) {
   final error = validateFields(values, leaseRules);
   if (error != null) return error;

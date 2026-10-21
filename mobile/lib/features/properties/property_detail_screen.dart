@@ -13,7 +13,9 @@ import '../../core/l10n.dart';
 import '../../core/providers.dart';
 import '../common.dart';
 import '../documents/documents_section.dart';
+import '../expenses/expense_screens.dart';
 import '../leases/lease_screens.dart';
+import '../maintenance/maintenance_screens.dart';
 import '../map/base_map.dart';
 import 'property_form_screen.dart';
 
@@ -58,6 +60,8 @@ class PropertyDetailScreen extends ConsumerWidget {
                   _Fields(kind: kind, row: row),
                   DocumentsSection(kind: kind, propertyId: id),
                   LeasesSection(kind: kind, propertyId: id),
+                  ExpensesSection(kind: kind, propertyId: id),
+                  MaintenanceSection(kind: kind, propertyId: id),
                   const SizedBox(height: 32),
                 ],
               ),

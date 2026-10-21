@@ -72,14 +72,27 @@ class Repository {
     }
     try {
       await _client.rpc('ensure_all_lease_payments');
-      final [plots, apartments, leases, payments, plotDocs, aptDocs, profile, plotStats, rentStats] =
-          await Future.wait<List<DbRow>>([
+      final [
+        plots,
+        apartments,
+        leases,
+        payments,
+        plotDocs,
+        aptDocs,
+        expenses,
+        maintenance,
+        profile,
+        plotStats,
+        rentStats,
+      ] = await Future.wait<List<DbRow>>([
         _client.from('land_plots').select(_plotColumns).order('created_at', ascending: false),
         _client.from('apartments').select().order('created_at', ascending: false),
         _client.from('leases').select().order('start_date', ascending: false),
         _client.from('lease_payments').select().order('due_date'),
         _client.from('plot_documents').select().order('uploaded_at', ascending: false),
         _client.from('apartment_documents').select().order('uploaded_at', ascending: false),
+        _client.from('expenses').select(),
+        _client.from('maintenance_requests').select(),
         _client.from('profiles').select(_profileColumns).eq('id', _userId),
         _client.from('plot_stats').select(),
         _client.from('lease_payment_stats').select(),
@@ -90,6 +103,8 @@ class Repository {
       await _db.replaceTable('lease_payments', payments);
       await _db.replaceTable('plot_documents', plotDocs);
       await _db.replaceTable('apartment_documents', aptDocs);
+      await _db.replaceTable('expenses', expenses);
+      await _db.replaceTable('maintenance_requests', maintenance);
       await _db.replaceTable('profiles', profile);
       await _db.replaceTable('plot_stats', plotStats);
       await _db.replaceTable('lease_payment_stats', rentStats);
@@ -136,6 +151,16 @@ class Repository {
       (await _db.rows(kind.documentTable))
           .where((d) => d[kind.foreignKey] == propertyId)
           .toList();
+
+  Future<List<DbRow>> expenses(PropertyKind kind, String propertyId) async =>
+      (await _db.rows('expenses')).where((e) => e[kind.foreignKey] == propertyId).toList()
+        ..sort((a, b) => (b['expense_date'] as String).compareTo(a['expense_date'] as String));
+
+  Future<List<DbRow>> maintenance(PropertyKind kind, String propertyId) async =>
+      (await _db.rows('maintenance_requests'))
+          .where((m) => m[kind.foreignKey] == propertyId)
+          .toList()
+        ..sort((a, b) => (b['reported_date'] as String).compareTo(a['reported_date'] as String));
 
   Future<DbRow?> profile() async {
     final rows = await _db.rows('profiles');
@@ -297,6 +322,69 @@ class Repository {
     await _db.upsertRow('lease_payments', id, payload);
     await _write([OutboxOp(kind: 'update', target: 'lease_payments', rowId: id, payload: payload)]);
   }
+
+  // ---- Expenses & maintenance (create/delete, plus status for maintenance,
+  // as on the web) ------------------------------------------------------------
+
+  Map<String, String?> _subject(PropertyKind kind, String propertyId) => {
+        'plot_id': kind == PropertyKind.plot ? propertyId : null,
+        'apartment_id': kind == PropertyKind.apartment ? propertyId : null,
+      };
+
+  Future<void> _insert(String table, Map<String, dynamic> row) async {
+    final id = _uuid.v4();
+    final full = {...row, 'id': id, 'user_id': _userId};
+    await _db.upsertRow(table, id, full);
+    await _write([OutboxOp(kind: 'insert', target: table, rowId: id, payload: full)]);
+  }
+
+  Future<void> _delete(String table, String id) async {
+    await _db.deleteRow(table, id);
+    await _write([OutboxOp(kind: 'delete', target: table, rowId: id)]);
+  }
+
+  Future<void> addExpense(
+      PropertyKind kind, String propertyId, Map<String, String> values) {
+    final notes = values['notes']?.trim() ?? '';
+    return _insert('expenses', {
+      ..._subject(kind, propertyId),
+      'category': values['category'] ?? 'other',
+      'amount': num.parse(values['amount']!),
+      'expense_date': (values['expenseDate'] ?? '').isEmpty ? _today() : values['expenseDate'],
+      'notes': notes.isEmpty ? null : notes,
+    });
+  }
+
+  Future<void> deleteExpense(String id) => _delete('expenses', id);
+
+  Future<void> addMaintenance(
+      PropertyKind kind, String propertyId, Map<String, String> values) {
+    final description = values['description']?.trim() ?? '';
+    final cost = values['cost']?.trim() ?? '';
+    return _insert('maintenance_requests', {
+      ..._subject(kind, propertyId),
+      'title': values['title']!.trim(),
+      'description': description.isEmpty ? null : description,
+      'cost': cost.isEmpty ? null : num.parse(cost),
+      'reported_date':
+          (values['reportedDate'] ?? '').isEmpty ? _today() : values['reportedDate'],
+      'status': 'open',
+    });
+  }
+
+  /// Mirrors updateMaintenanceStatus: resolving stamps today's date.
+  Future<void> setMaintenanceStatus(String id, String status) async {
+    final payload = {
+      'status': status,
+      'resolved_date': status == 'resolved' ? _today() : null,
+    };
+    await _db.upsertRow('maintenance_requests', id, payload);
+    await _write([
+      OutboxOp(kind: 'update', target: 'maintenance_requests', rowId: id, payload: payload)
+    ]);
+  }
+
+  Future<void> deleteMaintenance(String id) => _delete('maintenance_requests', id);
 
   Future<void> setLanguage(String code) async {
     await _db.upsertRow('profiles', _userId, {'preferred_language': code});

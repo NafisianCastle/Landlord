@@ -273,5 +273,46 @@
   "notifications": "Rent reminders",
   "notificationsHint": "Get notified on this phone when rent is due or a lease is about to expire.",
   "notificationsUnavailable": "Push notifications aren't configured in this build.",
-  "signOut": "Sign out"
+  "signOut": "Sign out",
+  "expenses": "Expenses",
+  "addExpense": "Add expense",
+  "noExpenses": "No expenses yet.",
+  "expensesTotal": "Total: {amount}",
+  "@expensesTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "category": "Category",
+  "category_tax": "Tax",
+  "category_insurance": "Insurance",
+  "category_utility": "Utility",
+  "category_repair": "Repair",
+  "category_management_fee": "Management fee",
+  "category_other": "Other",
+  "amount": "Amount (BDT)",
+  "expenseDate": "Expense date",
+  "maintenance": "Maintenance",
+  "addMaintenanceRequest": "Add request",
+  "noMaintenance": "No maintenance requests yet.",
+  "maintenanceTitle": "Title",
+  "maintenanceDescription": "Description",
+  "cost": "Cost (BDT)",
+  "reportedDate": "Reported date",
+  "reportedOn": "Reported {date}",
+  "@reportedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "maintenanceStatus_open": "Open",
+  "maintenanceStatus_in_progress": "In progress",
+  "maintenanceStatus_resolved": "Resolved",
+  "markInProgress": "Mark in progress",
+  "markResolved": "Mark resolved",
+  "reopen": "Reopen"
 }

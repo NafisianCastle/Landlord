@@ -1057,6 +1057,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign out'**
   String get signOut;
+
+  /// No description provided for @expenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get expenses;
+
+  /// No description provided for @addExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Add expense'**
+  String get addExpense;
+
+  /// No description provided for @noExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses yet.'**
+  String get noExpenses;
+
+  /// No description provided for @expensesTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total: {amount}'**
+  String expensesTotal(String amount);
+
+  /// No description provided for @category.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get category;
+
+  /// No description provided for @category_tax.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax'**
+  String get category_tax;
+
+  /// No description provided for @category_insurance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insurance'**
+  String get category_insurance;
+
+  /// No description provided for @category_utility.
+  ///
+  /// In en, this message translates to:
+  /// **'Utility'**
+  String get category_utility;
+
+  /// No description provided for @category_repair.
+  ///
+  /// In en, this message translates to:
+  /// **'Repair'**
+  String get category_repair;
+
+  /// No description provided for @category_management_fee.
+  ///
+  /// In en, this message translates to:
+  /// **'Management fee'**
+  String get category_management_fee;
+
+  /// No description provided for @category_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get category_other;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (BDT)'**
+  String get amount;
+
+  /// No description provided for @expenseDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense date'**
+  String get expenseDate;
+
+  /// No description provided for @maintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance'**
+  String get maintenance;
+
+  /// No description provided for @addMaintenanceRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Add request'**
+  String get addMaintenanceRequest;
+
+  /// No description provided for @noMaintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'No maintenance requests yet.'**
+  String get noMaintenance;
+
+  /// No description provided for @maintenanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get maintenanceTitle;
+
+  /// No description provided for @maintenanceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get maintenanceDescription;
+
+  /// No description provided for @cost.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost (BDT)'**
+  String get cost;
+
+  /// No description provided for @reportedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported date'**
+  String get reportedDate;
+
+  /// No description provided for @reportedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported {date}'**
+  String reportedOn(String date);
+
+  /// No description provided for @maintenanceStatus_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get maintenanceStatus_open;
+
+  /// No description provided for @maintenanceStatus_in_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get maintenanceStatus_in_progress;
+
+  /// No description provided for @maintenanceStatus_resolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get maintenanceStatus_resolved;
+
+  /// No description provided for @markInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark in progress'**
+  String get markInProgress;
+
+  /// No description provided for @markResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark resolved'**
+  String get markResolved;
+
+  /// No description provided for @reopen.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen'**
+  String get reopen;
 }
 
 class _AppLocalizationsDelegate

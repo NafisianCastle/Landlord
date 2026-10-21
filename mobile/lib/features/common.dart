@@ -66,3 +66,26 @@ class SectionHeader extends StatelessWidget {
         ),
       );
 }
+
+/// Read-only text field that opens a date picker and stores YYYY-MM-DD.
+class DateField extends StatelessWidget {
+  const DateField({super.key, required this.controller, required this.label});
+  final TextEditingController controller;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => TextFormField(
+        controller: controller,
+        readOnly: true,
+        decoration: InputDecoration(labelText: label, suffixIcon: const Icon(Icons.calendar_today)),
+        onTap: () async {
+          final picked = await showDatePicker(
+            context: context,
+            initialDate: DateTime.tryParse(controller.text) ?? DateTime.now(),
+            firstDate: DateTime(1900),
+            lastDate: DateTime(2100),
+          );
+          if (picked != null) controller.text = picked.toIso8601String().substring(0, 10);
+        },
+      );
+}
