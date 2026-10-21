@@ -314,5 +314,17 @@
   "maintenanceStatus_resolved": "Resolved",
   "markInProgress": "Mark in progress",
   "markResolved": "Mark resolved",
-  "reopen": "Reopen"
+  "reopen": "Reopen",
+  "vendors": "Vendors",
+  "addVendor": "Add vendor",
+  "editVendor": "Edit vendor",
+  "noVendors": "No vendors yet.",
+  "vendorsHint": "Plumbers, electricians and other contacts you can assign to maintenance requests.",
+  "manageVendors": "Manage vendors",
+  "vendorTrade": "Trade",
+  "vendorTradeHint": "e.g. Plumber, Electrician",
+  "phone": "Phone",
+  "call": "Call",
+  "vendor": "Vendor",
+  "noVendor": "No vendor"
 }

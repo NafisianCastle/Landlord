@@ -84,6 +84,11 @@ final maintenanceProvider =
   return ref.read(repositoryProvider).maintenance(args.$1, args.$2);
 });
 
+final vendorsProvider = FutureProvider<List<DbRow>>((ref) {
+  ref.watch(dataRevisionProvider);
+  return ref.read(repositoryProvider).vendors();
+});
+
 final profileProvider = FutureProvider<DbRow?>((ref) {
   ref.watch(dataRevisionProvider);
   return ref.read(repositoryProvider).profile();

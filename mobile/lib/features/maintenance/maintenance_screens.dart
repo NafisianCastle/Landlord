@@ -20,15 +20,25 @@ class MaintenanceSection extends ConsumerWidget {
     final l = context.l10n;
     final repo = ref.read(repositoryProvider);
     final requests = ref.watch(maintenanceProvider((kind, propertyId))).value ?? [];
+    final vendorNames = {
+      for (final v in ref.watch(vendorsProvider).value ?? []) v['id']: v['name'] as String?
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SectionHeader(l.maintenance,
-            trailing: TextButton.icon(
-              icon: const Icon(Icons.add),
-              label: Text(l.addMaintenanceRequest),
-              onPressed: () => context.go('/${kind.route}/$propertyId/maintenance/new'),
-            )),
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+              IconButton(
+                tooltip: l.manageVendors,
+                icon: const Icon(Icons.handyman_outlined),
+                onPressed: () => context.go('/settings/vendors'),
+              ),
+              TextButton.icon(
+                icon: const Icon(Icons.add),
+                label: Text(l.addMaintenanceRequest),
+                onPressed: () => context.go('/${kind.route}/$propertyId/maintenance/new'),
+              ),
+            ])),
         Card(
           child: Column(children: [
             if (requests.isEmpty) ListTile(title: Text(l.noMaintenance)),
@@ -42,6 +52,7 @@ class MaintenanceSection extends ConsumerWidget {
                   l.maintenanceStatus(m['status'] as String? ?? 'open'),
                   l.reportedOn('${m['reported_date'] ?? ''}'),
                   if (m['cost'] != null) formatBdt(context, m['cost']),
+                  ?vendorNames[m['vendor_id']],
                   if ((m['description'] as String?)?.isNotEmpty ?? false) m['description'] as String,
                 ].join(' · ')),
                 isThreeLine: (m['description'] as String?)?.isNotEmpty ?? false,
@@ -87,6 +98,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
   final _description = TextEditingController();
   final _cost = TextEditingController();
   final _date = TextEditingController(text: DateTime.now().toIso8601String().substring(0, 10));
+  String? _vendorId;
 
   Future<void> _save() async {
     if (!_form.currentState!.validate()) return;
@@ -95,6 +107,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       'description': _description.text,
       'cost': _cost.text.trim(),
       'reportedDate': _date.text,
+      'vendorId': _vendorId ?? '',
     };
     final error = validateFields(values, maintenanceRules);
     if (error != null) return showMessage(context, error);
@@ -132,6 +145,16 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
               decoration: InputDecoration(labelText: l.cost),
             )),
             gap(DateField(controller: _date, label: l.reportedDate)),
+            gap(DropdownButtonFormField<String?>(
+              initialValue: _vendorId,
+              decoration: InputDecoration(labelText: l.vendor),
+              items: [
+                DropdownMenuItem(value: null, child: Text(l.noVendor)),
+                for (final v in ref.watch(vendorsProvider).value ?? [])
+                  DropdownMenuItem(value: v['id'] as String, child: Text(v['name'] as String)),
+              ],
+              onChanged: (v) => _vendorId = v,
+            )),
           ],
         ),
       ),

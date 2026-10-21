@@ -81,6 +81,7 @@ class Repository {
         aptDocs,
         expenses,
         maintenance,
+        vendors,
         profile,
         plotStats,
         rentStats,
@@ -93,6 +94,7 @@ class Repository {
         _client.from('apartment_documents').select().order('uploaded_at', ascending: false),
         _client.from('expenses').select(),
         _client.from('maintenance_requests').select(),
+        _client.from('vendors').select().order('name'),
         _client.from('profiles').select(_profileColumns).eq('id', _userId),
         _client.from('plot_stats').select(),
         _client.from('lease_payment_stats').select(),
@@ -105,6 +107,7 @@ class Repository {
       await _db.replaceTable('apartment_documents', aptDocs);
       await _db.replaceTable('expenses', expenses);
       await _db.replaceTable('maintenance_requests', maintenance);
+      await _db.replaceTable('vendors', vendors);
       await _db.replaceTable('profiles', profile);
       await _db.replaceTable('plot_stats', plotStats);
       await _db.replaceTable('lease_payment_stats', rentStats);
@@ -161,6 +164,11 @@ class Repository {
           .where((m) => m[kind.foreignKey] == propertyId)
           .toList()
         ..sort((a, b) => (b['reported_date'] as String).compareTo(a['reported_date'] as String));
+
+  Future<List<DbRow>> vendors() async => (await _db.rows('vendors'))
+    ..sort((a, b) => (a['name'] as String).toLowerCase().compareTo((b['name'] as String).toLowerCase()));
+
+  Future<DbRow?> vendor(String id) => _db.row('vendors', id);
 
   Future<DbRow?> profile() async {
     final rows = await _db.rows('profiles');
@@ -361,6 +369,7 @@ class Repository {
       PropertyKind kind, String propertyId, Map<String, String> values) {
     final description = values['description']?.trim() ?? '';
     final cost = values['cost']?.trim() ?? '';
+    final vendorId = values['vendorId'] ?? '';
     return _insert('maintenance_requests', {
       ..._subject(kind, propertyId),
       'title': values['title']!.trim(),
@@ -369,6 +378,7 @@ class Repository {
       'reported_date':
           (values['reportedDate'] ?? '').isEmpty ? _today() : values['reportedDate'],
       'status': 'open',
+      'vendor_id': vendorId.isEmpty ? null : vendorId,
     });
   }
 
@@ -385,6 +395,32 @@ class Repository {
   }
 
   Future<void> deleteMaintenance(String id) => _delete('maintenance_requests', id);
+
+  // ---- Vendors (shared across properties, like the web /vendors page) ------
+
+  Future<void> saveVendor(String? id, Map<String, String> values) async {
+    String? opt(String k) => (values[k]?.trim().isEmpty ?? true) ? null : values[k]!.trim();
+    final payload = {
+      'name': values['name']!.trim(),
+      'trade': opt('trade'),
+      'phone': opt('phone'),
+      'notes': opt('notes'),
+    };
+    if (id == null) return _insert('vendors', payload);
+    await _db.upsertRow('vendors', id, payload);
+    await _write([OutboxOp(kind: 'update', target: 'vendors', rowId: id, payload: payload)]);
+  }
+
+  /// The FK is `on delete set null`; mirror that in the cache so requests
+  /// stop showing the vendor before the next refresh.
+  Future<void> deleteVendor(String id) async {
+    for (final m in await _db.rows('maintenance_requests')) {
+      if (m['vendor_id'] == id) {
+        await _db.upsertRow('maintenance_requests', m['id'] as String, {'vendor_id': null});
+      }
+    }
+    await _delete('vendors', id);
+  }
 
   Future<void> setLanguage(String code) async {
     await _db.upsertRow('profiles', _userId, {'preferred_language': code});

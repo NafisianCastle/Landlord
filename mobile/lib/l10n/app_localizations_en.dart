@@ -626,4 +626,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reopen => 'Reopen';
+
+  @override
+  String get vendors => 'Vendors';
+
+  @override
+  String get addVendor => 'Add vendor';
+
+  @override
+  String get editVendor => 'Edit vendor';
+
+  @override
+  String get noVendors => 'No vendors yet.';
+
+  @override
+  String get vendorsHint =>
+      'Plumbers, electricians and other contacts you can assign to maintenance requests.';
+
+  @override
+  String get manageVendors => 'Manage vendors';
+
+  @override
+  String get vendorTrade => 'Trade';
+
+  @override
+  String get vendorTradeHint => 'e.g. Plumber, Electrician';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get call => 'Call';
+
+  @override
+  String get vendor => 'Vendor';
+
+  @override
+  String get noVendor => 'No vendor';
 }

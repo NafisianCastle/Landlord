@@ -624,4 +624,41 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get reopen => 'পুনরায় খুলুন';
+
+  @override
+  String get vendors => 'ভেন্ডর';
+
+  @override
+  String get addVendor => 'ভেন্ডর যোগ করুন';
+
+  @override
+  String get editVendor => 'ভেন্ডর সম্পাদনা করুন';
+
+  @override
+  String get noVendors => 'এখনো কোনো ভেন্ডর নেই।';
+
+  @override
+  String get vendorsHint =>
+      'প্লাম্বার, ইলেকট্রিশিয়ান ও অন্যান্য যোগাযোগ, যাদের মেরামত রিকোয়েস্টে যুক্ত করা যায়।';
+
+  @override
+  String get manageVendors => 'ভেন্ডর পরিচালনা করুন';
+
+  @override
+  String get vendorTrade => 'পেশা';
+
+  @override
+  String get vendorTradeHint => 'যেমন প্লাম্বার, ইলেকট্রিশিয়ান';
+
+  @override
+  String get phone => 'ফোন';
+
+  @override
+  String get call => 'কল করুন';
+
+  @override
+  String get vendor => 'ভেন্ডর';
+
+  @override
+  String get noVendor => 'কোনো ভেন্ডর নেই';
 }

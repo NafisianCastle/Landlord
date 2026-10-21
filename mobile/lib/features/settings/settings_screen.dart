@@ -44,6 +44,16 @@ class SettingsScreen extends ConsumerWidget {
           const _BiometricCard(),
           SectionHeader(l.notifications),
           const _PushCard(),
+          SectionHeader(l.vendors),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.handyman_outlined),
+              title: Text(l.vendors),
+              subtitle: Text(l.vendorsHint),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.go('/settings/vendors'),
+            ),
+          ),
           SectionHeader(l.offlineMaps),
           Card(
             child: ListTile(

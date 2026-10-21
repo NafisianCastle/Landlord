@@ -108,12 +108,19 @@ const expenseRules = <String, Rule>{
   'notes': Rule(max: 10000),
 };
 
-// The web rules also carry vendorId; vendors aren't in the app yet.
 const maintenanceRules = <String, Rule>{
   'title': Rule(max: 200),
   'description': Rule(max: 10000),
   'cost': money,
   'reportedDate': _date,
+  'vendorId': Rule(kind: RuleKind.uuid, max: 36),
+};
+
+const vendorRules = <String, Rule>{
+  'name': Rule(max: 200, required: true),
+  'trade': Rule(max: 100),
+  'phone': Rule(kind: RuleKind.phone, max: 32),
+  'notes': Rule(max: 10000),
 };
 
 String? validateLease(Map<String, String?> values) {

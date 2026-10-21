@@ -1219,6 +1219,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reopen'**
   String get reopen;
+
+  /// No description provided for @vendors.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendors'**
+  String get vendors;
+
+  /// No description provided for @addVendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Add vendor'**
+  String get addVendor;
+
+  /// No description provided for @editVendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit vendor'**
+  String get editVendor;
+
+  /// No description provided for @noVendors.
+  ///
+  /// In en, this message translates to:
+  /// **'No vendors yet.'**
+  String get noVendors;
+
+  /// No description provided for @vendorsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Plumbers, electricians and other contacts you can assign to maintenance requests.'**
+  String get vendorsHint;
+
+  /// No description provided for @manageVendors.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage vendors'**
+  String get manageVendors;
+
+  /// No description provided for @vendorTrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Trade'**
+  String get vendorTrade;
+
+  /// No description provided for @vendorTradeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Plumber, Electrician'**
+  String get vendorTradeHint;
+
+  /// No description provided for @phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phone;
+
+  /// No description provided for @call.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get call;
+
+  /// No description provided for @vendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendor'**
+  String get vendor;
+
+  /// No description provided for @noVendor.
+  ///
+  /// In en, this message translates to:
+  /// **'No vendor'**
+  String get noVendor;
 }
 
 class _AppLocalizationsDelegate

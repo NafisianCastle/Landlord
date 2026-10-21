@@ -86,6 +86,7 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>https</string>
+		<string>tel</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

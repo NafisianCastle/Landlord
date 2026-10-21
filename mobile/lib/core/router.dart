@@ -16,6 +16,7 @@ import '../features/settings/lock_screen.dart';
 import '../features/settings/offline_maps_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/shell/home_shell.dart';
+import '../features/vendors/vendor_screens.dart';
 import 'crypto/key_vault.dart';
 import 'data/property_kind.dart';
 
@@ -117,6 +118,17 @@ final routerProvider = Provider<GoRouter>((ref) {
               builder: (_, _) => const SettingsScreen(),
               routes: [
                 GoRoute(path: 'offline-maps', builder: (_, _) => const OfflineMapsScreen()),
+                GoRoute(
+                  path: 'vendors',
+                  builder: (_, _) => const VendorsScreen(),
+                  routes: [
+                    GoRoute(path: 'new', builder: (_, _) => const VendorFormScreen()),
+                    GoRoute(
+                      path: ':vendorId',
+                      builder: (_, s) => VendorFormScreen(id: s.pathParameters['vendorId']),
+                    ),
+                  ],
+                ),
               ],
             ),
           ]),

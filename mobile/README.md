@@ -86,6 +86,5 @@ CI runs the same checks (`.github/workflows/mobile.yml`).
 
 ## Not in this version yet
 
-These are in the web app but not here yet: vendors (so maintenance requests
-can't be assigned to one from the app), analytics, collaborators and audit
-log, admin, CSV reports, payments, and guest mode.
+These are in the web app but not here yet: analytics, collaborators and
+audit log, admin, CSV reports, payments, and guest mode.

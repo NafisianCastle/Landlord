@@ -44,4 +44,11 @@ void main() {
     expect(validateFields({'title': 'Leak', 'cost': 'abc'}, maintenanceRules), 'Invalid cost.');
     expect(validateFields({'title': 'Leak', 'cost': ''}, maintenanceRules), isNull);
   });
+
+  test('vendor rules and maintenance vendorId mirror the web', () {
+    expect(validateFields({'name': ''}, vendorRules), 'name is required.');
+    expect(validateFields({'name': 'Rahim', 'phone': '01711-000000'}, vendorRules), isNull);
+    expect(validateFields({'name': 'Rahim', 'phone': 'call me'}, vendorRules), 'Invalid phone.');
+    expect(validateFields({'title': 'Leak', 'vendorId': 'abc'}, maintenanceRules), 'Invalid vendorId.');
+  });
 }
