@@ -27,12 +27,12 @@ export default async function AppShell({
       <Sidebar signedIn={Boolean(user)} />
 
       <div className="flex min-h-screen flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex items-center justify-between gap-2 border-b border-border bg-background/95 px-3 py-2.5 backdrop-blur sm:px-4 sm:py-3 md:hidden">
+        <header className="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-2 border-b border-border bg-background/95 px-3 py-2.5 backdrop-blur sm:px-4 sm:py-3 md:hidden">
           <span className="flex shrink-0 items-center gap-1.5 font-semibold">
             <Logo className="size-6 rounded-md" />
             Landlord
           </span>
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex max-w-full flex-wrap items-center justify-end gap-1.5 sm:gap-2">
             <LocaleSwitcher />
             <ThemeToggle />
             {user ? (
@@ -48,8 +48,12 @@ export default async function AppShell({
                 </Button>
               </form>
             ) : (
-              <Button asChild size="sm" className="shrink-0 whitespace-nowrap px-2.5 sm:px-3">
-                <Link href="/signup">{tGuest("signUpToSave")}</Link>
+              <Button
+                asChild
+                size="sm"
+                className="shrink-0 whitespace-nowrap px-2.5 sm:px-3"
+              >
+                <Link href="/signup">{tGuest("signUpShort")}</Link>
               </Button>
             )}
           </div>
@@ -58,7 +62,10 @@ export default async function AppShell({
         {showGuestBanner && !user && (
           <p className="border-b border-border bg-muted/50 px-4 py-2 text-center text-sm text-muted-foreground md:px-6">
             {tGuest("guestBanner")}{" "}
-            <Link href="/signup" className="font-medium text-foreground underline">
+            <Link
+              href="/signup"
+              className="font-medium text-foreground underline"
+            >
               {tGuest("signUp")}
             </Link>
           </p>

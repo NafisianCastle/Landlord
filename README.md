@@ -65,6 +65,15 @@ The app is designed to deploy on a modern Node.js hosting platform such as Verce
 
 The repository name is `Landlord`, and the product is positioned as a practical land-plot and parcel management workflow with map-first data capture and secure document handling.
 
+## Brand and marketing
+
+The brand promise is **Your property, in order.** Open `brand/index.html` to browse
+the logo, feed posts, carousel, stories, and the 16-second vertical reel.
+`brand/BRAND-GUIDE.md` documents the identity and `brand/SOCIAL-CONTENT.md` contains
+English/Bangla captions, alt text, voiceover options, and a two-week launch plan.
+Ready-to-use PNG/MP4 files and editable SVG artwork are in `brand/assets/`.
+Regeneration commands are documented in `brand/README.md`.
+
 ## Input and attachment validation
 
 Server Actions validate text lengths, finite nonnegative amounts (up to 1 trillion),

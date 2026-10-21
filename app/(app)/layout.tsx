@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/supabase/current-user";
 import { hasActiveAccess } from "@/lib/access";
 import GuestMigration from "@/components/system/GuestMigration";
 import AppShell from "@/components/system/AppShell";
+import AppMessages from "@/components/system/AppMessages";
 
 export default async function AppLayout({
   children,
@@ -16,11 +17,11 @@ export default async function AppLayout({
   }
 
   return (
-    <>
+    <AppMessages>
       {user && <GuestMigration />}
       <AppShell user={user} showGuestBanner>
         {children}
       </AppShell>
-    </>
+    </AppMessages>
   );
 }
