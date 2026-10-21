@@ -3,21 +3,29 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   admin: vi.fn(),
   send: vi.fn(),
+  fcm: vi.fn(),
   config: vi.fn(),
 }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: mocks.admin }));
 vi.mock("@/lib/webPush", () => ({ sendPush: mocks.send }));
-vi.mock("@/lib/pushConfig", () => ({ getRentReminderPublicKey: mocks.config }));
+vi.mock("@/lib/fcm", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/fcm")>()),
+  sendFcm: mocks.fcm,
+}));
+vi.mock("@/lib/pushConfig", () => ({ remindersConfigured: mocks.config }));
 import { GET as rent } from "./rent-reminders/route";
 import { GET as expiry } from "./lease-expiry/route";
 
 const update = vi.fn();
 const remove = vi.fn();
 const from = vi.fn();
+let deviceTokens: { user_id: string; token: string }[] = [];
 beforeEach(() => {
+  deviceTokens = [];
+  mocks.fcm.mockResolvedValue({ token: "fcm-token", expired: false, sent: false });
   vi.clearAllMocks();
   vi.stubEnv("CRON_SECRET", "test-cron-secret");
-  mocks.config.mockReturnValue("test-public-key");
+  mocks.config.mockReturnValue(true);
   mocks.send.mockResolvedValue({
     endpoint: "https://push.example/test",
     expired: false,
@@ -40,7 +48,9 @@ beforeEach(() => {
       resolve({
         error: null,
         data:
-          table === "push_subscriptions"
+          table === "device_push_tokens"
+            ? deviceTokens
+            : table === "push_subscriptions"
             ? [
                 {
                   user_id: "u1",
@@ -85,7 +95,7 @@ describe.each([
     expect(mocks.admin).not.toHaveBeenCalled();
   });
   it("reports unavailable delivery before accessing records when configuration is missing", async () => {
-    mocks.config.mockReturnValue(null);
+    mocks.config.mockReturnValue(false);
     expect((await handler(authorized())).status).toBe(503);
     expect(mocks.admin).not.toHaveBeenCalled();
   });
@@ -120,6 +130,28 @@ describe.each([
       expiredSubscriptionsRemoved: 1,
     });
     expect(remove).toHaveBeenCalledWith("push_subscriptions");
+    expect(update).not.toHaveBeenCalled();
+  });
+  it("delivers to the mobile app through FCM when the user has a device token", async () => {
+    deviceTokens = [{ user_id: "u1", token: "fcm-token" }];
+    mocks.fcm.mockResolvedValue({ token: "fcm-token", expired: false, sent: true });
+    const response = await handler(authorized());
+    expect((await response.json()).sent).toBe(1);
+    expect(mocks.fcm).toHaveBeenCalledWith(
+      "fcm-token",
+      expect.objectContaining({ title: expect.any(String) }),
+    );
+    expect(update).toHaveBeenCalledOnce();
+  });
+  it("prunes an unregistered FCM token", async () => {
+    deviceTokens = [{ user_id: "u1", token: "fcm-token" }];
+    mocks.fcm.mockResolvedValue({ token: "fcm-token", expired: true, sent: false });
+    const response = await handler(authorized());
+    expect(await response.json()).toEqual({
+      sent: 0,
+      expiredSubscriptionsRemoved: 1,
+    });
+    expect(remove).toHaveBeenCalledWith("device_push_tokens");
     expect(update).not.toHaveBeenCalled();
   });
 });

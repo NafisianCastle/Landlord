@@ -1,0 +1,542 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Bengali Bangla (`bn`).
+class AppLocalizationsBn extends AppLocalizations {
+  AppLocalizationsBn([String locale = 'bn']) : super(locale);
+
+  @override
+  String get appTitle => 'Landlord';
+
+  @override
+  String get navDashboard => 'ড্যাশবোর্ড';
+
+  @override
+  String get navPlots => 'প্লট';
+
+  @override
+  String get navApartments => 'অ্যাপার্টমেন্ট';
+
+  @override
+  String get navSettings => 'সেটিংস';
+
+  @override
+  String get email => 'ইমেইল';
+
+  @override
+  String get password => 'পাসওয়ার্ড';
+
+  @override
+  String get fullName => 'পুরো নাম';
+
+  @override
+  String get logIn => 'লগ ইন';
+
+  @override
+  String get signUp => 'সাইন আপ';
+
+  @override
+  String get noAccount => 'অ্যাকাউন্ট নেই?';
+
+  @override
+  String get haveAccount => 'ইতিমধ্যে অ্যাকাউন্ট আছে?';
+
+  @override
+  String get continueWithGoogle => 'গুগল দিয়ে চালিয়ে যান';
+
+  @override
+  String get forgotPassword => 'পাসওয়ার্ড ভুলে গেছেন?';
+
+  @override
+  String get resetEmailSent => 'রিসেট লিংকের জন্য আপনার ইমেইল দেখুন।';
+
+  @override
+  String get passwordTooShort => 'পাসওয়ার্ড অন্তত ১০ অক্ষরের হতে হবে।';
+
+  @override
+  String get checkEmailToConfirm =>
+      'অ্যাকাউন্ট নিশ্চিত করতে আপনার ইমেইল দেখুন, তারপর লগ ইন করুন।';
+
+  @override
+  String get referralCode => 'রেফারেল কোড (ঐচ্ছিক)';
+
+  @override
+  String get save => 'সংরক্ষণ করুন';
+
+  @override
+  String get cancel => 'বাতিল';
+
+  @override
+  String get delete => 'মুছুন';
+
+  @override
+  String get edit => 'সম্পাদনা';
+
+  @override
+  String get retry => 'আবার চেষ্টা করুন';
+
+  @override
+  String get required => 'আবশ্যক';
+
+  @override
+  String get confirmDelete => 'স্থায়ীভাবে মুছে ফেলবেন?';
+
+  @override
+  String get offlineBanner => 'অফলাইন — সংরক্ষিত তথ্য দেখানো হচ্ছে';
+
+  @override
+  String pendingChanges(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countটি পরিবর্তন সিঙ্কের অপেক্ষায়',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String syncRejected(String message) {
+    return 'সার্ভার একটি পরিবর্তন গ্রহণ করেনি: $message';
+  }
+
+  @override
+  String errorMessage(String message) {
+    return 'কিছু ভুল হয়েছে: $message';
+  }
+
+  @override
+  String get totalPlots => 'মোট প্লট';
+
+  @override
+  String get totalArea => 'মোট জমি';
+
+  @override
+  String get totalPurchasePrice => 'মোট কেনার মূল্য';
+
+  @override
+  String get totalCurrentValue => 'মোট বর্তমান মূল্য';
+
+  @override
+  String get overdueRent => 'বকেয়া ভাড়া';
+
+  @override
+  String get upcomingRent => '৩০ দিনের মধ্যে প্রাপ্য';
+
+  @override
+  String get receivedThisMonth => 'এ মাসে প্রাপ্ত';
+
+  @override
+  String decimalValue(String value) {
+    return '$value ডেসিমেল';
+  }
+
+  @override
+  String areaSub(String bigha, String acre) {
+    return '$bigha বিঘা · $acre একর';
+  }
+
+  @override
+  String get addPlot => 'প্লট যোগ করুন';
+
+  @override
+  String get addApartment => 'অ্যাপার্টমেন্ট যোগ করুন';
+
+  @override
+  String get noPlots => 'এখনো কোনো প্লট নেই।';
+
+  @override
+  String get noApartments => 'এখনো কোনো অ্যাপার্টমেন্ট নেই।';
+
+  @override
+  String get field_name => 'নাম';
+
+  @override
+  String get field_village => 'গ্রাম';
+
+  @override
+  String get field_upazila => 'উপজেলা';
+
+  @override
+  String get field_district => 'জেলা';
+
+  @override
+  String get field_division => 'বিভাগ';
+
+  @override
+  String get field_mutationNumber => 'মিউটেশন নম্বর';
+
+  @override
+  String get field_dolilArea => 'প্লটের পরিমাণ (দলিল অনুযায়ী)';
+
+  @override
+  String get field_actualArea => 'প্লটের পরিমাণ (প্রকৃত)';
+
+  @override
+  String get field_purchasePrice => 'কেনার মূল্য (টাকা)';
+
+  @override
+  String get field_purchaseDate => 'কেনার তারিখ';
+
+  @override
+  String get field_currentEstimatedValue => 'বর্তমান আনুমানিক মূল্য (টাকা)';
+
+  @override
+  String get field_notes => 'নোট';
+
+  @override
+  String get field_buildingName => 'ভবনের নাম';
+
+  @override
+  String get field_unitNumber => 'ইউনিট নম্বর';
+
+  @override
+  String get field_floor => 'তলা';
+
+  @override
+  String get field_size => 'আয়তন';
+
+  @override
+  String get unit => 'একক';
+
+  @override
+  String get unit_decimal => 'ডেসিমেল';
+
+  @override
+  String get unit_katha => 'কাঠা';
+
+  @override
+  String get unit_bigha => 'বিঘা';
+
+  @override
+  String get unit_acre => 'একর';
+
+  @override
+  String get unit_sqft => 'বর্গফুট';
+
+  @override
+  String get unit_sqmeter => 'বর্গমিটার';
+
+  @override
+  String get sensitiveLocked =>
+      'গ্রাম, মিউটেশন নম্বর, মূল্য এবং নোট এনক্রিপ্ট করা আছে। দেখতে বা সম্পাদনা করতে সেটিংসে এনক্রিপশন আনলক করুন।';
+
+  @override
+  String get willEncrypt =>
+      'স্পর্শকাতর তথ্য আপলোডের আগে এই ডিভাইসেই এনক্রিপ্ট করা হবে।';
+
+  @override
+  String get encrypted => 'এনক্রিপ্টেড';
+
+  @override
+  String get area => 'আয়তন';
+
+  @override
+  String get directions => 'দিকনির্দেশনা';
+
+  @override
+  String get details => 'বিস্তারিত';
+
+  @override
+  String get notFound => 'পাওয়া যায়নি। হয়তো মুছে ফেলা হয়েছে।';
+
+  @override
+  String get boundary => 'সীমানা';
+
+  @override
+  String get noBoundary => 'এখনো কোনো সীমানা নেই।';
+
+  @override
+  String get captureBoundary => 'সীমানা নির্ধারণ করুন';
+
+  @override
+  String get redrawBoundary => 'সীমানা আবার আঁকুন';
+
+  @override
+  String gpsAccuracy(String meters) {
+    return 'জিপিএস ±$meters মি.';
+  }
+
+  @override
+  String get waitingForGps => 'জিপিএসের অপেক্ষায়…';
+
+  @override
+  String get gpsTooWeak => 'জিপিএস সিগন্যাল দুর্বল — খোলা আকাশের নিচে যান';
+
+  @override
+  String get markCorner => 'এখানে কোণা চিহ্নিত করুন';
+
+  @override
+  String markingCorner(int count) {
+    return 'স্থির থাকুন… $countটি অবস্থান গড় করা হচ্ছে';
+  }
+
+  @override
+  String cornerAdded(String meters) {
+    return 'কোণা যোগ হয়েছে (±$meters মি.)';
+  }
+
+  @override
+  String get autoTrace => 'হাঁটার সাথে সাথে আঁকুন';
+
+  @override
+  String get boundaryHelp =>
+      'প্রতিটি কোণায় হেঁটে গিয়ে \"কোণা চিহ্নিত করুন\" চাপুন, অথবা আঁকা চালু করে সীমানা ধরে হাঁটুন। মানচিত্রে ট্যাপ করেও বিন্দু যোগ করা যায়।';
+
+  @override
+  String get undo => 'পূর্বাবস্থা';
+
+  @override
+  String get clear => 'মুছুন';
+
+  @override
+  String get saveBoundary => 'সীমানা সংরক্ষণ করুন';
+
+  @override
+  String get needThreePoints => 'সীমানার জন্য অন্তত ৩টি বিন্দু প্রয়োজন।';
+
+  @override
+  String get invalidPolygon =>
+      'সীমানার রেখাগুলো একে অপরকে ছেদ করছে। বিন্দুগুলো ঠিক করুন।';
+
+  @override
+  String pointsAndArea(int count, String area) {
+    return '$countটি বিন্দু · ~$area ডেসিমেল';
+  }
+
+  @override
+  String get locationPermissionDenied =>
+      'সীমানা ধরে হাঁটতে লোকেশন অনুমতি প্রয়োজন।';
+
+  @override
+  String get trackingNotificationTitle => 'সীমানা রেকর্ড হচ্ছে';
+
+  @override
+  String get trackingNotificationText =>
+      'আপনি প্লট ধরে হাঁটার সময় Landlord জিপিএস ব্যবহার করছে।';
+
+  @override
+  String get satellite => 'স্যাটেলাইট';
+
+  @override
+  String get streets => 'রাস্তা';
+
+  @override
+  String get documents => 'নথি';
+
+  @override
+  String get noDocuments => 'এখনো কোনো নথি নেই।';
+
+  @override
+  String get scanDocument => 'স্ক্যান';
+
+  @override
+  String get pickPdf => 'পিডিএফ আপলোড';
+
+  @override
+  String get uploading => 'আপলোড হচ্ছে…';
+
+  @override
+  String get uploaded => 'আপলোড হয়েছে।';
+
+  @override
+  String get documentsNeedConnection => 'নথির জন্য ইন্টারনেট সংযোগ প্রয়োজন।';
+
+  @override
+  String get documentLocked =>
+      'এই নথিটি এনক্রিপ্ট করা। খুলতে সেটিংসে এনক্রিপশন আনলক করুন।';
+
+  @override
+  String get docError_onlyPdf => 'শুধুমাত্র পিডিএফ ফাইল অনুমোদিত।';
+
+  @override
+  String get docError_choosePdf => 'একটি পিডিএফ ফাইল বেছে নিন।';
+
+  @override
+  String get docError_fileTooLarge => 'ফাইলটি ২০ এমবি-র চেয়ে বড়।';
+
+  @override
+  String get docError_invalidPdfContent => 'এটি একটি বৈধ পিডিএফ নয়।';
+
+  @override
+  String get leases => 'লিজ';
+
+  @override
+  String get addLease => 'লিজ যোগ করুন';
+
+  @override
+  String get editLease => 'লিজ সম্পাদনা';
+
+  @override
+  String get noLeases => 'এখনো কোনো লিজ নেই।';
+
+  @override
+  String get tenantName => 'ভাড়াটিয়ার নাম';
+
+  @override
+  String get tenantPhone => 'ভাড়াটিয়ার ফোন';
+
+  @override
+  String get tenantEmail => 'ভাড়াটিয়ার ইমেইল';
+
+  @override
+  String get rentAmount => 'ভাড়ার পরিমাণ (টাকা)';
+
+  @override
+  String get frequency => 'পেমেন্ট চক্র';
+
+  @override
+  String get frequency_monthly => 'মাসিক';
+
+  @override
+  String get frequency_quarterly => 'ত্রৈমাসিক';
+
+  @override
+  String get frequency_yearly => 'বার্ষিক';
+
+  @override
+  String get startDate => 'লিজ শুরুর তারিখ';
+
+  @override
+  String get endDate => 'লিজ শেষের তারিখ';
+
+  @override
+  String get endDateHint => 'চলমান লিজের জন্য খালি রাখুন।';
+
+  @override
+  String get status_active => 'সক্রিয়';
+
+  @override
+  String get status_ended => 'শেষ';
+
+  @override
+  String get endLease => 'লিজ শেষ করুন';
+
+  @override
+  String get payments => 'পেমেন্ট';
+
+  @override
+  String get paymentsAfterSync => 'সিঙ্ক হলে পেমেন্টের তালিকা দেখা যাবে।';
+
+  @override
+  String get markPaid => 'পরিশোধিত হিসেবে চিহ্নিত করুন';
+
+  @override
+  String paidOn(String date) {
+    return 'পরিশোধিত $date';
+  }
+
+  @override
+  String dueOn(String date) {
+    return 'প্রাপ্য $date';
+  }
+
+  @override
+  String get overdue => 'বকেয়া';
+
+  @override
+  String get settings => 'সেটিংস';
+
+  @override
+  String get language => 'ভাষা';
+
+  @override
+  String get encryption => 'এনক্রিপশন';
+
+  @override
+  String get encryptionNotSetUp =>
+      'এনক্রিপশন সেট আপ করা হয়নি। ওয়েব অ্যাপের প্রোফাইল থেকে সেট আপ করুন; তারপর এখানেও আনলক করা যাবে।';
+
+  @override
+  String get passphrase => 'পাসফ্রেজ';
+
+  @override
+  String get recoveryCode => 'রিকভারি কোড';
+
+  @override
+  String get useRecoveryCode => 'পরিবর্তে রিকভারি কোড ব্যবহার করুন';
+
+  @override
+  String get unlock => 'আনলক করুন';
+
+  @override
+  String get lock => 'লক করুন';
+
+  @override
+  String get unlockedNotice =>
+      'আনলক করা আছে। স্পর্শকাতর তথ্য এই ডিভাইস থেকে বের হওয়ার আগেই এনক্রিপ্ট করা হয়।';
+
+  @override
+  String get lockedNotice =>
+      'এনক্রিপশন চালু আছে কিন্তু লক করা। স্পর্শকাতর তথ্য দেখতে বা সম্পাদনা করতে পাসফ্রেজ দিন।';
+
+  @override
+  String get wrongPassphrase => 'ভুল পাসফ্রেজ।';
+
+  @override
+  String get biometricLock => 'বায়োমেট্রিক লক';
+
+  @override
+  String get biometricLockHint =>
+      'অ্যাপ খুলতে আঙুলের ছাপ বা মুখ প্রয়োজন হবে, এবং এনক্রিপশন কী এই ডিভাইসের সুরক্ষিত কী-স্টোরে থাকবে।';
+
+  @override
+  String get biometricUnavailable =>
+      'এই ডিভাইসে আঙুলের ছাপ বা মুখ আনলক সেট আপ করা নেই।';
+
+  @override
+  String get biometricReason => 'Landlord আনলক করুন';
+
+  @override
+  String get appLocked => 'Landlord লক করা আছে';
+
+  @override
+  String get offlineMaps => 'অফলাইন মানচিত্র';
+
+  @override
+  String get offlineMapsHint =>
+      'মাঠে সংযোগ ছাড়াই মানচিত্র ব্যবহারের জন্য একটি এলাকার স্যাটেলাইট ছবি ডাউনলোড করুন।';
+
+  @override
+  String get downloadVisibleArea => 'দৃশ্যমান এলাকা ডাউনলোড করুন';
+
+  @override
+  String downloadProgress(int done, int total) {
+    return 'ডাউনলোড হচ্ছে $done/$total';
+  }
+
+  @override
+  String downloadDone(int count) {
+    return 'অফলাইন ব্যবহারের জন্য $countটি টাইল সংরক্ষিত।';
+  }
+
+  @override
+  String areaTooLarge(int count) {
+    return 'এই এলাকায় $countটি টাইল লাগবে, যা ৩০০০ সীমার বেশি — আগে জুম ইন করুন।';
+  }
+
+  @override
+  String cacheSize(String size) {
+    return 'সংরক্ষিত: $size এমবি';
+  }
+
+  @override
+  String get clearCache => 'অফলাইন মানচিত্র মুছুন';
+
+  @override
+  String get notifications => 'ভাড়ার রিমাইন্ডার';
+
+  @override
+  String get notificationsHint =>
+      'ভাড়া প্রাপ্য হলে বা লিজ শেষ হওয়ার আগে এই ফোনে নোটিফিকেশন পান।';
+
+  @override
+  String get notificationsUnavailable =>
+      'এই বিল্ডে পুশ নোটিফিকেশন কনফিগার করা নেই।';
+
+  @override
+  String get signOut => 'সাইন আউট';
+}

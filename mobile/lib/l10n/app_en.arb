@@ -1,0 +1,277 @@
+{
+  "@@locale": "en",
+  "appTitle": "Landlord",
+  "navDashboard": "Dashboard",
+  "navPlots": "Plots",
+  "navApartments": "Apartments",
+  "navSettings": "Settings",
+  "email": "Email",
+  "password": "Password",
+  "fullName": "Full name",
+  "logIn": "Log in",
+  "signUp": "Sign up",
+  "noAccount": "Don't have an account?",
+  "haveAccount": "Already have an account?",
+  "continueWithGoogle": "Continue with Google",
+  "forgotPassword": "Forgot password?",
+  "resetEmailSent": "Check your email for a reset link.",
+  "passwordTooShort": "Password must be at least 10 characters.",
+  "checkEmailToConfirm": "Check your email to confirm your account, then log in.",
+  "referralCode": "Referral code (optional)",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "retry": "Retry",
+  "required": "Required",
+  "confirmDelete": "Delete this permanently?",
+  "offlineBanner": "Offline — showing saved data",
+  "pendingChanges": "{count, plural, =1{1 change waiting to sync} other{{count} changes waiting to sync}}",
+  "@pendingChanges": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncRejected": "The server rejected a change: {message}",
+  "@syncRejected": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "errorMessage": "Something went wrong: {message}",
+  "@errorMessage": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "totalPlots": "Total plots",
+  "totalArea": "Total area",
+  "totalPurchasePrice": "Total purchase price",
+  "totalCurrentValue": "Total current value",
+  "overdueRent": "Overdue rent",
+  "upcomingRent": "Due in 30 days",
+  "receivedThisMonth": "Received this month",
+  "decimalValue": "{value} decimal",
+  "@decimalValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "areaSub": "{bigha} bigha · {acre} acre",
+  "@areaSub": {
+    "placeholders": {
+      "bigha": {
+        "type": "String"
+      },
+      "acre": {
+        "type": "String"
+      }
+    }
+  },
+  "addPlot": "Add plot",
+  "addApartment": "Add apartment",
+  "noPlots": "No plots yet.",
+  "noApartments": "No apartments yet.",
+  "field_name": "Name",
+  "field_village": "Village",
+  "field_upazila": "Upazila",
+  "field_district": "District",
+  "field_division": "Division",
+  "field_mutationNumber": "Mutation number",
+  "field_dolilArea": "Area (per dolil)",
+  "field_actualArea": "Area (actual)",
+  "field_purchasePrice": "Purchase price (BDT)",
+  "field_purchaseDate": "Purchase date",
+  "field_currentEstimatedValue": "Current estimated value (BDT)",
+  "field_notes": "Notes",
+  "field_buildingName": "Building name",
+  "field_unitNumber": "Unit number",
+  "field_floor": "Floor",
+  "field_size": "Size",
+  "unit": "Unit",
+  "unit_decimal": "Decimal",
+  "unit_katha": "Katha",
+  "unit_bigha": "Bigha",
+  "unit_acre": "Acre",
+  "unit_sqft": "Sq ft",
+  "unit_sqmeter": "Sq meter",
+  "sensitiveLocked": "Village, mutation number, prices and notes are encrypted. Unlock encryption in Settings to view or edit them.",
+  "willEncrypt": "Sensitive fields will be encrypted on this device before upload.",
+  "encrypted": "Encrypted",
+  "area": "Area",
+  "directions": "Directions",
+  "details": "Details",
+  "notFound": "Not found. It may have been deleted.",
+  "boundary": "Boundary",
+  "noBoundary": "No boundary yet.",
+  "captureBoundary": "Capture boundary",
+  "redrawBoundary": "Redraw boundary",
+  "gpsAccuracy": "GPS ±{meters} m",
+  "@gpsAccuracy": {
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "waitingForGps": "Waiting for GPS…",
+  "gpsTooWeak": "GPS signal too weak — move to open sky",
+  "markCorner": "Mark corner here",
+  "markingCorner": "Hold still… averaging {count} fixes",
+  "@markingCorner": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cornerAdded": "Corner added (±{meters} m)",
+  "@cornerAdded": {
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "autoTrace": "Trace as I walk",
+  "boundaryHelp": "Walk to each corner and tap \"Mark corner\", or turn on tracing and walk the edge. You can also tap the map to add points.",
+  "undo": "Undo",
+  "clear": "Clear",
+  "saveBoundary": "Save boundary",
+  "needThreePoints": "A boundary needs at least 3 points.",
+  "invalidPolygon": "The boundary edges cross each other. Adjust the points.",
+  "pointsAndArea": "{count} points · ~{area} decimal",
+  "@pointsAndArea": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "area": {
+        "type": "String"
+      }
+    }
+  },
+  "locationPermissionDenied": "Location permission is needed to walk a boundary.",
+  "trackingNotificationTitle": "Recording boundary",
+  "trackingNotificationText": "Landlord is using GPS while you walk the plot.",
+  "satellite": "Satellite",
+  "streets": "Streets",
+  "documents": "Documents",
+  "noDocuments": "No documents yet.",
+  "scanDocument": "Scan",
+  "pickPdf": "Upload PDF",
+  "uploading": "Uploading…",
+  "uploaded": "Uploaded.",
+  "documentsNeedConnection": "Documents need an internet connection.",
+  "documentLocked": "This document is encrypted. Unlock encryption in Settings to open it.",
+  "docError_onlyPdf": "Only PDF files are allowed.",
+  "docError_choosePdf": "Choose a PDF file.",
+  "docError_fileTooLarge": "File is larger than 20 MB.",
+  "docError_invalidPdfContent": "This file isn't a valid PDF.",
+  "leases": "Leases",
+  "addLease": "Add lease",
+  "editLease": "Edit lease",
+  "noLeases": "No leases yet.",
+  "tenantName": "Tenant name",
+  "tenantPhone": "Tenant phone",
+  "tenantEmail": "Tenant email",
+  "rentAmount": "Rent amount (BDT)",
+  "frequency": "Payment cycle",
+  "frequency_monthly": "Monthly",
+  "frequency_quarterly": "Quarterly",
+  "frequency_yearly": "Yearly",
+  "startDate": "Start date",
+  "endDate": "End date",
+  "endDateHint": "Leave empty for an ongoing lease.",
+  "status_active": "Active",
+  "status_ended": "Ended",
+  "endLease": "End lease",
+  "payments": "Payments",
+  "paymentsAfterSync": "Payment schedule appears once synced.",
+  "markPaid": "Mark paid",
+  "paidOn": "Paid {date}",
+  "@paidOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "dueOn": "Due {date}",
+  "@dueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "overdue": "Overdue",
+  "settings": "Settings",
+  "language": "Language",
+  "encryption": "Encryption",
+  "encryptionNotSetUp": "Encryption isn't set up. Set it up from your profile on the web app; it will then unlock here too.",
+  "passphrase": "Passphrase",
+  "recoveryCode": "Recovery code",
+  "useRecoveryCode": "Use recovery code instead",
+  "unlock": "Unlock",
+  "lock": "Lock",
+  "unlockedNotice": "Unlocked. Sensitive data is encrypted on this device before it leaves it.",
+  "lockedNotice": "Encryption is on but locked. Enter your passphrase to view or edit sensitive data.",
+  "wrongPassphrase": "Wrong passphrase.",
+  "biometricLock": "Biometric lock",
+  "biometricLockHint": "Require fingerprint or face to open the app, and keep the encryption key in this device's secure keystore.",
+  "biometricUnavailable": "No fingerprint or face unlock is set up on this device.",
+  "biometricReason": "Unlock Landlord",
+  "appLocked": "Landlord is locked",
+  "offlineMaps": "Offline maps",
+  "offlineMapsHint": "Download satellite imagery for an area so maps work without a connection in the field.",
+  "downloadVisibleArea": "Download visible area",
+  "downloadProgress": "Downloading {done}/{total}",
+  "@downloadProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadDone": "Saved {count} tiles for offline use.",
+  "@downloadDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "areaTooLarge": "That area needs {count} tiles, over the 3000 limit — zoom in first.",
+  "@areaTooLarge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cacheSize": "Stored: {size} MB",
+  "@cacheSize": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "clearCache": "Clear offline maps",
+  "notifications": "Rent reminders",
+  "notificationsHint": "Get notified on this phone when rent is due or a lease is about to expire.",
+  "notificationsUnavailable": "Push notifications aren't configured in this build.",
+  "signOut": "Sign out"
+}

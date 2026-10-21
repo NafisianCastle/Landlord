@@ -26,6 +26,7 @@ Landlord is a land-plot management web app for recording plot boundaries, tracki
 - `components/` – UI and feature components
 - `lib/` – map, crypto, offline, payment, and Supabase helpers
 - `supabase/migrations/` – database schema and migrations
+- `mobile/` – Flutter Android/iOS app on the same Supabase backend (GPS boundary walking, document scanning, biometric lock, native push, offline data and maps); see `mobile/README.md`
 
 ## Local development
 

@@ -1,4 +1,5 @@
 import { createECDH, timingSafeEqual } from "node:crypto";
+import { getFcmConfiguration } from "@/lib/fcm";
 
 /** Server-only configuration. Only pass publicKey to client components. */
 export function getPushConfiguration() {
@@ -42,4 +43,14 @@ export function getRentReminderPublicKey(): string | null {
   )
     return null;
   return getPushConfiguration()?.publicKey ?? null;
+}
+
+/** The reminder cron routes can run and reach users through browser push, native (FCM) push, or both. */
+export function remindersConfigured(): boolean {
+  if (
+    !process.env.CRON_SECRET?.trim() ||
+    !process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
+  )
+    return false;
+  return getPushConfiguration() !== null || getFcmConfiguration() !== null;
 }
