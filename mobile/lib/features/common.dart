@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../core/data/repository.dart';
 import '../core/l10n.dart';
+import '../core/offline/sync.dart';
 
 String formatBdt(BuildContext context, Object? amount) {
   final value = amount is num ? amount : num.tryParse('${amount ?? ''}');
@@ -88,4 +90,23 @@ class DateField extends StatelessWidget {
           if (picked != null) controller.text = picked.toIso8601String().substring(0, 10);
         },
       );
+}
+
+/// Runs an online-only operation (bills, sharing) and reports the outcome
+/// with the web's wording. Returns true on success.
+Future<bool> runOnlineAction(BuildContext context, Future<void> Function() action,
+    {String? success}) async {
+  final l = context.l10n;
+  try {
+    await action();
+    if (success != null && context.mounted) showMessage(context, success);
+    return true;
+  } on ActionException catch (e) {
+    if (context.mounted) showMessage(context, l.actionError(e.error));
+  } catch (e) {
+    if (context.mounted) {
+      showMessage(context, isOfflineError(e) ? l.needsConnection : l.errorMessage('$e'));
+    }
+  }
+  return false;
 }

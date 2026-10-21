@@ -1643,7 +1643,7 @@ abstract class AppLocalizations {
   /// No description provided for @billError_alreadyShared.
   ///
   /// In en, this message translates to:
-  /// **'This apartment is already shared with that person.'**
+  /// **'This property is already shared with that person.'**
   String get billError_alreadyShared;
 
   /// No description provided for @tenants.
@@ -1705,12 +1705,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose file'**
   String get chooseFile;
-
-  /// No description provided for @billsNeedConnection.
-  ///
-  /// In en, this message translates to:
-  /// **'Bills need an internet connection.'**
-  String get billsNeedConnection;
 
   /// No description provided for @locationTitle.
   ///
@@ -1927,6 +1921,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chart'**
   String get chart;
+
+  /// No description provided for @needsConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'This needs an internet connection.'**
+  String get needsConnection;
+
+  /// No description provided for @sharedWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared with'**
+  String get sharedWith;
+
+  /// No description provided for @inviteEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get inviteEmail;
+
+  /// No description provided for @collaboratorRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get collaboratorRole;
+
+  /// No description provided for @roleViewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Viewer (read-only)'**
+  String get roleViewer;
+
+  /// No description provided for @roleEditor.
+  ///
+  /// In en, this message translates to:
+  /// **'Editor (can edit and draw boundary)'**
+  String get roleEditor;
+
+  /// No description provided for @invited.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited'**
+  String get invited;
+
+  /// No description provided for @noCollaborators.
+  ///
+  /// In en, this message translates to:
+  /// **'Not shared with anyone yet.'**
+  String get noCollaborators;
+
+  /// No description provided for @sharedByOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared with you by the plot owner.'**
+  String get sharedByOwner;
+
+  /// No description provided for @sharedAsRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Your role: {role}'**
+  String sharedAsRole(String role);
+
+  /// No description provided for @removeCollaboratorConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {email}? They will lose access to this property.'**
+  String removeCollaboratorConfirm(String email);
+
+  /// No description provided for @inviteCollaborator.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get inviteCollaborator;
+
+  /// No description provided for @role_viewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Viewer'**
+  String get role_viewer;
+
+  /// No description provided for @role_editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Editor'**
+  String get role_editor;
 }
 
 class _AppLocalizationsDelegate

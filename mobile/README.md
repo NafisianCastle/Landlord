@@ -15,6 +15,17 @@ encrypted fields stay in sync between the two.
 | **Offline data** | Everything is cached in SQLite. Changes made offline wait in a queue (`lib/core/offline/`) and upload when you're back online. If two edits conflict, the last one saved wins. Uploading and opening documents still needs a connection. |
 | **Offline maps** | Save the satellite tiles for any area, up to 3,000 tiles (same limit as the web). Areas you've already looked at are cached too. |
 
+## Sharing
+
+As on the web, each plot and apartment has a **Shared with** section:
+
+- **Owners** invite existing Landlord accounts as Viewer or Editor, and remove
+  them. Each change is written to the audit log.
+- **Collaborators** see their own role.
+- **Viewers** don't get edit, boundary or location buttons, and only the owner
+  can delete. The database enforces the same rules.
+- **Tenants** (bills only) are managed in the apartment's Bills section.
+
 ## Analytics
 
 Open it from the dashboard: occupancy rate, 12-month profit, a monthly

@@ -413,7 +413,7 @@
   "billError_noAccountFound": "No Landlord account found for that email.",
   "billError_cannotInviteSelf": "You can't invite yourself.",
   "billError_removeBroadAccess": "Remove this account’s Viewer or Editor access before inviting them as a tenant.",
-  "billError_alreadyShared": "This apartment is already shared with that person.",
+  "billError_alreadyShared": "This property is already shared with that person.",
   "tenants": "Tenants",
   "inviteTenant": "Invite tenant",
   "roleTenant": "Tenant — bills only",
@@ -431,7 +431,6 @@
   "noTenants": "No tenants yet.",
   "takePhoto": "Take photo",
   "chooseFile": "Choose file",
-  "billsNeedConnection": "Bills need an internet connection.",
   "locationTitle": "Apartment location",
   "locationHint": "Save a pin for the building. Search or tap the map, drag the pin, use GPS, or enter coordinates. Changes are saved only when you choose Save location.",
   "locationViewHint": "The saved building location.",
@@ -494,5 +493,33 @@
   "chartLabel": "Monthly income and expense trend",
   "month": "Month",
   "table": "Table",
-  "chart": "Chart"
+  "chart": "Chart",
+  "needsConnection": "This needs an internet connection.",
+  "sharedWith": "Shared with",
+  "inviteEmail": "Email address",
+  "collaboratorRole": "Role",
+  "roleViewer": "Viewer (read-only)",
+  "roleEditor": "Editor (can edit and draw boundary)",
+  "invited": "Invited",
+  "noCollaborators": "Not shared with anyone yet.",
+  "sharedByOwner": "Shared with you by the plot owner.",
+  "sharedAsRole": "Your role: {role}",
+  "removeCollaboratorConfirm": "Remove {email}? They will lose access to this property.",
+  "inviteCollaborator": "Share",
+  "role_viewer": "Viewer",
+  "role_editor": "Editor",
+  "@sharedAsRole": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "@removeCollaboratorConfirm": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  }
 }

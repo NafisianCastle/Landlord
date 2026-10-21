@@ -20,6 +20,7 @@ import '../maintenance/maintenance_screens.dart';
 import '../map/base_map.dart';
 import 'apartment_location.dart';
 import 'property_form_screen.dart';
+import 'sharing_section.dart';
 
 class PropertyDetailScreen extends ConsumerWidget {
   const PropertyDetailScreen({super.key, required this.kind, required this.id});
@@ -30,24 +31,29 @@ class PropertyDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final rowValue = ref.watch(propertyProvider((kind, id)));
+    // Viewers only read; only the owner deletes (matching the RLS policies).
+    final role = ref.watch(myRoleProvider((kind, id))).value;
+    final canEdit = role == 'owner' || role == 'editor';
     return Scaffold(
       appBar: AppBar(
         title: Text(rowValue.value?['name'] as String? ?? ''),
         actions: [
-          IconButton(
-            tooltip: l.edit,
-            icon: const Icon(Icons.edit),
-            onPressed: () => context.go('/${kind.route}/$id/edit'),
-          ),
-          IconButton(
-            tooltip: l.delete,
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () async {
-              if (!await confirmDelete(context)) return;
-              await ref.read(repositoryProvider).deleteProperty(kind, id);
-              if (context.mounted) context.go('/${kind.route}');
-            },
-          ),
+          if (canEdit)
+            IconButton(
+              tooltip: l.edit,
+              icon: const Icon(Icons.edit),
+              onPressed: () => context.go('/${kind.route}/$id/edit'),
+            ),
+          if (role == 'owner')
+            IconButton(
+              tooltip: l.delete,
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () async {
+                if (!await confirmDelete(context)) return;
+                await ref.read(repositoryProvider).deleteProperty(kind, id);
+                if (context.mounted) context.go('/${kind.route}');
+              },
+            ),
         ],
       ),
       body: AsyncBody(
@@ -57,8 +63,10 @@ class PropertyDetailScreen extends ConsumerWidget {
             : ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  if (kind == PropertyKind.plot) _BoundaryCard(plotId: id, row: row),
-                  if (kind == PropertyKind.apartment) ApartmentLocationCard(apartment: row),
+                  if (kind == PropertyKind.plot)
+                    _BoundaryCard(plotId: id, row: row, canEdit: canEdit),
+                  if (kind == PropertyKind.apartment)
+                    ApartmentLocationCard(apartment: row),
                   SectionHeader(l.details),
                   _Fields(kind: kind, row: row),
                   DocumentsSection(kind: kind, propertyId: id),
@@ -66,9 +74,9 @@ class PropertyDetailScreen extends ConsumerWidget {
                   ExpensesSection(kind: kind, propertyId: id),
                   MaintenanceSection(kind: kind, propertyId: id),
                   // Only the owner can bill tenants (not editor collaborators).
-                  if (kind == PropertyKind.apartment &&
-                      row['user_id'] == ref.read(repositoryProvider).userId)
+                  if (kind == PropertyKind.apartment && role == 'owner')
                     ApartmentBillsSection(apartment: row),
+                  SharingSection(kind: kind, propertyId: id),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -79,12 +87,15 @@ class PropertyDetailScreen extends ConsumerWidget {
 
 /// Decrypted (or plaintext) sensitive fields; null while encrypted and locked.
 final _sensitiveProvider =
-    FutureProvider.family<Map<String, dynamic>?, (PropertyKind, String)>((ref, args) async {
-  final row = await ref.watch(propertyProvider(args).future);
-  final dek = ref.watch(keyVaultProvider);
-  if (row == null) return null;
-  return ref.read(repositoryProvider).sensitiveValues(args.$1, row, dek);
-});
+    FutureProvider.family<Map<String, dynamic>?, (PropertyKind, String)>((
+      ref,
+      args,
+    ) async {
+      final row = await ref.watch(propertyProvider(args).future);
+      final dek = ref.watch(keyVaultProvider);
+      if (row == null) return null;
+      return ref.read(repositoryProvider).sensitiveValues(args.$1, row, dek);
+    });
 
 class _Fields extends ConsumerWidget {
   const _Fields({required this.kind, required this.row});
@@ -93,7 +104,9 @@ class _Fields extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sensitive = ref.watch(_sensitiveProvider((kind, row['id'] as String)));
+    final sensitive = ref.watch(
+      _sensitiveProvider((kind, row['id'] as String)),
+    );
     final locked = sensitive.hasValue && sensitive.value == null;
     return Card(
       child: Column(
@@ -112,14 +125,21 @@ class _Fields extends ConsumerWidget {
 }
 
 class _BoundaryCard extends StatelessWidget {
-  const _BoundaryCard({required this.plotId, required this.row});
+  const _BoundaryCard({
+    required this.plotId,
+    required this.row,
+    required this.canEdit,
+  });
   final String plotId;
   final DbRow row;
+  final bool canEdit;
 
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final points = polygonToPoints(row['boundary_geojson'] as Map<String, dynamic>?);
+    final points = polygonToPoints(
+      row['boundary_geojson'] as Map<String, dynamic>?,
+    );
     final areaSqM = (row['area_sq_meters'] as num?)?.toDouble();
     final area = areaSqM == null ? null : AreaConversions(areaSqM);
     return Card(
@@ -133,17 +153,24 @@ class _BoundaryCard extends StatelessWidget {
               child: BaseMap(
                 interactive: false,
                 initialFit: CameraFit.coordinates(
-                    coordinates: points, padding: const EdgeInsets.all(32)),
+                  coordinates: points,
+                  padding: const EdgeInsets.all(32),
+                ),
                 children: [boundaryLayer(points)],
               ),
             )
           else
-            Padding(padding: const EdgeInsets.all(16), child: Text(l.noBoundary)),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(l.noBoundary),
+            ),
           if (area != null)
             ListTile(
               title: Text(l.area),
-              subtitle: Text('${l.decimalValue(formatNumber(context, area.decimal))} · '
-                  '${l.areaSub(formatNumber(context, area.bigha), formatNumber(context, area.acre))}'),
+              subtitle: Text(
+                '${l.decimalValue(formatNumber(context, area.decimal))} · '
+                '${l.areaSub(formatNumber(context, area.bigha), formatNumber(context, area.acre))}',
+              ),
             ),
           OverflowBar(
             alignment: MainAxisAlignment.end,
@@ -152,14 +179,19 @@ class _BoundaryCard extends StatelessWidget {
                 TextButton.icon(
                   icon: const Icon(Icons.directions),
                   label: Text(l.directions),
-                  onPressed: () => launchUrl(googleMapsDirectionsUrl(polygonCentroid(points)),
-                      mode: LaunchMode.externalApplication),
+                  onPressed: () => launchUrl(
+                    googleMapsDirectionsUrl(polygonCentroid(points)),
+                    mode: LaunchMode.externalApplication,
+                  ),
                 ),
-              FilledButton.icon(
-                icon: const Icon(Icons.directions_walk),
-                label: Text(points.length >= 3 ? l.redrawBoundary : l.captureBoundary),
-                onPressed: () => context.go('/plots/$plotId/boundary'),
-              ),
+              if (canEdit)
+                FilledButton.icon(
+                  icon: const Icon(Icons.directions_walk),
+                  label: Text(
+                    points.length >= 3 ? l.redrawBoundary : l.captureBoundary,
+                  ),
+                  onPressed: () => context.go('/plots/$plotId/boundary'),
+                ),
             ],
           ),
         ],

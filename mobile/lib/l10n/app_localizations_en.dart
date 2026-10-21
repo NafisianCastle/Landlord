@@ -877,7 +877,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get billError_alreadyShared =>
-      'This apartment is already shared with that person.';
+      'This property is already shared with that person.';
 
   @override
   String get tenants => 'Tenants';
@@ -911,9 +911,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chooseFile => 'Choose file';
-
-  @override
-  String get billsNeedConnection => 'Bills need an internet connection.';
 
   @override
   String get locationTitle => 'Apartment location';
@@ -1034,4 +1031,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chart => 'Chart';
+
+  @override
+  String get needsConnection => 'This needs an internet connection.';
+
+  @override
+  String get sharedWith => 'Shared with';
+
+  @override
+  String get inviteEmail => 'Email address';
+
+  @override
+  String get collaboratorRole => 'Role';
+
+  @override
+  String get roleViewer => 'Viewer (read-only)';
+
+  @override
+  String get roleEditor => 'Editor (can edit and draw boundary)';
+
+  @override
+  String get invited => 'Invited';
+
+  @override
+  String get noCollaborators => 'Not shared with anyone yet.';
+
+  @override
+  String get sharedByOwner => 'Shared with you by the plot owner.';
+
+  @override
+  String sharedAsRole(String role) {
+    return 'Your role: $role';
+  }
+
+  @override
+  String removeCollaboratorConfirm(String email) {
+    return 'Remove $email? They will lose access to this property.';
+  }
+
+  @override
+  String get inviteCollaborator => 'Share';
+
+  @override
+  String get role_viewer => 'Viewer';
+
+  @override
+  String get role_editor => 'Editor';
 }

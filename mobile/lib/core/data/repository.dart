@@ -24,9 +24,9 @@ class RefreshResult {
 
 class LockedException implements Exception {}
 
-/// Failures of the online bill operations, named like the web's Bills /
-/// collaborator messages.
-enum BillError {
+/// Failures of the online-only operations (bills, sharing), named like the
+/// web's Bills / collaborator messages.
+enum ActionError {
   notFound,
   chooseFile,
   fileTooLarge,
@@ -41,9 +41,9 @@ enum BillError {
   alreadyShared,
 }
 
-class BillException implements Exception {
-  const BillException(this.error);
-  final BillError error;
+class ActionException implements Exception {
+  const ActionException(this.error);
+  final ActionError error;
 }
 
 class DocumentValidationException implements Exception {
@@ -68,6 +68,7 @@ const _billColumns =
     'visible_to_tenant,storage_path,file_name,paid_at,created_at';
 const _proofColumns = 'id,bill_id,user_id,storage_path,file_name,status,review_note,created_at';
 const _billsBucket = 'apartment-bills';
+const _collaboratorColumns = 'id,user_id,invited_email,role,created_at';
 
 String _today() => DateTime.now().toIso8601String().substring(0, 10);
 
@@ -115,6 +116,7 @@ class Repository {
         tenantShares,
         bills,
         billProofs,
+        plotCollaborators,
         apartmentCollaborators,
         occupancy,
         monthly,
@@ -144,8 +146,10 @@ class Repository {
         // Drafts without a file are never shown (same filter as the web).
         _client.from('apartment_bills').select(_billColumns).not('file_name', 'is', null),
         _client.from('apartment_bill_proofs').select(_proofColumns).order('created_at', ascending: false),
-        // Only this user's own memberships, to know where they're an editor.
-        _client.from('apartment_collaborators').select('apartment_id, role').eq('user_id', _userId),
+        // RLS returns the sharing rows of properties the user owns, plus
+        // their own memberships elsewhere.
+        _client.from('plot_collaborators').select('plot_id,$_collaboratorColumns'),
+        _client.from('apartment_collaborators').select('apartment_id,$_collaboratorColumns'),
         _client.from('occupancy_stats').select(),
         _client.from('portfolio_monthly_stats').select(),
         _client.from('property_financial_stats').select(),
@@ -166,7 +170,8 @@ class Repository {
       await _db.replaceTable('apartment_tenants', tenantShares);
       await _db.replaceTable('apartment_bills', bills);
       await _db.replaceTable('apartment_bill_proofs', billProofs);
-      await _db.replaceTable('apartment_collaborators', apartmentCollaborators, idKey: 'apartment_id');
+      await _db.replaceTable('plot_collaborators', plotCollaborators);
+      await _db.replaceTable('apartment_collaborators', apartmentCollaborators);
       await _db.replaceTable('occupancy_stats', occupancy);
       await _db.replaceTable('portfolio_monthly_stats', monthly, idKey: 'month');
       await _db.replaceTable('property_financial_stats', financials, idKey: 'subject_id');
@@ -588,8 +593,8 @@ class Repository {
   Future<void> inviteTenant(String apartmentId, String apartmentName, String email) async {
     final tenantId = await _client.rpc('find_apartment_tenant_account',
         params: {'p_apartment_id': apartmentId, 'p_email': email}) as String?;
-    if (tenantId == null) throw const BillException(BillError.noAccountFound);
-    if (tenantId == _userId) throw const BillException(BillError.cannotInviteSelf);
+    if (tenantId == null) throw const ActionException(ActionError.noAccountFound);
+    if (tenantId == _userId) throw const ActionException(ActionError.cannotInviteSelf);
     // A tenant label must not imply privacy while viewer/editor access remains.
     final existing = await _client
         .from('apartment_collaborators')
@@ -597,7 +602,7 @@ class Repository {
         .eq('apartment_id', apartmentId)
         .eq('user_id', tenantId)
         .limit(1);
-    if (existing.isNotEmpty) throw const BillException(BillError.removeBroadAccess);
+    if (existing.isNotEmpty) throw const ActionException(ActionError.removeBroadAccess);
     try {
       await _client.from('apartment_tenants').insert({
         'apartment_id': apartmentId,
@@ -607,7 +612,7 @@ class Repository {
         'apartment_label': apartmentName,
       });
     } on PostgrestException catch (e) {
-      if (e.code == '23505') throw const BillException(BillError.alreadyShared);
+      if (e.code == '23505') throw const ActionException(ActionError.alreadyShared);
       rethrow;
     }
     await refresh();
@@ -624,9 +629,9 @@ class Repository {
 
   BillFile _checkFile(String name, Uint8List bytes) => switch (validateBillFile(name, bytes)) {
         final BillFile file => file,
-        BillFileError.chooseFile => throw const BillException(BillError.chooseFile),
-        BillFileError.fileTooLarge => throw const BillException(BillError.fileTooLarge),
-        _ => throw const BillException(BillError.fileType),
+        BillFileError.chooseFile => throw const ActionException(ActionError.chooseFile),
+        BillFileError.fileTooLarge => throw const ActionException(ActionError.fileTooLarge),
+        _ => throw const ActionException(ActionError.fileType),
       };
 
   /// createApartmentBill: insert the row, upload the copy under
@@ -657,7 +662,7 @@ class Repository {
         'visible_to_tenant': visible,
       });
     } on PostgrestException {
-      throw const BillException(BillError.saveFailed);
+      throw const ActionException(ActionError.saveFailed);
     }
     final path = '$id/bill/$_userId/${_uuid.v4()}.${file.extension}';
     try {
@@ -666,14 +671,14 @@ class Repository {
     } catch (e) {
       await bills.delete().eq('id', id);
       if (isOfflineError(e)) rethrow;
-      throw const BillException(BillError.uploadFailed);
+      throw const ActionException(ActionError.uploadFailed);
     }
     try {
       await bills.update({'storage_path': path, 'file_name': fileName}).eq('id', id).select('id').single();
     } catch (e) {
       await bills.delete().eq('id', id);
       if (isOfflineError(e)) rethrow;
-      throw const BillException(BillError.saveFailed);
+      throw const ActionException(ActionError.saveFailed);
     }
     await refresh();
   }
@@ -681,14 +686,14 @@ class Repository {
   /// submitBillProof: upload under `{bill}/proof/{tenant}/…`, then insert the
   /// pending proof. The database allows one pending proof per bill.
   Future<void> submitProof(DbRow bill, String fileName, Uint8List bytes) async {
-    if (bill['paid_at'] != null) throw const BillException(BillError.notFound);
+    if (bill['paid_at'] != null) throw const ActionException(ActionError.notFound);
     final pending = await _client
         .from('apartment_bill_proofs')
         .select('id')
         .eq('bill_id', bill['id'] as String)
         .eq('status', 'pending')
         .limit(1);
-    if (pending.isNotEmpty) throw const BillException(BillError.alreadyPending);
+    if (pending.isNotEmpty) throw const ActionException(ActionError.alreadyPending);
     final file = _checkFile(fileName, bytes);
     final path = '${bill['id']}/proof/$_userId/${_uuid.v4()}.${file.extension}';
     try {
@@ -696,7 +701,7 @@ class Repository {
           fileOptions: FileOptions(contentType: file.contentType, upsert: false));
     } catch (e) {
       if (isOfflineError(e)) rethrow;
-      throw const BillException(BillError.uploadFailed);
+      throw const ActionException(ActionError.uploadFailed);
     }
     try {
       await _client.from('apartment_bill_proofs').insert({
@@ -706,7 +711,7 @@ class Repository {
         'file_name': fileName,
       });
     } on PostgrestException catch (e) {
-      throw BillException(e.code == '23505' ? BillError.alreadyPending : BillError.saveFailed);
+      throw ActionException(e.code == '23505' ? ActionError.alreadyPending : ActionError.saveFailed);
     }
     await refresh();
   }
@@ -721,7 +726,7 @@ class Repository {
         'p_note': (note?.trim().isEmpty ?? true) ? null : note!.trim(),
       });
     } on PostgrestException {
-      throw const BillException(BillError.reviewFailed);
+      throw const ActionException(ActionError.reviewFailed);
     }
     await refresh();
   }
@@ -736,7 +741,7 @@ class Repository {
           .select('id')
           .single();
     } on PostgrestException {
-      throw const BillException(BillError.saveFailed);
+      throw const ActionException(ActionError.saveFailed);
     }
     await refresh();
   }
@@ -759,11 +764,8 @@ class Repository {
 
   /// Owners and editor collaborators can move the pin; viewers only see it
   /// (same rule as the web apartment page; RLS enforces it server-side).
-  Future<bool> canEditApartment(DbRow apartment) async {
-    if (apartment['user_id'] == _userId) return true;
-    final membership = await _db.row('apartment_collaborators', apartment['id'] as String);
-    return membership?['role'] == 'editor';
-  }
+  Future<bool> canEditApartment(DbRow apartment) async =>
+      await myRole(PropertyKind.apartment, apartment) != 'viewer';
 
   /// saveApartmentLocation: both coordinates set, or both cleared. Goes
   /// through the outbox, so a pin dropped on site saves when back online.
@@ -774,6 +776,72 @@ class Repository {
     final payload = {'latitude': point?.latitude, 'longitude': point?.longitude};
     await _db.upsertRow('apartments', apartmentId, payload);
     await _write([OutboxOp(kind: 'update', target: 'apartments', rowId: apartmentId, payload: payload)]);
+  }
+
+  // ---- Viewer/editor sharing (mirrors invite/removeCollaborator) ------------
+
+  bool isOwner(DbRow property) => property['user_id'] == _userId;
+
+  /// 'owner', 'editor' or 'viewer' for the signed-in user on this property.
+  Future<String> myRole(PropertyKind kind, DbRow property) async {
+    if (isOwner(property)) return 'owner';
+    final mine = (await _db.rows(kind.collaboratorTable)).where(
+        (c) => c[kind.foreignKey] == property['id'] && c['user_id'] == _userId);
+    return mine.firstOrNull?['role'] as String? ?? 'viewer';
+  }
+
+  Future<List<DbRow>> collaborators(PropertyKind kind, String propertyId) async =>
+      (await _db.rows(kind.collaboratorTable))
+          .where((c) => c[kind.foreignKey] == propertyId)
+          .toList()
+        ..sort((a, b) => (a['created_at'] as String? ?? '').compareTo(b['created_at'] as String? ?? ''));
+
+  Future<void> _audit(PropertyKind kind, String propertyId, String action, Map<String, dynamic> detail) async {
+    try {
+      await _client.rpc(kind.auditRpc,
+          params: {kind.auditParam: propertyId, 'p_action': action, 'p_detail': detail});
+    } catch (_) {
+      // Same as the web: a failed audit entry doesn't undo the change.
+    }
+  }
+
+  Future<void> inviteCollaborator(
+      PropertyKind kind, String propertyId, String email, String role) async {
+    assert(role == 'viewer' || role == 'editor');
+    final userId = await _client.rpc('find_user_id_by_email', params: {'p_email': email}) as String?;
+    if (userId == null) throw const ActionException(ActionError.noAccountFound);
+    if (userId == _userId) throw const ActionException(ActionError.cannotInviteSelf);
+    if (kind == PropertyKind.apartment) {
+      // A billing-only tenant can't also hold viewer/editor access.
+      final tenant = await _client
+          .from('apartment_tenants')
+          .select('id')
+          .eq('apartment_id', propertyId)
+          .eq('user_id', userId)
+          .limit(1);
+      if (tenant.isNotEmpty) throw const ActionException(ActionError.alreadyShared);
+    }
+    try {
+      await _client.from(kind.collaboratorTable).insert({
+        kind.foreignKey: propertyId,
+        'user_id': userId,
+        'invited_email': email,
+        'role': role,
+        'invited_by': _userId,
+      });
+    } on PostgrestException catch (e) {
+      if (e.code == '23505') throw const ActionException(ActionError.alreadyShared);
+      rethrow;
+    }
+    await _audit(kind, propertyId, 'collaborator_invited', {'email': email, 'role': role});
+    await refresh();
+  }
+
+  Future<void> removeCollaborator(PropertyKind kind, DbRow collaborator) async {
+    final propertyId = collaborator[kind.foreignKey] as String;
+    await _client.from(kind.collaboratorTable).delete().eq('id', collaborator['id'] as String);
+    await _audit(kind, propertyId, 'collaborator_removed', {'email': collaborator['invited_email']});
+    await refresh();
   }
 
   Future<void> signOut() async {

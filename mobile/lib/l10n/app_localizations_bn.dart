@@ -872,7 +872,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get billError_alreadyShared =>
-      'এই অ্যাপার্টমেন্ট ইতিমধ্যে সেই ব্যক্তির সাথে শেয়ার করা আছে।';
+      'এই সম্পত্তি ইতিমধ্যে সেই ব্যক্তির সাথে শেয়ার করা আছে।';
 
   @override
   String get tenants => 'ভাড়াটিয়া';
@@ -906,9 +906,6 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get chooseFile => 'ফাইল বেছে নিন';
-
-  @override
-  String get billsNeedConnection => 'বিলের জন্য ইন্টারনেট সংযোগ প্রয়োজন।';
 
   @override
   String get locationTitle => 'অ্যাপার্টমেন্টের অবস্থান';
@@ -1028,4 +1025,50 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get chart => 'চার্ট';
+
+  @override
+  String get needsConnection => 'এর জন্য ইন্টারনেট সংযোগ প্রয়োজন।';
+
+  @override
+  String get sharedWith => 'যাদের সাথে শেয়ার করা';
+
+  @override
+  String get inviteEmail => 'ইমেইল ঠিকানা';
+
+  @override
+  String get collaboratorRole => 'ভূমিকা';
+
+  @override
+  String get roleViewer => 'দর্শক (শুধু দেখতে পারবে)';
+
+  @override
+  String get roleEditor => 'সম্পাদক (সম্পাদনা ও সীমানা আঁকতে পারবে)';
+
+  @override
+  String get invited => 'আমন্ত্রণ পাঠানো হয়েছে';
+
+  @override
+  String get noCollaborators => 'এখনো কারো সাথে শেয়ার করা হয়নি।';
+
+  @override
+  String get sharedByOwner => 'প্লটের মালিক আপনার সাথে এটি শেয়ার করেছেন।';
+
+  @override
+  String sharedAsRole(String role) {
+    return 'আপনার ভূমিকা: $role';
+  }
+
+  @override
+  String removeCollaboratorConfirm(String email) {
+    return '$email কে সরাবেন? তিনি এই সম্পত্তিতে আর প্রবেশ করতে পারবেন না।';
+  }
+
+  @override
+  String get inviteCollaborator => 'শেয়ার করুন';
+
+  @override
+  String get role_viewer => 'দর্শক';
+
+  @override
+  String get role_editor => 'সম্পাদক';
 }

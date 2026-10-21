@@ -33,6 +33,9 @@ enum PropertyKind {
     documentTable: 'plot_documents',
     bucket: 'land-documents',
     foreignKey: 'plot_id',
+    collaboratorTable: 'plot_collaborators',
+    auditRpc: 'log_plot_collaborator_audit',
+    auditParam: 'p_plot_id',
     fields: [
       FieldSpec('name', 'name', FieldType.text),
       FieldSpec('village', 'village', FieldType.text, sensitive: true),
@@ -53,6 +56,9 @@ enum PropertyKind {
     documentTable: 'apartment_documents',
     bucket: 'apartment-documents',
     foreignKey: 'apartment_id',
+    collaboratorTable: 'apartment_collaborators',
+    auditRpc: 'log_apartment_collaborator_audit',
+    auditParam: 'p_apartment_id',
     fields: [
       FieldSpec('name', 'name', FieldType.text),
       FieldSpec('buildingName', 'building_name', FieldType.text, sensitive: true),
@@ -73,6 +79,9 @@ enum PropertyKind {
     required this.documentTable,
     required this.bucket,
     required this.foreignKey,
+    required this.collaboratorTable,
+    required this.auditRpc,
+    required this.auditParam,
     required this.fields,
   });
 
@@ -83,6 +92,11 @@ enum PropertyKind {
 
   /// Column linking leases and documents to this kind of property.
   final String foreignKey;
+
+  /// Viewer/editor sharing, and the audit-log RPC the web calls on changes.
+  final String collaboratorTable;
+  final String auditRpc;
+  final String auditParam;
   final List<FieldSpec> fields;
 
   static PropertyKind fromRoute(String route) =>

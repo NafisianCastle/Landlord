@@ -119,6 +119,19 @@ final sharedExpensesProvider = FutureProvider<List<DbRow>>((ref) {
   return ref.read(repositoryProvider).sharedExpenses();
 });
 
+final collaboratorsProvider =
+    FutureProvider.family<List<DbRow>, (PropertyKind, String)>((ref, args) {
+  ref.watch(dataRevisionProvider);
+  return ref.read(repositoryProvider).collaborators(args.$1, args.$2);
+});
+
+/// 'owner', 'editor' or 'viewer' on a property; drives which actions show.
+final myRoleProvider = FutureProvider.family<String, (PropertyKind, String)>((ref, args) async {
+  final row = await ref.watch(propertyProvider(args).future);
+  if (row == null) return 'viewer';
+  return ref.read(repositoryProvider).myRole(args.$1, row);
+});
+
 final profileProvider = FutureProvider<DbRow?>((ref) {
   ref.watch(dataRevisionProvider);
   return ref.read(repositoryProvider).profile();

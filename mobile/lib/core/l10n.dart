@@ -79,19 +79,19 @@ extension DynamicLabels on AppLocalizations {
         _ => proofStatus_pending,
       };
 
-  String billError(BillError error) => switch (error) {
-        BillError.notFound => billError_notFound,
-        BillError.chooseFile => billError_chooseFile,
-        BillError.fileTooLarge => billError_fileTooLarge,
-        BillError.fileType => billError_fileType,
-        BillError.saveFailed => billError_saveFailed,
-        BillError.uploadFailed => billError_uploadFailed,
-        BillError.alreadyPending => billError_alreadyPending,
-        BillError.reviewFailed => billError_reviewFailed,
-        BillError.noAccountFound => billError_noAccountFound,
-        BillError.cannotInviteSelf => billError_cannotInviteSelf,
-        BillError.removeBroadAccess => billError_removeBroadAccess,
-        BillError.alreadyShared => billError_alreadyShared,
+  String actionError(ActionError error) => switch (error) {
+        ActionError.notFound => billError_notFound,
+        ActionError.chooseFile => billError_chooseFile,
+        ActionError.fileTooLarge => billError_fileTooLarge,
+        ActionError.fileType => billError_fileType,
+        ActionError.saveFailed => billError_saveFailed,
+        ActionError.uploadFailed => billError_uploadFailed,
+        ActionError.alreadyPending => billError_alreadyPending,
+        ActionError.reviewFailed => billError_reviewFailed,
+        ActionError.noAccountFound => billError_noAccountFound,
+        ActionError.cannotInviteSelf => billError_cannotInviteSelf,
+        ActionError.removeBroadAccess => billError_removeBroadAccess,
+        ActionError.alreadyShared => billError_alreadyShared,
       };
 
   String documentError(DocumentError error) => switch (error) {

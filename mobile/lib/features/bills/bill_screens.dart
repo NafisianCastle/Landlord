@@ -11,32 +11,12 @@ import 'package:path/path.dart' as p;
 
 import '../../core/data/repository.dart';
 import '../../core/l10n.dart';
-import '../../core/offline/sync.dart';
 import '../../core/providers.dart';
 import '../../core/validation/bills.dart';
 import '../../core/validation/forms.dart';
 import '../common.dart';
 import '../documents/documents_section.dart';
 import '../shell/home_shell.dart';
-
-/// Runs an online bill operation and reports the outcome the way the web's
-/// Bills messages do. Returns true on success.
-Future<bool> runBillAction(BuildContext context, Future<void> Function() action,
-    {String? success}) async {
-  final l = context.l10n;
-  try {
-    await action();
-    if (success != null && context.mounted) showMessage(context, success);
-    return true;
-  } on BillException catch (e) {
-    if (context.mounted) showMessage(context, l.billError(e.error));
-  } catch (e) {
-    if (context.mounted) {
-      showMessage(context, isOfflineError(e) ? l.billsNeedConnection : l.errorMessage('$e'));
-    }
-  }
-  return false;
-}
 
 /// Bill copy or payment proof: scan to PDF, take a photo, or pick a file.
 Future<(String, Uint8List)?> pickBillFile(BuildContext context) async {
@@ -86,7 +66,7 @@ Future<(String, Uint8List)?> pickBillFile(BuildContext context) async {
 Future<void> openBillFile(
     BuildContext context, WidgetRef ref, String storagePath, String fileName) async {
   Uint8List? bytes;
-  final ok = await runBillAction(context, () async {
+  final ok = await runOnlineAction(context, () async {
     bytes = await ref.read(repositoryProvider).downloadBillFile(storagePath);
   });
   if (!ok || bytes == null || !context.mounted) return;
@@ -252,7 +232,7 @@ class BillCard extends ConsumerWidget {
               Wrap(spacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
                 Chip(label: Text(visible ? l.billShared : l.billPrivate)),
                 OutlinedButton(
-                  onPressed: () => runBillAction(
+                  onPressed: () => runOnlineAction(
                       context, () => repo.setBillVisibility(bill['id'] as String, !visible)),
                   child: Text(visible ? l.billHide : l.billShare),
                 ),
@@ -269,7 +249,7 @@ class BillCard extends ConsumerWidget {
                   onPressed: () async {
                     final file = await pickBillFile(context);
                     if (file == null || !context.mounted) return;
-                    await runBillAction(context, () => repo.submitProof(bill, file.$1, file.$2),
+                    await runOnlineAction(context, () => repo.submitProof(bill, file.$1, file.$2),
                         success: l.proofSubmitted);
                   },
                 ),
@@ -316,7 +296,7 @@ class _ProofTile extends ConsumerWidget {
       ),
     );
     if (reason == null || !context.mounted) return;
-    await runBillAction(
+    await runOnlineAction(
         context, () => ref.read(repositoryProvider).reviewProof(proof['id'] as String, false, reason));
   }
 
@@ -351,7 +331,7 @@ class _ProofTile extends ConsumerWidget {
           OverflowBar(alignment: MainAxisAlignment.end, spacing: 8, children: [
             OutlinedButton(onPressed: () => _reject(context, ref), child: Text(l.rejectProof)),
             FilledButton(
-              onPressed: () => runBillAction(context,
+              onPressed: () => runOnlineAction(context,
                   () => ref.read(repositoryProvider).reviewProof(proof['id'] as String, true, null)),
               child: Text(l.approveProof),
             ),
@@ -394,7 +374,7 @@ class ApartmentBillsSection extends ConsumerWidget {
       ),
     );
     if (value == null || !context.mounted) return;
-    await runBillAction(
+    await runOnlineAction(
         context,
         () => ref.read(repositoryProvider).inviteTenant(
             apartment['id'] as String, apartment['name'] as String, value));
@@ -450,7 +430,7 @@ class ApartmentBillsSection extends ConsumerWidget {
                       ),
                     );
                     if (ok == true && context.mounted) {
-                      await runBillAction(context, () => ref.read(repositoryProvider).removeTenant(t));
+                      await runOnlineAction(context, () => ref.read(repositoryProvider).removeTenant(t));
                     }
                   },
                 ),
@@ -498,7 +478,7 @@ class _BillFormScreenState extends ConsumerState<BillFormScreen> {
     if (file == null) return showMessage(context, l.billError_chooseFile);
     final share = tenants.firstWhere((t) => t['id'] == (_shareId ?? tenants.first['id']));
     setState(() => _saving = true);
-    final ok = await runBillAction(
+    final ok = await runOnlineAction(
       context,
       () => ref.read(repositoryProvider).createBill(
             apartmentId: widget.apartmentId,
