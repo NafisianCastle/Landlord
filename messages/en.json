@@ -1,7 +1,8 @@
 {
   "Common": {
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "noSuggestions": "No suggestions. You can enter your own value."
   },
   "Nav": {
     "dashboard": "Dashboard",

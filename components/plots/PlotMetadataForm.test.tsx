@@ -74,10 +74,10 @@ describe("PlotMetadataForm — plaintext, unencrypted record, no session", () =>
 
   it("renders the area unit selects with 'decimal' as the default", () => {
     render(<PlotMetadataForm action={vi.fn()} submitLabel="Save" />);
-    const selects = screen.getAllByRole("combobox").filter((el) => el.tagName === "SELECT");
+    const selects = screen.getAllByRole("combobox").filter((el) => el.tagName === "BUTTON");
     expect(selects).toHaveLength(2);
     for (const select of selects) {
-      expect(select).toHaveValue("decimal");
+      expect(select).toHaveTextContent("decimal");
     }
   });
 
