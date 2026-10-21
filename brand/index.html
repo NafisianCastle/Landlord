@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Landlord · Brand & social kit</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f7f8f2;
+        color: #163d33;
+        font:
+          16px/1.6 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 1200px;
+        margin: auto;
+        padding: 50px 26px;
+      }
+      header {
+        border-bottom: 1px solid #dce5d7;
+        padding-bottom: 38px;
+        margin-bottom: 44px;
+      }
+      header img {
+        width: 230px;
+        max-width: 70vw;
+      }
+      h1 {
+        font-size: clamp(32px, 5vw, 64px);
+        letter-spacing: -2px;
+        line-height: 1.1;
+        font-weight: 600;
+        max-width: 700px;
+      }
+      h1 em {
+        font-family: Georgia, serif;
+        font-weight: 400;
+        color: #54815c;
+      }
+      h2 {
+        margin: 58px 0 12px;
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: -0.7px;
+      }
+      p {
+        max-width: 700px;
+        color: #54695b;
+      }
+      a {
+        color: #164b3f;
+        text-underline-offset: 4px;
+      }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 25px;
+      }
+      .palette {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+      }
+      .swatch span {
+        display: block;
+        height: 80px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+      }
+      .swatch small {
+        display: block;
+        color: #54695b;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+      .grid img {
+        display: block;
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid #dce5d7;
+      }
+      figure {
+        margin: 0;
+      }
+      figcaption {
+        font-size: 12px;
+        color: #54695b;
+        padding-top: 8px;
+      }
+      .wide {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .carousel {
+        display: flex;
+        gap: 15px;
+        overflow-x: auto;
+        padding-bottom: 20px;
+      }
+      .carousel figure {
+        min-width: 240px;
+        width: 240px;
+      }
+      .carousel img {
+        width: 100%;
+        border-radius: 10px;
+      }
+      video {
+        display: block;
+        width: min(100%, 400px);
+        border-radius: 16px;
+        background: #164b3f;
+      }
+      footer {
+        margin-top: 65px;
+        border-top: 1px solid #dce5d7;
+        padding-top: 20px;
+        color: #54695b;
+        font-size: 12px;
+      }
+      a:focus-visible {
+        outline: 3px solid #54815c;
+        outline-offset: 5px;
+      }
+      @media (max-width: 650px) {
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .palette {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .wide {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <img src="assets/logos/landlord-wordmark.png" alt="Landlord logo" />
+        <h1>Your property,<br /><em>in order.</em></h1>
+        <p>
+          A calm, practical identity for property owners in Bangladesh. Forest
+          green, warm paper, and a little lime. Ready-to-use artwork, editable
+          vectors, captions, and a launch plan.
+        </p>
+        <nav aria-label="Brand resources">
+          <a href="BRAND-GUIDE.md">Brand guide</a
+          ><a href="SOCIAL-CONTENT.md">Captions & launch plan</a
+          ><a href="#posts">Feed posts</a><a href="#reel">Reel</a>
+        </nav>
+      </header>
+      <section aria-label="Brand colours">
+        <div class="palette">
+          <div class="swatch">
+            <span style="background: #164b3f"></span>Forest<small
+              >#164B3F</small
+            >
+          </div>
+          <div class="swatch">
+            <span style="background: #f7f8f2; border: 1px solid #dce5d7"></span
+            >Paper<small>#F7F8F2</small>
+          </div>
+          <div class="swatch">
+            <span style="background: #d9f279"></span>Lime<small>#D9F279</small>
+          </div>
+          <div class="swatch">
+            <span style="background: #163d33"></span>Ink<small>#163D33</small>
+          </div>
+          <div class="swatch">
+            <span style="background: #a3bc9c"></span>Sage<small>#A3BC9C</small>
+          </div>
+        </div>
+      </section>
+      <section id="posts">
+        <h2>Feed posts</h2>
+        <p>
+          1080 × 1350. English and Bangla launch artwork, plus rent and document
+          stories. Select an image to open the full-size PNG.
+        </p>
+        <div class="grid">
+          <figure>
+            <a href="assets/posts/01-brand-en.png"
+              ><img
+                src="assets/posts/01-brand-en.png"
+                alt="Your property, in order"
+                loading="lazy"
+            /></a>
+            <figcaption>Brand introduction · EN</figcaption>
+          </figure>
+          <figure>
+            <a href="assets/posts/04-brand-bn.png"
+              ><img
+                src="assets/posts/04-brand-bn.png"
+                alt="আপনার সম্পত্তি, গুছিয়ে রাখুন"
+                loading="lazy"
+            /></a>
+            <figcaption>Brand introduction · বাংলা</figcaption>
+          </figure>
+          <figure>
+            <a href="assets/posts/02-rent.png"
+              ><img
+                src="assets/posts/02-rent.png"
+                alt="Rent day without the guesswork"
+                loading="lazy"
+            /></a>
+            <figcaption>Rent records · illustrative data</figcaption>
+          </figure>
+          <figure>
+            <a href="assets/posts/03-documents.png"
+              ><img
+                src="assets/posts/03-documents.png"
+                alt="A place for your property papers"
+                loading="lazy"
+            /></a>
+            <figcaption>Property documents</figcaption>
+          </figure>
+        </div>
+      </section>
+      <section>
+        <h2>The property reset</h2>
+        <p>A five-card carousel. Upload in numerical order.</p>
+        <div class="carousel">
+          <figure>
+            <img
+              src="assets/carousel/01.png"
+              alt="Property details everywhere?"
+              loading="lazy"
+            />
+          </figure>
+          <figure>
+            <img
+              src="assets/carousel/02.png"
+              alt="Start with one property"
+              loading="lazy"
+            />
+          </figure>
+          <figure>
+            <img
+              src="assets/carousel/03.png"
+              alt="Keep your papers close"
+              loading="lazy"
+            />
+          </figure>
+          <figure>
+            <img
+              src="assets/carousel/04.png"
+              alt="See your rent clearly"
+              loading="lazy"
+            />
+          </figure>
+          <figure>
+            <img
+              src="assets/carousel/05.png"
+              alt="Your property, in order"
+              loading="lazy"
+            />
+          </figure>
+        </div>
+      </section>
+      <section>
+        <h2>Stories</h2>
+        <p>
+          1080 × 1920. Hook, explanation, and action. Add your verified app URL
+          using a platform link sticker in the lower blank area of the last
+          frame.
+        </p>
+        <div class="grid">
+          <figure>
+            <img
+              src="assets/stories/01.png"
+              alt="Still looking for that property document?"
+              loading="lazy"
+            />
+          </figure>
+          <figure>
+            <img
+              src="assets/stories/02.png"
+              alt="Land, apartments, rent and documents"
+              loading="lazy"
+            />
+          </figure>
+          <figure>
+            <img
+              src="assets/stories/03.png"
+              alt="Get started free"
+              loading="lazy"
+            />
+          </figure>
+        </div>
+      </section>
+      <section id="reel">
+        <h2>A little less keeping track</h2>
+        <p>
+          A 16-second vertical brand reel with gentle motion. Silent export;
+          captions and voiceover options are in the content guide. Add licensed
+          music if desired.
+        </p>
+        <video
+          controls
+          playsinline
+          preload="metadata"
+          poster="assets/reel-scenes/04.png"
+        >
+          <source src="assets/landlord-reel.mp4" type="video/mp4" />
+          <track
+            kind="subtitles"
+            src="assets/reel-scenes/captions-en.vtt"
+            srclang="en"
+            label="English"
+          />
+          Your browser does not support embedded video.
+        </video>
+        <p><a href="assets/landlord-reel.mp4" download>Download MP4</a></p>
+      </section>
+      <section>
+        <h2>Shared links look like the brand, too.</h2>
+        <div class="grid wide">
+          <figure>
+            <img
+              src="assets/web/social-preview.png"
+              alt="Landlord social link preview"
+              loading="lazy"
+            />
+            <figcaption>1200 × 630 · Installed in the app</figcaption>
+          </figure>
+          <figure>
+            <img
+              src="assets/logos/social-avatar.png"
+              alt="Landlord social avatar"
+              loading="lazy"
+            />
+            <figcaption>1080 × 1080 · Profile avatar</figcaption>
+          </figure>
+        </div>
+      </section>
+      <footer>
+        Landlord · Your property, in order. Artwork and copy created for this
+        repository. Editable SVGs sit next to the rendered PNGs.
+      </footer>
+    </main>
+  </body>
+</html>

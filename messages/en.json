@@ -34,7 +34,7 @@
   },
   "SignupPage": {
     "title": "Sign up",
-    "subtitle": "14-day free trial, no card required.",
+    "subtitle": "Free to use. No card or subscription required.",
     "fullName": "Full name",
     "email": "Email",
     "password": "Password",
@@ -548,7 +548,8 @@
     "plotNotFound": "This plot doesn't exist on this device.",
     "documentsRequireSignup": "Sign up to attach and store documents for this plot.",
     "migratedNotice": "{count, plural, =1 {# item} other {# items}} saved to your account.",
-    "apartmentNotFound": "This apartment doesn't exist on this device."
+    "apartmentNotFound": "This apartment doesn't exist on this device.",
+    "signUpShort": "Sign up"
   },
   "LeaseForm": {
     "tenantName": "Tenant name",
@@ -577,19 +578,19 @@
     "noPaymentsYet": "No payments scheduled yet."
   },
   "LandingPage": {
-    "metaTitle": "Landlord — Land, Apartment & Rent Management for Bangladesh",
-    "metaDescription": "Map land boundaries, track apartments, manage leases and rent collection, and store ownership documents — offline-first, built for Bangladeshi landlords.",
+    "metaTitle": "Landlord — Your property, in order",
+    "metaDescription": "Manage land plots, apartments, rent and property documents in one place. Built for property owners in Bangladesh. Free to use, with guest mode to get started.",
     "logIn": "Log in",
     "getStarted": "Get started",
-    "heroTitle": "Manage your land, apartments, and rent — from your phone",
-    "heroSubtitle": "Map plot boundaries, track apartments, collect rent on schedule, and keep ownership documents safe. Works offline, built for how landlords actually operate in Bangladesh.",
+    "heroTitle": "Your property,",
+    "heroSubtitle": "Land, apartments, rent, and the paperwork that comes with them. Bring it all together in one calm, organised place. Built for property owners in Bangladesh.",
     "heroCta": "Get started free",
-    "heroTrialNote": "Free to use, no card required, no subscription.",
-    "featuresTitle": "Everything a landlord needs, in one app",
+    "heroTrialNote": "Free to use. No card. No subscription.",
+    "featuresTitle": "Less keeping track. More peace of mind.",
     "features": {
       "0": {
         "title": "Map plot boundaries",
-        "description": "Mark a plot's corners on satellite imagery — no surveyor needed."
+        "description": "Record plot corners on a map and keep land details together. A helpful record, not a legal survey."
       },
       "1": {
         "title": "Track apartments",
@@ -613,7 +614,7 @@
       },
       "6": {
         "title": "Works offline",
-        "description": "Map boundaries and enter data with no signal — everything syncs once you're back online."
+        "description": "Keep guest property records on this device. Previously viewed map tiles may also be available without a connection."
       },
       "7": {
         "title": "Reports & export",
@@ -622,7 +623,89 @@
     },
     "pricingTitle": "Free to use",
     "pricingAmount": "Free",
-    "pricingHint": "No trial, no payment, no subscription — every feature, free."
+    "pricingHint": "Your plots, apartments, documents, and rent. One free place to keep them together.",
+    "heroAccent": "in order.",
+    "eyebrow": "A little less property admin",
+    "tryGuest": "Explore as a guest",
+    "explore": "A clearer way to manage property",
+    "skipToContent": "Skip to content",
+    "navigation": "Main navigation",
+    "navFeatures": "What you can do",
+    "navHow": "How it works",
+    "navFaq": "Questions",
+    "previewLabel": "Illustrative Landlord property overview with sample data",
+    "demo": "Sample overview",
+    "previewNote": "Illustrative preview · sample data, not a live account",
+    "preview": {
+      "eyebrow": "A little clarity, every day.",
+      "title": "Your property overview",
+      "properties": "Properties",
+      "propertyBreakdown": "4 plots · 2 apartments",
+      "rent": "Rent collected",
+      "rentStatus": "This month",
+      "plot": "Garden plot · Dhaka",
+      "boundary": "Boundary recorded",
+      "documents": "Property papers, together",
+      "documentsHint": "Deeds, records, and the details that matter"
+    },
+    "trust": {
+      "local": "Built for Bangladesh",
+      "offline": "Guest records work offline",
+      "private": "Optional document encryption"
+    },
+    "featuresEyebrow": "One place. A clearer picture.",
+    "featuresIntro": "From a family plot to a growing rental portfolio, keep the details close and the admin simple.",
+    "featureDetails": {
+      "0": "Plot details & boundary mapping",
+      "1": "Units, floors & ownership details",
+      "2": "Tenant details & payment history",
+      "3": "PDF storage & optional encryption"
+    },
+    "howEyebrow": "Make room for clarity",
+    "howTitle": "Start with one property.",
+    "steps": {
+      "0": {
+        "title": "Make yourself at home",
+        "description": "Create a free account, or explore guest mode to organise a plot on this device first."
+      },
+      "1": {
+        "title": "Put the details in place",
+        "description": "Add your property, record its details, and attach the documents you want close at hand."
+      },
+      "2": {
+        "title": "Keep the day-to-day in view",
+        "description": "Check rent, update a lease, or review your property records from your phone."
+      }
+    },
+    "privacyEyebrow": "Your records deserve care",
+    "privacyTitle": "Keep the important things close.",
+    "privacyText": "Store your property PDFs with optional encryption before upload. Your encryption passphrase is yours to keep; losing it can mean losing access to those files.",
+    "privacyCta": "Read our privacy policy",
+    "faqEyebrow": "A few useful answers",
+    "faqTitle": "Good to know.",
+    "faq": {
+      "0": {
+        "question": "Is Landlord really free?",
+        "answer": "Yes. Landlord is currently free to use, with no card or subscription required."
+      },
+      "1": {
+        "question": "Can I try it without signing up?",
+        "answer": "Yes. Guest mode lets you add and organise plots on this device. Create an account to move your guest records into your account. Browser storage can be cleared, so guest mode is not a backup."
+      },
+      "2": {
+        "question": "What works without an internet connection?",
+        "answer": "Guest property records are stored locally on your device. Previously viewed map tiles may be available offline. Signing in, cloud documents, and account updates need an internet connection."
+      },
+      "3": {
+        "question": "Does a mapped boundary replace a land survey?",
+        "answer": "No. Map boundaries help organise your records. They are not a legal survey or proof of ownership. Use verified documents and a qualified surveyor for legal or boundary decisions."
+      }
+    },
+    "closingEyebrow": "A clearer view starts here",
+    "closingTitle": "More property. Less paperwork.",
+    "closingNote": "English & বাংলা · On your phone or computer",
+    "tagline": "Your property, in order.",
+    "backToTop": "Back to top"
   },
   "AdminNav": {
     "overview": "Overview",

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale } from "next-intl/server";
+import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import RegisterServiceWorker from "@/components/system/RegisterServiceWorker";
 import ReferralCapture from "@/components/system/ReferralCapture";
@@ -24,11 +24,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Landlord — Land, Apartment & Rent Management for Bangladesh",
+    default: "Landlord — Your property, in order",
     template: "%s · Landlord",
   },
   description:
-    "Map land boundaries, track apartments, manage leases and rent collection, and store ownership documents — offline-first, built for Bangladeshi landlords.",
+    "Manage land, apartments, rent records, and property documents in one place. Built for property owners in Bangladesh. Free to use.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -40,14 +40,14 @@ export const metadata: Metadata = {
     locale: "en_US",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
   },
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#F7F8F2" },
+    { media: "(prefers-color-scheme: dark)", color: "#10231C" },
   ],
 };
 
@@ -57,6 +57,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const messages = await getMessages();
+  const shellMessages = {
+    ThemeToggle: messages.ThemeToggle,
+    LocaleSwitcher: messages.LocaleSwitcher,
+    ErrorPage: messages.ErrorPage,
+  };
 
   return (
     <html
@@ -68,12 +74,12 @@ export default async function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col">
-        <NextIntlClientProvider>
+        <NextIntlClientProvider messages={shellMessages}>
           <RegisterServiceWorker />
           <ReferralCapture />
           <div className="flex flex-1 flex-col">{children}</div>
           <Footer />
-          <Analytics />
+          {process.env.VERCEL === "1" && <Analytics />}
         </NextIntlClientProvider>
       </body>
     </html>

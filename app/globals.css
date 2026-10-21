@@ -3,26 +3,26 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8faf6;
+  --foreground: #193d32;
   --card: #ffffff;
-  --card-foreground: #171717;
-  --border: #e5e5e5;
-  --input: #e5e5e5;
-  --ring: #171717;
-  --primary: #171717;
-  --primary-foreground: #fafafa;
-  --secondary: #f5f5f5;
-  --secondary-foreground: #171717;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373;
+  --card-foreground: #193d32;
+  --border: #dce5da;
+  --input: #dce5da;
+  --ring: #39785a;
+  --primary: #164b3f;
+  --primary-foreground: #ffffff;
+  --secondary: #eef3e9;
+  --secondary-foreground: #193d32;
+  --muted: #eef3e9;
+  --muted-foreground: #586b5f;
   --destructive: #dc2626;
-  --destructive-foreground: #fafafa;
-  --success: #16a34a;
-  --success-foreground: #fafafa;
-  --warning: #d97706;
-  --warning-foreground: #fafafa;
-  --radius: 0.5rem;
+  --destructive-foreground: #ffffff;
+  --success: #28744a;
+  --success-foreground: #ffffff;
+  --warning: #a4510f;
+  --warning-foreground: #ffffff;
+  --radius: 0.75rem;
 }
 
 @theme inline {
@@ -57,19 +57,19 @@
    classes, it wins regardless of system preference. */
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not(.dark) {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --card: #0a0a0a;
-    --card-foreground: #ededed;
-    --border: #262626;
-    --input: #262626;
-    --ring: #d4d4d4;
-    --primary: #ededed;
+    --background: #10231c;
+    --foreground: #e7eee5;
+    --card: #10231c;
+    --card-foreground: #e7eee5;
+    --border: #294235;
+    --input: #294235;
+    --ring: #c4df95;
+    --primary: #d9f279;
     --primary-foreground: #171717;
-    --secondary: #262626;
-    --secondary-foreground: #ededed;
-    --muted: #262626;
-    --muted-foreground: #a3a3a3;
+    --secondary: #294235;
+    --secondary-foreground: #e7eee5;
+    --muted: #294235;
+    --muted-foreground: #b5c4b8;
     --destructive: #ef4444;
     --destructive-foreground: #fafafa;
     --success: #22c55e;
@@ -80,19 +80,19 @@
 }
 
 :root.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --card: #0a0a0a;
-  --card-foreground: #ededed;
-  --border: #262626;
-  --input: #262626;
-  --ring: #d4d4d4;
-  --primary: #ededed;
+  --background: #10231c;
+  --foreground: #e7eee5;
+  --card: #10231c;
+  --card-foreground: #e7eee5;
+  --border: #294235;
+  --input: #294235;
+  --ring: #c4df95;
+  --primary: #d9f279;
   --primary-foreground: #171717;
-  --secondary: #262626;
-  --secondary-foreground: #ededed;
-  --muted: #262626;
-  --muted-foreground: #a3a3a3;
+  --secondary: #294235;
+  --secondary-foreground: #e7eee5;
+  --muted: #294235;
+  --muted-foreground: #b5c4b8;
   --destructive: #ef4444;
   --destructive-foreground: #fafafa;
   --success: #22c55e;
@@ -105,4 +105,13 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* A consistent keyboard focus indicator across app navigation and controls. */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
 }

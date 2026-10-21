@@ -55,7 +55,7 @@ export default function StatsCards({
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
       {cards.map((card) => (
         <Card key={card.label} className="min-w-0">
           <CardContent className="min-w-0 p-3">
