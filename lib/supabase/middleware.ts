@@ -19,6 +19,15 @@ const PUBLIC_PATHS = [
 const GUEST_ALLOWED_PATHS = ["/", "/dashboard", "/plots"];
 
 export async function updateSession(request: NextRequest) {
+  // Cron handlers authenticate their own bearer secret, without browser cookies.
+  if (
+    ["/api/cron/rent-reminders", "/api/cron/lease-expiry"].includes(
+      request.nextUrl.pathname,
+    )
+  ) {
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(

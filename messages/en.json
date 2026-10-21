@@ -415,13 +415,19 @@
     "explanation": "Get a notification on this device when rent is due soon or overdue.",
     "unsupported": "Your browser doesn't support push notifications.",
     "denied": "Notifications are blocked for this site. Enable them in your browser settings to use reminders.",
-    "notConfigured": "Push notifications aren't configured yet.",
+    "notConfigured": "Rent reminders aren’t available on this site yet. You can still check upcoming and overdue rent in Leases.",
     "subscribeFailed": "Couldn't enable reminders. Please try again.",
     "unsubscribeFailed": "Couldn't disable reminders. Please try again.",
     "enable": "Enable rent reminders",
     "enabling": "Enabling...",
     "disable": "Disable rent reminders",
-    "disabling": "Disabling..."
+    "disabling": "Disabling...",
+    "checking": "Checking this device’s reminder settings…",
+    "statusFailed": "Couldn’t check reminders on this device. Please try again.",
+    "retry": "Try again",
+    "permissionDismissed": "Notification permission wasn’t granted. You can try again when you’re ready.",
+    "enabled": "Reminders are enabled on this device.",
+    "savedSubscription": "This device has a saved reminder subscription."
   },
   "ProfileForm": {
     "email": "Email",

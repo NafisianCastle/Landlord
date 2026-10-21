@@ -1,13 +1,22 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPush } from "@/lib/webPush";
+import { getRentReminderPublicKey } from "@/lib/pushConfig";
 
 // Vercel Cron (see vercel.json) hits this daily. Reminds once per lease:
 // active, end_date within the next 14 days, not yet reminded.
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const cronSecret = process.env.CRON_SECRET?.trim();
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!getRentReminderPublicKey()) {
+    return NextResponse.json(
+      { error: "Push notifications are not configured" },
+      { status: 503 },
+    );
   }
 
   const admin = createAdminClient();
@@ -58,7 +67,7 @@ export async function GET(request: Request) {
         }),
       ),
     );
-    if (results.some((r) => !r.expired)) {
+    if (results.some((r) => r.sent)) {
       sent += 1;
       remindedIds.push(lease.id);
     }
@@ -74,8 +83,14 @@ export async function GET(request: Request) {
       .in("id", remindedIds);
   }
   if (expiredEndpoints.length > 0) {
-    await admin.from("push_subscriptions").delete().in("endpoint", expiredEndpoints);
+    await admin
+      .from("push_subscriptions")
+      .delete()
+      .in("endpoint", expiredEndpoints);
   }
 
-  return NextResponse.json({ sent, expiredSubscriptionsRemoved: expiredEndpoints.length });
+  return NextResponse.json({
+    sent,
+    expiredSubscriptionsRemoved: expiredEndpoints.length,
+  });
 }
