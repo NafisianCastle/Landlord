@@ -29,7 +29,7 @@ enum BaseLayer {
       .replaceAll('{y}', '$y');
 }
 
-const userAgent = 'io.landlord.landlord_mobile';
+const userAgent = 'io.landlord.app';
 
 /// Same cap as the web's lib/offline/tileDownload.ts.
 const maxDownloadTiles = 3000;
