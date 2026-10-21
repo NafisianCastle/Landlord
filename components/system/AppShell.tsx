@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import BillAlerts from "@/components/bills/BillAlerts";
 import { LogOut } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { User } from "@supabase/supabase-js";
@@ -71,6 +73,7 @@ export default async function AppShell({
           </p>
         )}
 
+        {user && <Suspense fallback={null}><BillAlerts userId={user.id} /></Suspense>}
         <main className="flex-1 pb-16 md:pb-0">{children}</main>
         <BottomNav />
       </div>
