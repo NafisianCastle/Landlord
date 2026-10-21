@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -39,10 +40,9 @@ export default function MaintenanceRequestForm({ action, vendors }: MaintenanceR
         {vendors && vendors.length > 0 && (
           <div className="flex flex-col gap-1.5 sm:col-span-2">
             <Label htmlFor="vendorId">{t("vendor")}</Label>
-            <select
+            <Select
               id="vendorId"
               name="vendorId"
-              className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
               defaultValue=""
             >
               <option value="">{t("noVendor")}</option>
@@ -51,7 +51,7 @@ export default function MaintenanceRequestForm({ action, vendors }: MaintenanceR
                   {v.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         )}
       </div>

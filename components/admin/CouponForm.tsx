@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { createCoupon } from "@/app/actions/admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
 export default function CouponForm() {
@@ -20,15 +21,14 @@ export default function CouponForm() {
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="discountType">{t("discountType")}</Label>
-          <select
+          <Select
             id="discountType"
             name="discountType"
             defaultValue="percent"
-            className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm"
           >
             <option value="percent">{t("percent")}</option>
             <option value="fixed">{t("fixed")}</option>
-          </select>
+          </Select>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="discountValue">{t("discountValue")}</Label>

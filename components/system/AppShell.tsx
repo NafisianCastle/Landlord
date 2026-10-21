@@ -33,7 +33,7 @@ export default async function AppShell({
             Landlord
           </span>
           <div className="flex max-w-full flex-wrap items-center justify-end gap-1.5 sm:gap-2">
-            <LocaleSwitcher />
+            <LocaleSwitcher align="start" />
             <ThemeToggle />
             {user ? (
               <form action={signOut}>
