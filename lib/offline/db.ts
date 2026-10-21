@@ -38,6 +38,8 @@ export interface GuestApartment {
   purchaseDate: string | null;
   currentEstimatedValue: number | null;
   notes: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   createdAt: number;
   updatedAt: number;
 }
