@@ -39,7 +39,8 @@ does not restore its old bills automatically. Downloaded copies cannot be recall
 In-app alerts work without Web Push. They show unpaid visible bills due within
 three days, including overdue bills. `/api/cron/bill-reminders` runs daily at 03:00
 UTC, requires the exact cron bearer secret, and notifies the assigned tenant rather
-than the owner. One reminder is recorded per bill only after provider acceptance;
+than the owner, through browser push and, when the tenant has the mobile app with
+notifications on, native push (FCM; see [push setup](push-notifications.md)). One reminder is recorded per bill only after provider acceptance;
 failed delivery or absent subscriptions can retry. Notifications omit amounts and
 bill titles from lock screens. Hidden, paid, draft and revoked bills are excluded.
 Overlapping cron executions can duplicate push delivery; deployment should run one

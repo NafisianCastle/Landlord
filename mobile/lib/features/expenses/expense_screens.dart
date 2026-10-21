@@ -18,6 +18,10 @@ class ExpensesSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final expenses = ref.watch(expensesProvider((kind, propertyId))).value ?? [];
+    final repo = ref.read(repositoryProvider);
+    // Only apartment owners can share expenses with tenants.
+    final canShare = kind == PropertyKind.apartment &&
+        ref.watch(propertyProvider((kind, propertyId))).value?['user_id'] == repo.userId;
     final total = expenses.fold<num>(0, (sum, e) => sum + (e['amount'] as num? ?? 0));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -28,6 +32,11 @@ class ExpensesSection extends ConsumerWidget {
               label: Text(l.addExpense),
               onPressed: () => context.go('/${kind.route}/$propertyId/expenses/new'),
             )),
+        if (canShare)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(l.expenseVisibilityHint, style: Theme.of(context).textTheme.bodySmall),
+          ),
         Card(
           child: Column(children: [
             if (expenses.isEmpty) ListTile(title: Text(l.noExpenses)),
@@ -41,12 +50,21 @@ class ExpensesSection extends ConsumerWidget {
                     .join(' · ')),
                 trailing: Row(mainAxisSize: MainAxisSize.min, children: [
                   Text(formatBdt(context, e['amount'])),
+                  if (canShare)
+                    IconButton(
+                      tooltip: e['visible_to_tenants'] == true ? l.hideExpense : l.shareExpense,
+                      icon: Icon(e['visible_to_tenants'] == true
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined),
+                      onPressed: () =>
+                          repo.setExpenseVisibility(e, e['visible_to_tenants'] != true),
+                    ),
                   IconButton(
                     tooltip: l.delete,
                     icon: const Icon(Icons.delete_outline),
                     onPressed: () async {
                       if (await confirmDelete(context)) {
-                        await ref.read(repositoryProvider).deleteExpense(e['id'] as String);
+                        await repo.deleteExpense(e['id'] as String);
                       }
                     },
                   ),

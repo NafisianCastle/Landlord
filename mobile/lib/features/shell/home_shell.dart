@@ -90,6 +90,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           NavigationDestination(icon: const Icon(Icons.dashboard_outlined), label: l.navDashboard),
           NavigationDestination(icon: const Icon(Icons.landscape_outlined), label: l.navPlots),
           NavigationDestination(icon: const Icon(Icons.apartment_outlined), label: l.navApartments),
+          NavigationDestination(icon: const Icon(Icons.receipt_long_outlined), label: l.navBills),
           NavigationDestination(icon: const Icon(Icons.settings_outlined), label: l.navSettings),
         ],
       ),

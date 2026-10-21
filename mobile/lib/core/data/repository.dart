@@ -10,6 +10,7 @@ import '../crypto/encryption.dart';
 import '../geo/geo.dart';
 import '../offline/local_db.dart';
 import '../offline/sync.dart';
+import '../validation/bills.dart';
 import '../validation/documents.dart';
 import 'property_kind.dart';
 
@@ -22,6 +23,28 @@ class RefreshResult {
 }
 
 class LockedException implements Exception {}
+
+/// Failures of the online bill operations, named like the web's Bills /
+/// collaborator messages.
+enum BillError {
+  notFound,
+  chooseFile,
+  fileTooLarge,
+  fileType,
+  saveFailed,
+  uploadFailed,
+  alreadyPending,
+  reviewFailed,
+  noAccountFound,
+  cannotInviteSelf,
+  removeBroadAccess,
+  alreadyShared,
+}
+
+class BillException implements Exception {
+  const BillException(this.error);
+  final BillError error;
+}
 
 class DocumentValidationException implements Exception {
   const DocumentValidationException(this.error);
@@ -39,6 +62,12 @@ const _plotColumns =
 const _profileColumns =
     'id,full_name,preferred_language,encryption_enabled,dek_salt,dek_wrapped_by_passphrase,'
     'dek_wrapped_by_passphrase_iv,recovery_salt,dek_wrapped_by_recovery,dek_wrapped_by_recovery_iv';
+
+const _billColumns =
+    'id,apartment_id,owner_id,tenant_share_id,tenant_email,title,amount,due_date,'
+    'visible_to_tenant,storage_path,file_name,paid_at,created_at';
+const _proofColumns = 'id,bill_id,user_id,storage_path,file_name,status,review_note,created_at';
+const _billsBucket = 'apartment-bills';
 
 String _today() => DateTime.now().toIso8601String().substring(0, 10);
 
@@ -82,6 +111,10 @@ class Repository {
         expenses,
         maintenance,
         vendors,
+        sharedExpenses,
+        tenantShares,
+        bills,
+        billProofs,
         profile,
         plotStats,
         rentStats,
@@ -97,6 +130,16 @@ class Repository {
         _client.from('expenses').select().eq('user_id', _userId),
         _client.from('maintenance_requests').select(),
         _client.from('vendors').select().order('name'),
+        // Expenses an owner shared with this user as a tenant (reference only).
+        _client
+            .from('expenses')
+            .select('id, apartment_id, category, amount, expense_date, notes')
+            .eq('visible_to_tenants', true)
+            .neq('user_id', _userId),
+        _client.from('apartment_tenants').select(),
+        // Drafts without a file are never shown (same filter as the web).
+        _client.from('apartment_bills').select(_billColumns).not('file_name', 'is', null),
+        _client.from('apartment_bill_proofs').select(_proofColumns).order('created_at', ascending: false),
         _client.from('profiles').select(_profileColumns).eq('id', _userId),
         _client.from('plot_stats').select(),
         _client.from('lease_payment_stats').select(),
@@ -110,6 +153,10 @@ class Repository {
       await _db.replaceTable('expenses', expenses);
       await _db.replaceTable('maintenance_requests', maintenance);
       await _db.replaceTable('vendors', vendors);
+      await _db.replaceTable('shared_expenses', sharedExpenses);
+      await _db.replaceTable('apartment_tenants', tenantShares);
+      await _db.replaceTable('apartment_bills', bills);
+      await _db.replaceTable('apartment_bill_proofs', billProofs);
       await _db.replaceTable('profiles', profile);
       await _db.replaceTable('plot_stats', plotStats);
       await _db.replaceTable('lease_payment_stats', rentStats);
@@ -484,6 +531,206 @@ class Repository {
     await _client.from(kind.documentTable).delete().eq('id', doc['id'] as String);
     await _db.deleteRow(kind.documentTable, doc['id'] as String);
     _onChanged();
+  }
+
+  // ---- Tenant bills & payment proofs ---------------------------------------
+  // Mirrors app/actions/bills.ts. These need a connection: each is a
+  // multi-step server operation (row + immutable storage object) that the
+  // database guards with RLS and triggers, so it can't be queued offline.
+
+  String get userId => _userId;
+
+  Future<List<DbRow>> tenantShares(String apartmentId) async =>
+      (await _db.rows('apartment_tenants')).where((t) => t['apartment_id'] == apartmentId).toList();
+
+  /// Bills for one apartment (owner view), newest due date first.
+  Future<List<DbRow>> apartmentBills(String apartmentId) async =>
+      (await _db.rows('apartment_bills')).where((b) => b['apartment_id'] == apartmentId).toList()
+        ..sort((a, b) => (b['due_date'] as String).compareTo(a['due_date'] as String));
+
+  /// Every bill the user can see: as owner, and as tenant.
+  Future<List<DbRow>> allBills() async => (await _db.rows('apartment_bills'))
+    ..sort((a, b) => (b['due_date'] as String).compareTo(a['due_date'] as String));
+
+  Future<List<DbRow>> billProofs() async => (await _db.rows('apartment_bill_proofs'))
+    ..sort((a, b) => (b['created_at'] as String).compareTo(a['created_at'] as String));
+
+  /// Shares where this user is the tenant (to label bills with the apartment).
+  Future<List<DbRow>> myTenancies() async =>
+      (await _db.rows('apartment_tenants')).where((t) => t['user_id'] == _userId).toList();
+
+  Future<List<DbRow>> sharedExpenses() async => (await _db.rows('shared_expenses'))
+    ..sort((a, b) => (b['expense_date'] as String).compareTo(a['expense_date'] as String));
+
+  /// inviteApartmentCollaborator with role "tenant".
+  Future<void> inviteTenant(String apartmentId, String apartmentName, String email) async {
+    final tenantId = await _client.rpc('find_apartment_tenant_account',
+        params: {'p_apartment_id': apartmentId, 'p_email': email}) as String?;
+    if (tenantId == null) throw const BillException(BillError.noAccountFound);
+    if (tenantId == _userId) throw const BillException(BillError.cannotInviteSelf);
+    // A tenant label must not imply privacy while viewer/editor access remains.
+    final existing = await _client
+        .from('apartment_collaborators')
+        .select('id')
+        .eq('apartment_id', apartmentId)
+        .eq('user_id', tenantId)
+        .limit(1);
+    if (existing.isNotEmpty) throw const BillException(BillError.removeBroadAccess);
+    try {
+      await _client.from('apartment_tenants').insert({
+        'apartment_id': apartmentId,
+        'owner_id': _userId,
+        'user_id': tenantId,
+        'invited_email': email,
+        'apartment_label': apartmentName,
+      });
+    } on PostgrestException catch (e) {
+      if (e.code == '23505') throw const BillException(BillError.alreadyShared);
+      rethrow;
+    }
+    await refresh();
+  }
+
+  Future<void> removeTenant(DbRow share) async {
+    await _client
+        .from('apartment_tenants')
+        .delete()
+        .eq('id', share['id'] as String)
+        .eq('owner_id', _userId);
+    await refresh();
+  }
+
+  BillFile _checkFile(String name, Uint8List bytes) => switch (validateBillFile(name, bytes)) {
+        final BillFile file => file,
+        BillFileError.chooseFile => throw const BillException(BillError.chooseFile),
+        BillFileError.fileTooLarge => throw const BillException(BillError.fileTooLarge),
+        _ => throw const BillException(BillError.fileType),
+      };
+
+  /// createApartmentBill: insert the row, upload the copy under
+  /// `{bill}/bill/{owner}/…`, then publish it by setting storage_path. Any
+  /// failure removes the draft row (a stray private object may remain, as on
+  /// the web — clients can't delete evidence).
+  Future<void> createBill({
+    required String apartmentId,
+    required DbRow share,
+    required Map<String, String> values,
+    required bool visible,
+    required String fileName,
+    required Uint8List bytes,
+  }) async {
+    final file = _checkFile(fileName, bytes);
+    final id = _uuid.v4();
+    final bills = _client.from('apartment_bills');
+    try {
+      await bills.insert({
+        'id': id,
+        'apartment_id': apartmentId,
+        'owner_id': _userId,
+        'tenant_share_id': share['id'],
+        'tenant_email': share['invited_email'],
+        'title': values['title']!.trim(),
+        'amount': num.parse(values['amount']!.trim()),
+        'due_date': values['dueDate'],
+        'visible_to_tenant': visible,
+      });
+    } on PostgrestException {
+      throw const BillException(BillError.saveFailed);
+    }
+    final path = '$id/bill/$_userId/${_uuid.v4()}.${file.extension}';
+    try {
+      await _client.storage.from(_billsBucket).uploadBinary(path, bytes,
+          fileOptions: FileOptions(contentType: file.contentType, upsert: false));
+    } catch (e) {
+      await bills.delete().eq('id', id);
+      if (isOfflineError(e)) rethrow;
+      throw const BillException(BillError.uploadFailed);
+    }
+    try {
+      await bills.update({'storage_path': path, 'file_name': fileName}).eq('id', id).select('id').single();
+    } catch (e) {
+      await bills.delete().eq('id', id);
+      if (isOfflineError(e)) rethrow;
+      throw const BillException(BillError.saveFailed);
+    }
+    await refresh();
+  }
+
+  /// submitBillProof: upload under `{bill}/proof/{tenant}/…`, then insert the
+  /// pending proof. The database allows one pending proof per bill.
+  Future<void> submitProof(DbRow bill, String fileName, Uint8List bytes) async {
+    if (bill['paid_at'] != null) throw const BillException(BillError.notFound);
+    final pending = await _client
+        .from('apartment_bill_proofs')
+        .select('id')
+        .eq('bill_id', bill['id'] as String)
+        .eq('status', 'pending')
+        .limit(1);
+    if (pending.isNotEmpty) throw const BillException(BillError.alreadyPending);
+    final file = _checkFile(fileName, bytes);
+    final path = '${bill['id']}/proof/$_userId/${_uuid.v4()}.${file.extension}';
+    try {
+      await _client.storage.from(_billsBucket).uploadBinary(path, bytes,
+          fileOptions: FileOptions(contentType: file.contentType, upsert: false));
+    } catch (e) {
+      if (isOfflineError(e)) rethrow;
+      throw const BillException(BillError.uploadFailed);
+    }
+    try {
+      await _client.from('apartment_bill_proofs').insert({
+        'bill_id': bill['id'],
+        'user_id': _userId,
+        'storage_path': path,
+        'file_name': fileName,
+      });
+    } on PostgrestException catch (e) {
+      throw BillException(e.code == '23505' ? BillError.alreadyPending : BillError.saveFailed);
+    }
+    await refresh();
+  }
+
+  /// Approve (marks the bill paid in the same transaction) or reject with a
+  /// reason, via the same RPC as the web.
+  Future<void> reviewProof(String proofId, bool approve, String? note) async {
+    try {
+      await _client.rpc('review_apartment_bill_proof', params: {
+        'p_proof_id': proofId,
+        'p_approve': approve,
+        'p_note': (note?.trim().isEmpty ?? true) ? null : note!.trim(),
+      });
+    } on PostgrestException {
+      throw const BillException(BillError.reviewFailed);
+    }
+    await refresh();
+  }
+
+  Future<void> setBillVisibility(String billId, bool visible) async {
+    try {
+      await _client
+          .from('apartment_bills')
+          .update({'visible_to_tenant': visible})
+          .eq('id', billId)
+          .eq('owner_id', _userId)
+          .select('id')
+          .single();
+    } on PostgrestException {
+      throw const BillException(BillError.saveFailed);
+    }
+    await refresh();
+  }
+
+  /// Bill copies and proofs, read through Storage RLS (the web proxies the
+  /// same check through /api/bills/files).
+  Future<Uint8List> downloadBillFile(String storagePath) =>
+      _client.storage.from(_billsBucket).download(storagePath);
+
+  /// setExpenseTenantVisibility: apartment expenses only, owner only.
+  Future<void> setExpenseVisibility(DbRow expense, bool visible) async {
+    final id = expense['id'] as String;
+    await _db.upsertRow('expenses', id, {'visible_to_tenants': visible});
+    await _write([
+      OutboxOp(kind: 'update', target: 'expenses', rowId: id, payload: {'visible_to_tenants': visible})
+    ]);
   }
 
   Future<void> signOut() async {

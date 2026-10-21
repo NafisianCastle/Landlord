@@ -326,5 +326,110 @@
   "phone": "Phone",
   "call": "Call",
   "vendor": "Vendor",
-  "noVendor": "No vendor"
+  "noVendor": "No vendor",
+  "navBills": "Bills",
+  "bills": "Apartment bills",
+  "billsPortalHint": "Review bills, upload payment proof and see expenses your apartment owner has shared.",
+  "billsOwnerHint": "Add a bill copy, amount and due date each month. Approve a tenant’s payment proof to mark the bill paid. Bill collections are separate from rent and expense totals.",
+  "billTitle": "Bill title",
+  "billTitlePlaceholder": "Electricity · October 2026",
+  "billTenant": "Tenant",
+  "billAmount": "Amount (BDT)",
+  "billDueDate": "Due date",
+  "billCopy": "Bill copy",
+  "paymentProof": "Payment proof",
+  "billFileHint": "JPEG, PNG, WebP or PDF · up to 10 MB.",
+  "billVisible": "Share this bill with the selected tenant",
+  "billInviteFirst": "Add a tenant above (Tenant — bills only), then create a bill. The tenant needs a Landlord account.",
+  "createBill": "Add monthly bill",
+  "submitProof": "Upload payment proof",
+  "billCreated": "Bill saved.",
+  "proofSubmitted": "Proof submitted for owner review.",
+  "billApprovalHint": "Uploading proof does not mark a bill paid. The owner will review and approve it.",
+  "viewBill": "View bill copy",
+  "viewProof": "View payment proof",
+  "approveProof": "Approve & mark paid",
+  "rejectProof": "Reject proof",
+  "rejectionReason": "Reason for rejection",
+  "reviewNote": "Owner’s review: {note}",
+  "@reviewNote": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "billDue": "Due {date}",
+  "@billDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "billStatus_paid": "Paid",
+  "billStatus_pending": "Awaiting review",
+  "billStatus_overdue": "Overdue",
+  "billStatus_unpaid": "Unpaid",
+  "proofStatus_pending": "Pending review",
+  "proofStatus_approved": "Approved",
+  "proofStatus_rejected": "Rejected",
+  "billShared": "Visible to tenant",
+  "billPrivate": "Private",
+  "billHide": "Hide from tenant",
+  "billShare": "Share with tenant",
+  "billTenantRemoved": "Tenant access removed. Historical bill and proof remain available to you.",
+  "noBills": "No bills yet. Owners can add monthly bills from an apartment’s details.",
+  "sharedExpenses": "Other shared expenses",
+  "sharedExpensesHint": "These are for reference. A shared expense is not an additional bill to pay.",
+  "noSharedExpenses": "Your owner has not shared any other expenses.",
+  "shareExpense": "Share with tenants",
+  "hideExpense": "Make private",
+  "expenseVisibilityHint": "Expenses are private by default. Sharing makes the amount, date, category and notes visible to all current tenants of this apartment.",
+  "reviewAlert": "{count, plural, one {{count} bill has payment proof awaiting your review.} other {{count} bills have payment proof awaiting your review.}}",
+  "@reviewAlert": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dueAlert": "{count, plural, one{You have {count} bill due soon or overdue.} other{You have {count} bills due soon or overdue.}}",
+  "@dueAlert": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "billError_notFound": "This bill or tenant is no longer available.",
+  "billError_chooseFile": "Choose a bill copy or payment proof.",
+  "billError_fileTooLarge": "The file must be 10 MB or smaller.",
+  "billError_fileType": "Choose a valid JPEG, PNG, WebP image or PDF.",
+  "billError_saveFailed": "Could not save. Please refresh and try again.",
+  "billError_uploadFailed": "Could not upload the file. Please try again.",
+  "billError_alreadyPending": "A payment proof is already awaiting review.",
+  "billError_reviewFailed": "Could not review this proof. It may have already been reviewed. Refresh and try again.",
+  "billError_noAccountFound": "No Landlord account found for that email.",
+  "billError_cannotInviteSelf": "You can't invite yourself.",
+  "billError_removeBroadAccess": "Remove this account’s Viewer or Editor access before inviting them as a tenant.",
+  "billError_alreadyShared": "This apartment is already shared with that person.",
+  "tenants": "Tenants",
+  "inviteTenant": "Invite tenant",
+  "roleTenant": "Tenant — bills only",
+  "tenantHelp": "Tenants open the Bills tab. They can see assigned bills and expenses you share, without ownership records or private documents. Viewer and Editor roles have broader access.",
+  "removeTenantConfirm": "Remove {email}? Their bill, proof and shared-expense access ends; history stays with you.",
+  "@removeTenantConfirm": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "Remove",
+  "invite": "Invite",
+  "noTenants": "No tenants yet.",
+  "takePhoto": "Take photo",
+  "chooseFile": "Choose file",
+  "billsNeedConnection": "Bills need an internet connection."
 }

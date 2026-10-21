@@ -15,6 +15,23 @@ encrypted fields stay in sync between the two.
 | **Offline data** | Everything is cached in SQLite. Changes made offline wait in a queue (`lib/core/offline/`) and upload when you're back online. If two edits conflict, the last one saved wins. Uploading and opening documents still needs a connection. |
 | **Offline maps** | Save the satellite tiles for any area, up to 3,000 tiles (same limit as the web). Areas you've already looked at are cached too. |
 
+## Tenant bills
+
+As on the web (`docs/tenant-billing.md`):
+
+- **Owners.** On an apartment they own, an owner can:
+  - invite or remove tenants ("Tenant — bills only");
+  - add a monthly bill with its copy (scan, photo or file);
+  - share or hide each bill;
+  - approve a tenant's payment proof, or reject it with a reason;
+  - share individual apartment expenses with tenants.
+- **Tenants.** The **Bills** tab shows bills shared with them. They can upload
+  payment proof, see the owner's review, and view expenses the owner shared.
+
+Bill operations need a connection. Each is a multi-step server write of
+evidence that can't be changed afterwards, and the database guards it.
+Bills you've already loaded stay viewable offline.
+
 ## Compatibility with the web app
 
 - **Encryption.** `lib/core/crypto/encryption.dart` is a port of

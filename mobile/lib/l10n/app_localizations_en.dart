@@ -663,4 +663,255 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noVendor => 'No vendor';
+
+  @override
+  String get navBills => 'Bills';
+
+  @override
+  String get bills => 'Apartment bills';
+
+  @override
+  String get billsPortalHint =>
+      'Review bills, upload payment proof and see expenses your apartment owner has shared.';
+
+  @override
+  String get billsOwnerHint =>
+      'Add a bill copy, amount and due date each month. Approve a tenant’s payment proof to mark the bill paid. Bill collections are separate from rent and expense totals.';
+
+  @override
+  String get billTitle => 'Bill title';
+
+  @override
+  String get billTitlePlaceholder => 'Electricity · October 2026';
+
+  @override
+  String get billTenant => 'Tenant';
+
+  @override
+  String get billAmount => 'Amount (BDT)';
+
+  @override
+  String get billDueDate => 'Due date';
+
+  @override
+  String get billCopy => 'Bill copy';
+
+  @override
+  String get paymentProof => 'Payment proof';
+
+  @override
+  String get billFileHint => 'JPEG, PNG, WebP or PDF · up to 10 MB.';
+
+  @override
+  String get billVisible => 'Share this bill with the selected tenant';
+
+  @override
+  String get billInviteFirst =>
+      'Add a tenant above (Tenant — bills only), then create a bill. The tenant needs a Landlord account.';
+
+  @override
+  String get createBill => 'Add monthly bill';
+
+  @override
+  String get submitProof => 'Upload payment proof';
+
+  @override
+  String get billCreated => 'Bill saved.';
+
+  @override
+  String get proofSubmitted => 'Proof submitted for owner review.';
+
+  @override
+  String get billApprovalHint =>
+      'Uploading proof does not mark a bill paid. The owner will review and approve it.';
+
+  @override
+  String get viewBill => 'View bill copy';
+
+  @override
+  String get viewProof => 'View payment proof';
+
+  @override
+  String get approveProof => 'Approve & mark paid';
+
+  @override
+  String get rejectProof => 'Reject proof';
+
+  @override
+  String get rejectionReason => 'Reason for rejection';
+
+  @override
+  String reviewNote(String note) {
+    return 'Owner’s review: $note';
+  }
+
+  @override
+  String billDue(String date) {
+    return 'Due $date';
+  }
+
+  @override
+  String get billStatus_paid => 'Paid';
+
+  @override
+  String get billStatus_pending => 'Awaiting review';
+
+  @override
+  String get billStatus_overdue => 'Overdue';
+
+  @override
+  String get billStatus_unpaid => 'Unpaid';
+
+  @override
+  String get proofStatus_pending => 'Pending review';
+
+  @override
+  String get proofStatus_approved => 'Approved';
+
+  @override
+  String get proofStatus_rejected => 'Rejected';
+
+  @override
+  String get billShared => 'Visible to tenant';
+
+  @override
+  String get billPrivate => 'Private';
+
+  @override
+  String get billHide => 'Hide from tenant';
+
+  @override
+  String get billShare => 'Share with tenant';
+
+  @override
+  String get billTenantRemoved =>
+      'Tenant access removed. Historical bill and proof remain available to you.';
+
+  @override
+  String get noBills =>
+      'No bills yet. Owners can add monthly bills from an apartment’s details.';
+
+  @override
+  String get sharedExpenses => 'Other shared expenses';
+
+  @override
+  String get sharedExpensesHint =>
+      'These are for reference. A shared expense is not an additional bill to pay.';
+
+  @override
+  String get noSharedExpenses =>
+      'Your owner has not shared any other expenses.';
+
+  @override
+  String get shareExpense => 'Share with tenants';
+
+  @override
+  String get hideExpense => 'Make private';
+
+  @override
+  String get expenseVisibilityHint =>
+      'Expenses are private by default. Sharing makes the amount, date, category and notes visible to all current tenants of this apartment.';
+
+  @override
+  String reviewAlert(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bills have payment proof awaiting your review.',
+      one: '$count bill has payment proof awaiting your review.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dueAlert(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You have $count bills due soon or overdue.',
+      one: 'You have $count bill due soon or overdue.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get billError_notFound =>
+      'This bill or tenant is no longer available.';
+
+  @override
+  String get billError_chooseFile => 'Choose a bill copy or payment proof.';
+
+  @override
+  String get billError_fileTooLarge => 'The file must be 10 MB or smaller.';
+
+  @override
+  String get billError_fileType =>
+      'Choose a valid JPEG, PNG, WebP image or PDF.';
+
+  @override
+  String get billError_saveFailed =>
+      'Could not save. Please refresh and try again.';
+
+  @override
+  String get billError_uploadFailed =>
+      'Could not upload the file. Please try again.';
+
+  @override
+  String get billError_alreadyPending =>
+      'A payment proof is already awaiting review.';
+
+  @override
+  String get billError_reviewFailed =>
+      'Could not review this proof. It may have already been reviewed. Refresh and try again.';
+
+  @override
+  String get billError_noAccountFound =>
+      'No Landlord account found for that email.';
+
+  @override
+  String get billError_cannotInviteSelf => 'You can\'t invite yourself.';
+
+  @override
+  String get billError_removeBroadAccess =>
+      'Remove this account’s Viewer or Editor access before inviting them as a tenant.';
+
+  @override
+  String get billError_alreadyShared =>
+      'This apartment is already shared with that person.';
+
+  @override
+  String get tenants => 'Tenants';
+
+  @override
+  String get inviteTenant => 'Invite tenant';
+
+  @override
+  String get roleTenant => 'Tenant — bills only';
+
+  @override
+  String get tenantHelp =>
+      'Tenants open the Bills tab. They can see assigned bills and expenses you share, without ownership records or private documents. Viewer and Editor roles have broader access.';
+
+  @override
+  String removeTenantConfirm(String email) {
+    return 'Remove $email? Their bill, proof and shared-expense access ends; history stays with you.';
+  }
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get invite => 'Invite';
+
+  @override
+  String get noTenants => 'No tenants yet.';
+
+  @override
+  String get takePhoto => 'Take photo';
+
+  @override
+  String get chooseFile => 'Choose file';
+
+  @override
+  String get billsNeedConnection => 'Bills need an internet connection.';
 }

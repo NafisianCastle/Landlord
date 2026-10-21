@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/geo/units.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
+import '../bills/bill_screens.dart';
 import '../common.dart';
 import '../shell/home_shell.dart';
 
@@ -22,6 +23,7 @@ class DashboardScreen extends ConsumerWidget {
           final rent = stats.rent ?? const {};
           final area = AreaConversions(((plots['total_area_sq_meters'] ?? 0) as num).toDouble());
           return RefreshableList(children: [
+            const BillAlerts(),
             _StatCard(
               icon: Icons.landscape,
               label: l.totalPlots,

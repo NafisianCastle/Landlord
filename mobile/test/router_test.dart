@@ -7,6 +7,7 @@ void main() {
     expect(appPathForWebUrl('/apartments/$id'), '/apartments/$id');
     expect(appPathForWebUrl('/plots/$id'), '/plots/$id');
     expect(appPathForWebUrl('/leases'), '/dashboard');
+    expect(appPathForWebUrl('/bills#bill-$id'), '/bills');
     expect(appPathForWebUrl('/plots/../../etc'), '/dashboard');
   });
 }

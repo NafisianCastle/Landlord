@@ -661,4 +661,252 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get noVendor => 'কোনো ভেন্ডর নেই';
+
+  @override
+  String get navBills => 'বিল';
+
+  @override
+  String get bills => 'অ্যাপার্টমেন্টের বিল';
+
+  @override
+  String get billsPortalHint =>
+      'বিল দেখুন, পরিশোধের প্রমাণ জমা দিন এবং মালিকের শেয়ার করা ব্যয় দেখুন।';
+
+  @override
+  String get billsOwnerHint =>
+      'প্রতি মাসে বিলের কপি, পরিমাণ ও শেষ তারিখ যোগ করুন। ভাড়াটিয়ার প্রমাণ অনুমোদন করলে বিল পরিশোধিত হবে। বিল আদায় ভাড়া ও ব্যয়ের হিসাব থেকে আলাদা।';
+
+  @override
+  String get billTitle => 'বিলের শিরোনাম';
+
+  @override
+  String get billTitlePlaceholder => 'বিদ্যুৎ · অক্টোবর ২০২৬';
+
+  @override
+  String get billTenant => 'ভাড়াটিয়া';
+
+  @override
+  String get billAmount => 'পরিমাণ (টাকা)';
+
+  @override
+  String get billDueDate => 'পরিশোধের শেষ তারিখ';
+
+  @override
+  String get billCopy => 'বিলের কপি';
+
+  @override
+  String get paymentProof => 'পরিশোধের প্রমাণ';
+
+  @override
+  String get billFileHint => 'JPEG, PNG, WebP বা PDF · সর্বোচ্চ ১০ MB।';
+
+  @override
+  String get billVisible => 'নির্বাচিত ভাড়াটিয়ার সাথে বিলটি শেয়ার করুন';
+
+  @override
+  String get billInviteFirst =>
+      'উপরে একজন ভাড়াটিয়া যোগ করুন (ভাড়াটিয়া — শুধু বিল), তারপর বিল তৈরি করুন। ভাড়াটিয়ার Landlord অ্যাকাউন্ট থাকতে হবে।';
+
+  @override
+  String get createBill => 'মাসিক বিল যোগ করুন';
+
+  @override
+  String get submitProof => 'পরিশোধের প্রমাণ আপলোড করুন';
+
+  @override
+  String get billCreated => 'বিল সংরক্ষিত হয়েছে।';
+
+  @override
+  String get proofSubmitted => 'মালিকের পর্যালোচনার জন্য প্রমাণ জমা হয়েছে।';
+
+  @override
+  String get billApprovalHint =>
+      'প্রমাণ আপলোড করলেই বিল পরিশোধিত হয় না। মালিক যাচাই করে অনুমোদন দেবেন।';
+
+  @override
+  String get viewBill => 'বিলের কপি দেখুন';
+
+  @override
+  String get viewProof => 'পরিশোধের প্রমাণ দেখুন';
+
+  @override
+  String get approveProof => 'অনুমোদন ও পরিশোধিত চিহ্নিত করুন';
+
+  @override
+  String get rejectProof => 'প্রমাণ প্রত্যাখ্যান করুন';
+
+  @override
+  String get rejectionReason => 'প্রত্যাখ্যানের কারণ';
+
+  @override
+  String reviewNote(String note) {
+    return 'মালিকের মন্তব্য: $note';
+  }
+
+  @override
+  String billDue(String date) {
+    return 'শেষ তারিখ $date';
+  }
+
+  @override
+  String get billStatus_paid => 'পরিশোধিত';
+
+  @override
+  String get billStatus_pending => 'পর্যালোচনার অপেক্ষায়';
+
+  @override
+  String get billStatus_overdue => 'মেয়াদোত্তীর্ণ';
+
+  @override
+  String get billStatus_unpaid => 'অপরিশোধিত';
+
+  @override
+  String get proofStatus_pending => 'পর্যালোচনার অপেক্ষায়';
+
+  @override
+  String get proofStatus_approved => 'অনুমোদিত';
+
+  @override
+  String get proofStatus_rejected => 'প্রত্যাখ্যাত';
+
+  @override
+  String get billShared => 'ভাড়াটিয়া দেখতে পাবেন';
+
+  @override
+  String get billPrivate => 'ব্যক্তিগত';
+
+  @override
+  String get billHide => 'ভাড়াটিয়ার কাছ থেকে লুকান';
+
+  @override
+  String get billShare => 'ভাড়াটিয়ার সাথে শেয়ার করুন';
+
+  @override
+  String get billTenantRemoved =>
+      'ভাড়াটিয়ার প্রবেশাধিকার সরানো হয়েছে। পুরোনো বিল ও প্রমাণ আপনার কাছে সংরক্ষিত আছে।';
+
+  @override
+  String get noBills =>
+      'এখনও কোনো বিল নেই। মালিক অ্যাপার্টমেন্টের বিবরণ থেকে মাসিক বিল যোগ করতে পারেন।';
+
+  @override
+  String get sharedExpenses => 'অন্যান্য শেয়ার করা ব্যয়';
+
+  @override
+  String get sharedExpensesHint =>
+      'এগুলো তথ্যের জন্য। শেয়ার করা ব্যয় পরিশোধের জন্য অতিরিক্ত বিল নয়।';
+
+  @override
+  String get noSharedExpenses => 'মালিক এখনও অন্য কোনো ব্যয় শেয়ার করেননি।';
+
+  @override
+  String get shareExpense => 'ভাড়াটিয়াদের সাথে শেয়ার করুন';
+
+  @override
+  String get hideExpense => 'ব্যক্তিগত করুন';
+
+  @override
+  String get expenseVisibilityHint =>
+      'ব্যয় প্রথমে ব্যক্তিগত থাকে। শেয়ার করলে পরিমাণ, তারিখ, ধরন ও নোট এই অ্যাপার্টমেন্টের সব বর্তমান ভাড়াটিয়া দেখতে পাবেন।';
+
+  @override
+  String reviewAlert(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countটি বিলের পরিশোধের প্রমাণ আপনার পর্যালোচনার অপেক্ষায়।',
+      one: '$countটি বিলের পরিশোধের প্রমাণ আপনার পর্যালোচনার অপেক্ষায়।',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dueAlert(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'আপনার $countটি বিলের শেষ তারিখ আসন্ন বা পেরিয়ে গেছে।',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get billError_notFound => 'বিল বা ভাড়াটিয়া আর পাওয়া যাচ্ছে না।';
+
+  @override
+  String get billError_chooseFile => 'বিলের কপি বা পরিশোধের প্রমাণ বেছে নিন।';
+
+  @override
+  String get billError_fileTooLarge => 'ফাইলটি ১০ MB বা তার কম হতে হবে।';
+
+  @override
+  String get billError_fileType => 'বৈধ JPEG, PNG, WebP ছবি বা PDF বেছে নিন।';
+
+  @override
+  String get billError_saveFailed =>
+      'সংরক্ষণ করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।';
+
+  @override
+  String get billError_uploadFailed =>
+      'ফাইল আপলোড করা যায়নি। আবার চেষ্টা করুন।';
+
+  @override
+  String get billError_alreadyPending =>
+      'একটি পরিশোধের প্রমাণ ইতিমধ্যে পর্যালোচনার অপেক্ষায় আছে।';
+
+  @override
+  String get billError_reviewFailed =>
+      'প্রমাণ পর্যালোচনা করা যায়নি। এটি আগেই পর্যালোচিত হয়ে থাকতে পারে। রিফ্রেশ করে আবার চেষ্টা করুন।';
+
+  @override
+  String get billError_noAccountFound =>
+      'এই ইমেইলের জন্য কোনো ল্যান্ডলর্ড অ্যাকাউন্ট পাওয়া যায়নি।';
+
+  @override
+  String get billError_cannotInviteSelf =>
+      'আপনি নিজেকে আমন্ত্রণ করতে পারবেন না।';
+
+  @override
+  String get billError_removeBroadAccess =>
+      'ভাড়াটিয়া হিসেবে যোগ করার আগে এই অ্যাকাউন্টের দর্শক বা সম্পাদক প্রবেশাধিকার সরান।';
+
+  @override
+  String get billError_alreadyShared =>
+      'এই অ্যাপার্টমেন্ট ইতিমধ্যে সেই ব্যক্তির সাথে শেয়ার করা আছে।';
+
+  @override
+  String get tenants => 'ভাড়াটিয়া';
+
+  @override
+  String get inviteTenant => 'ভাড়াটিয়া আমন্ত্রণ করুন';
+
+  @override
+  String get roleTenant => 'ভাড়াটিয়া — শুধু বিল';
+
+  @override
+  String get tenantHelp =>
+      'ভাড়াটিয়া মেনুর বিল থেকে তার বিল ও আপনার শেয়ার করা ব্যয় দেখতে পাবেন। মালিকানার তথ্য ও ব্যক্তিগত দলিল দেখতে পাবেন না। দর্শক ও সম্পাদকের প্রবেশাধিকার বেশি।';
+
+  @override
+  String removeTenantConfirm(String email) {
+    return '$email কে সরাবেন? তার বিল, প্রমাণ ও শেয়ার করা ব্যয়ের প্রবেশাধিকার শেষ হবে; ইতিহাস আপনার কাছে থাকবে।';
+  }
+
+  @override
+  String get remove => 'সরান';
+
+  @override
+  String get invite => 'আমন্ত্রণ করুন';
+
+  @override
+  String get noTenants => 'এখনো কোনো ভাড়াটিয়া নেই।';
+
+  @override
+  String get takePhoto => 'ছবি তুলুন';
+
+  @override
+  String get chooseFile => 'ফাইল বেছে নিন';
+
+  @override
+  String get billsNeedConnection => 'বিলের জন্য ইন্টারনেট সংযোগ প্রয়োজন।';
 }

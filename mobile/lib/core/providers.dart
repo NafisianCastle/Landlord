@@ -89,6 +89,36 @@ final vendorsProvider = FutureProvider<List<DbRow>>((ref) {
   return ref.read(repositoryProvider).vendors();
 });
 
+final allBillsProvider = FutureProvider<List<DbRow>>((ref) {
+  ref.watch(dataRevisionProvider);
+  return ref.read(repositoryProvider).allBills();
+});
+
+final apartmentBillsProvider = FutureProvider.family<List<DbRow>, String>((ref, apartmentId) {
+  ref.watch(dataRevisionProvider);
+  return ref.read(repositoryProvider).apartmentBills(apartmentId);
+});
+
+final billProofsProvider = FutureProvider<List<DbRow>>((ref) {
+  ref.watch(dataRevisionProvider);
+  return ref.read(repositoryProvider).billProofs();
+});
+
+final tenantSharesProvider = FutureProvider.family<List<DbRow>, String>((ref, apartmentId) {
+  ref.watch(dataRevisionProvider);
+  return ref.read(repositoryProvider).tenantShares(apartmentId);
+});
+
+final myTenanciesProvider = FutureProvider<List<DbRow>>((ref) {
+  ref.watch(dataRevisionProvider);
+  return ref.read(repositoryProvider).myTenancies();
+});
+
+final sharedExpensesProvider = FutureProvider<List<DbRow>>((ref) {
+  ref.watch(dataRevisionProvider);
+  return ref.read(repositoryProvider).sharedExpenses();
+});
+
 final profileProvider = FutureProvider<DbRow?>((ref) {
   ref.watch(dataRevisionProvider);
   return ref.read(repositoryProvider).profile();

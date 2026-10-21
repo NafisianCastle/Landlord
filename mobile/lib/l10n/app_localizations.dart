@@ -1291,6 +1291,426 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No vendor'**
   String get noVendor;
+
+  /// No description provided for @navBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills'**
+  String get navBills;
+
+  /// No description provided for @bills.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment bills'**
+  String get bills;
+
+  /// No description provided for @billsPortalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Review bills, upload payment proof and see expenses your apartment owner has shared.'**
+  String get billsPortalHint;
+
+  /// No description provided for @billsOwnerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a bill copy, amount and due date each month. Approve a tenant’s payment proof to mark the bill paid. Bill collections are separate from rent and expense totals.'**
+  String get billsOwnerHint;
+
+  /// No description provided for @billTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill title'**
+  String get billTitle;
+
+  /// No description provided for @billTitlePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Electricity · October 2026'**
+  String get billTitlePlaceholder;
+
+  /// No description provided for @billTenant.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenant'**
+  String get billTenant;
+
+  /// No description provided for @billAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (BDT)'**
+  String get billAmount;
+
+  /// No description provided for @billDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due date'**
+  String get billDueDate;
+
+  /// No description provided for @billCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill copy'**
+  String get billCopy;
+
+  /// No description provided for @paymentProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment proof'**
+  String get paymentProof;
+
+  /// No description provided for @billFileHint.
+  ///
+  /// In en, this message translates to:
+  /// **'JPEG, PNG, WebP or PDF · up to 10 MB.'**
+  String get billFileHint;
+
+  /// No description provided for @billVisible.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this bill with the selected tenant'**
+  String get billVisible;
+
+  /// No description provided for @billInviteFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a tenant above (Tenant — bills only), then create a bill. The tenant needs a Landlord account.'**
+  String get billInviteFirst;
+
+  /// No description provided for @createBill.
+  ///
+  /// In en, this message translates to:
+  /// **'Add monthly bill'**
+  String get createBill;
+
+  /// No description provided for @submitProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload payment proof'**
+  String get submitProof;
+
+  /// No description provided for @billCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Bill saved.'**
+  String get billCreated;
+
+  /// No description provided for @proofSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof submitted for owner review.'**
+  String get proofSubmitted;
+
+  /// No description provided for @billApprovalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading proof does not mark a bill paid. The owner will review and approve it.'**
+  String get billApprovalHint;
+
+  /// No description provided for @viewBill.
+  ///
+  /// In en, this message translates to:
+  /// **'View bill copy'**
+  String get viewBill;
+
+  /// No description provided for @viewProof.
+  ///
+  /// In en, this message translates to:
+  /// **'View payment proof'**
+  String get viewProof;
+
+  /// No description provided for @approveProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve & mark paid'**
+  String get approveProof;
+
+  /// No description provided for @rejectProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject proof'**
+  String get rejectProof;
+
+  /// No description provided for @rejectionReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for rejection'**
+  String get rejectionReason;
+
+  /// No description provided for @reviewNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner’s review: {note}'**
+  String reviewNote(String note);
+
+  /// No description provided for @billDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {date}'**
+  String billDue(String date);
+
+  /// No description provided for @billStatus_paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get billStatus_paid;
+
+  /// No description provided for @billStatus_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting review'**
+  String get billStatus_pending;
+
+  /// No description provided for @billStatus_overdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get billStatus_overdue;
+
+  /// No description provided for @billStatus_unpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid'**
+  String get billStatus_unpaid;
+
+  /// No description provided for @proofStatus_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending review'**
+  String get proofStatus_pending;
+
+  /// No description provided for @proofStatus_approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get proofStatus_approved;
+
+  /// No description provided for @proofStatus_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get proofStatus_rejected;
+
+  /// No description provided for @billShared.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible to tenant'**
+  String get billShared;
+
+  /// No description provided for @billPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get billPrivate;
+
+  /// No description provided for @billHide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide from tenant'**
+  String get billHide;
+
+  /// No description provided for @billShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with tenant'**
+  String get billShare;
+
+  /// No description provided for @billTenantRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenant access removed. Historical bill and proof remain available to you.'**
+  String get billTenantRemoved;
+
+  /// No description provided for @noBills.
+  ///
+  /// In en, this message translates to:
+  /// **'No bills yet. Owners can add monthly bills from an apartment’s details.'**
+  String get noBills;
+
+  /// No description provided for @sharedExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Other shared expenses'**
+  String get sharedExpenses;
+
+  /// No description provided for @sharedExpensesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'These are for reference. A shared expense is not an additional bill to pay.'**
+  String get sharedExpensesHint;
+
+  /// No description provided for @noSharedExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Your owner has not shared any other expenses.'**
+  String get noSharedExpenses;
+
+  /// No description provided for @shareExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with tenants'**
+  String get shareExpense;
+
+  /// No description provided for @hideExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Make private'**
+  String get hideExpense;
+
+  /// No description provided for @expenseVisibilityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses are private by default. Sharing makes the amount, date, category and notes visible to all current tenants of this apartment.'**
+  String get expenseVisibilityHint;
+
+  /// No description provided for @reviewAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} bill has payment proof awaiting your review.} other {{count} bills have payment proof awaiting your review.}}'**
+  String reviewAlert(int count);
+
+  /// No description provided for @dueAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{You have {count} bill due soon or overdue.} other{You have {count} bills due soon or overdue.}}'**
+  String dueAlert(int count);
+
+  /// No description provided for @billError_notFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This bill or tenant is no longer available.'**
+  String get billError_notFound;
+
+  /// No description provided for @billError_chooseFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a bill copy or payment proof.'**
+  String get billError_chooseFile;
+
+  /// No description provided for @billError_fileTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'The file must be 10 MB or smaller.'**
+  String get billError_fileTooLarge;
+
+  /// No description provided for @billError_fileType.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a valid JPEG, PNG, WebP image or PDF.'**
+  String get billError_fileType;
+
+  /// No description provided for @billError_saveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save. Please refresh and try again.'**
+  String get billError_saveFailed;
+
+  /// No description provided for @billError_uploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not upload the file. Please try again.'**
+  String get billError_uploadFailed;
+
+  /// No description provided for @billError_alreadyPending.
+  ///
+  /// In en, this message translates to:
+  /// **'A payment proof is already awaiting review.'**
+  String get billError_alreadyPending;
+
+  /// No description provided for @billError_reviewFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not review this proof. It may have already been reviewed. Refresh and try again.'**
+  String get billError_reviewFailed;
+
+  /// No description provided for @billError_noAccountFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Landlord account found for that email.'**
+  String get billError_noAccountFound;
+
+  /// No description provided for @billError_cannotInviteSelf.
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t invite yourself.'**
+  String get billError_cannotInviteSelf;
+
+  /// No description provided for @billError_removeBroadAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this account’s Viewer or Editor access before inviting them as a tenant.'**
+  String get billError_removeBroadAccess;
+
+  /// No description provided for @billError_alreadyShared.
+  ///
+  /// In en, this message translates to:
+  /// **'This apartment is already shared with that person.'**
+  String get billError_alreadyShared;
+
+  /// No description provided for @tenants.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenants'**
+  String get tenants;
+
+  /// No description provided for @inviteTenant.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite tenant'**
+  String get inviteTenant;
+
+  /// No description provided for @roleTenant.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenant — bills only'**
+  String get roleTenant;
+
+  /// No description provided for @tenantHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenants open the Bills tab. They can see assigned bills and expenses you share, without ownership records or private documents. Viewer and Editor roles have broader access.'**
+  String get tenantHelp;
+
+  /// No description provided for @removeTenantConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {email}? Their bill, proof and shared-expense access ends; history stays with you.'**
+  String removeTenantConfirm(String email);
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @invite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get invite;
+
+  /// No description provided for @noTenants.
+  ///
+  /// In en, this message translates to:
+  /// **'No tenants yet.'**
+  String get noTenants;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file'**
+  String get chooseFile;
+
+  /// No description provided for @billsNeedConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Bills need an internet connection.'**
+  String get billsNeedConnection;
 }
 
 class _AppLocalizationsDelegate

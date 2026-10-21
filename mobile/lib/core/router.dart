@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../features/auth/auth_screens.dart';
+import '../features/bills/bill_screens.dart';
 import '../features/boundary/boundary_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/expenses/expense_screens.dart';
@@ -71,6 +72,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                         builder: (_, s) =>
                             PropertyFormScreen(kind: kind, id: s.pathParameters['id']),
                       ),
+                      if (kind == PropertyKind.apartment)
+                        GoRoute(
+                          path: 'bills/new',
+                          builder: (_, s) => BillFormScreen(apartmentId: s.pathParameters['id']!),
+                        ),
                       if (kind == PropertyKind.plot)
                         GoRoute(
                           path: 'boundary',
@@ -113,6 +119,9 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ]),
           StatefulShellBranch(routes: [
+            GoRoute(path: '/bills', builder: (_, _) => const BillsScreen()),
+          ]),
+          StatefulShellBranch(routes: [
             GoRoute(
               path: '/settings',
               builder: (_, _) => const SettingsScreen(),
@@ -139,9 +148,10 @@ final routerProvider = Provider<GoRouter>((ref) {
 });
 
 /// Notification payloads carry web paths (`/plots/{id}`, `/apartments/{id}`,
-/// `/leases`); open the matching screen when we have one.
+/// `/bills#bill-{id}`, `/leases`); open the matching screen when we have one.
 String appPathForWebUrl(String url) {
   final path = Uri.tryParse(url)?.path ?? '';
+  if (path == '/bills') return '/bills';
   final match = RegExp(r'^/(plots|apartments)/([0-9a-f-]{36})').firstMatch(path);
   return match == null ? '/dashboard' : '/${match[1]}/${match[2]}';
 }

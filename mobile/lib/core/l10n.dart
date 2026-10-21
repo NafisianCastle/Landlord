@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../l10n/app_localizations.dart';
+import 'data/repository.dart';
 import 'validation/documents.dart';
 
 export '../l10n/app_localizations.dart';
@@ -63,6 +64,34 @@ extension DynamicLabels on AppLocalizations {
         'in_progress' => maintenanceStatus_in_progress,
         'resolved' => maintenanceStatus_resolved,
         _ => maintenanceStatus_open,
+      };
+
+  String billStatusLabel(String value) => switch (value) {
+        'paid' => billStatus_paid,
+        'pending' => billStatus_pending,
+        'overdue' => billStatus_overdue,
+        _ => billStatus_unpaid,
+      };
+
+  String proofStatusLabel(String value) => switch (value) {
+        'approved' => proofStatus_approved,
+        'rejected' => proofStatus_rejected,
+        _ => proofStatus_pending,
+      };
+
+  String billError(BillError error) => switch (error) {
+        BillError.notFound => billError_notFound,
+        BillError.chooseFile => billError_chooseFile,
+        BillError.fileTooLarge => billError_fileTooLarge,
+        BillError.fileType => billError_fileType,
+        BillError.saveFailed => billError_saveFailed,
+        BillError.uploadFailed => billError_uploadFailed,
+        BillError.alreadyPending => billError_alreadyPending,
+        BillError.reviewFailed => billError_reviewFailed,
+        BillError.noAccountFound => billError_noAccountFound,
+        BillError.cannotInviteSelf => billError_cannotInviteSelf,
+        BillError.removeBroadAccess => billError_removeBroadAccess,
+        BillError.alreadyShared => billError_alreadyShared,
       };
 
   String documentError(DocumentError error) => switch (error) {

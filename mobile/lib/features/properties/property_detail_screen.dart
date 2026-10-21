@@ -12,6 +12,7 @@ import '../../core/geo/units.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
 import '../common.dart';
+import '../bills/bill_screens.dart';
 import '../documents/documents_section.dart';
 import '../expenses/expense_screens.dart';
 import '../leases/lease_screens.dart';
@@ -62,6 +63,10 @@ class PropertyDetailScreen extends ConsumerWidget {
                   LeasesSection(kind: kind, propertyId: id),
                   ExpensesSection(kind: kind, propertyId: id),
                   MaintenanceSection(kind: kind, propertyId: id),
+                  // Only the owner can bill tenants (not editor collaborators).
+                  if (kind == PropertyKind.apartment &&
+                      row['user_id'] == ref.read(repositoryProvider).userId)
+                    ApartmentBillsSection(apartment: row),
                   const SizedBox(height: 32),
                 ],
               ),
