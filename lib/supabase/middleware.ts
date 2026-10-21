@@ -19,11 +19,13 @@ const PUBLIC_PATHS = [
 const GUEST_ALLOWED_PATHS = ["/", "/dashboard", "/plots"];
 
 export async function updateSession(request: NextRequest) {
-  // Cron handlers authenticate their own bearer secret, without browser cookies.
+  // Cron handlers authenticate their own bearer secret, and /api/admin the
+  // mobile app's Supabase access token (lib/adminApi.ts), without cookies.
   if (
     ["/api/cron/rent-reminders", "/api/cron/lease-expiry", "/api/cron/bill-reminders"].includes(
       request.nextUrl.pathname,
-    )
+    ) ||
+    request.nextUrl.pathname.startsWith("/api/admin/")
   ) {
     return NextResponse.next({ request });
   }

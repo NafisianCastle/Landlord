@@ -2,120 +2,51 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin";
-import { validateForm, money, UUID } from "@/lib/validation/forms";
+import {
+  createCouponOp,
+  grantLifetimeAccessOp,
+  toggleCouponOp,
+  updateAppSettingsOp,
+} from "@/lib/adminOps";
+
+// The logic lives in lib/adminOps.ts so /api/admin (the mobile app) shares it.
 
 export async function updateAppSettings(_prevState: unknown, formData: FormData) {
   const admin = await requireAdmin();
   if (!admin) redirect("/dashboard");
 
-  const t = await getTranslations("AdminSettingsActions");
-  const validationError = validateForm(formData, {
-    lifetimePriceBdt: money, trialDays: { kind: "number", min: 1, integer: true, max: 6 },
-  });
-  if (validationError) return { error: validationError };
-  const lifetimePriceBdt = Number(formData.get("lifetimePriceBdt"));
-  const trialDays = Number(formData.get("trialDays"));
-
-  if (!lifetimePriceBdt || lifetimePriceBdt <= 0) return { error: t("priceRequired") };
-  if (!trialDays || trialDays <= 0) return { error: t("trialDaysRequired") };
-
-  const supabaseAdmin = createAdminClient();
-  const { error } = await supabaseAdmin
-    .from("app_settings")
-    .update({
-      lifetime_price_bdt: lifetimePriceBdt,
-      trial_days: trialDays,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", 1);
-
-  if (error) return { error: error.message };
-
-  revalidatePath("/admin/settings");
-  revalidatePath("/paywall");
-  return { success: true };
+  const result = await updateAppSettingsOp(formData);
+  if (result.success) {
+    revalidatePath("/admin/settings");
+    revalidatePath("/paywall");
+  }
+  return result;
 }
 
 export async function createCoupon(_prevState: unknown, formData: FormData) {
   const admin = await requireAdmin();
   if (!admin) redirect("/dashboard");
 
-  const t = await getTranslations("AdminCouponsActions");
-  const validationError = validateForm(formData, {
-    code: { max: 64, pattern: /^[a-z0-9_-]+$/i },
-    discountType: { choices: ["percent", "fixed"] }, discountValue: money,
-    maxRedemptions: { kind: "number", min: 1, integer: true, max: 10 },
-    expiresAt: { kind: "date", max: 10 },
-  });
-  if (validationError) return { error: validationError };
-  const code = String(formData.get("code") ?? "").trim().toUpperCase();
-  const discountType = String(formData.get("discountType") ?? "percent");
-  const discountValue = Number(formData.get("discountValue"));
-  const maxRedemptions = formData.get("maxRedemptions")
-    ? Number(formData.get("maxRedemptions"))
-    : null;
-  const expiresAt = String(formData.get("expiresAt") ?? "") || null;
-
-  if (!code) return { error: t("codeRequired") };
-  if (!discountValue || discountValue <= 0) return { error: t("discountValueRequired") };
-  if (discountType === "percent" && discountValue > 100) return { error: t("percentTooHigh") };
-
-  const supabaseAdmin = createAdminClient();
-  const { error } = await supabaseAdmin.from("referral_coupons").insert({
-    code,
-    discount_type: discountType,
-    discount_value: discountValue,
-    max_redemptions: maxRedemptions,
-    expires_at: expiresAt,
-    created_by: admin.id,
-  });
-
-  if (error) {
-    return { error: error.code === "23505" ? t("codeAlreadyExists") : error.message };
-  }
-
-  revalidatePath("/admin/coupons");
-  return { success: true };
+  const result = await createCouponOp(admin.id, formData);
+  if (result.success) revalidatePath("/admin/coupons");
+  return result;
 }
 
 export async function toggleCoupon(couponId: string, active: boolean) {
   const admin = await requireAdmin();
   if (!admin) redirect("/dashboard");
 
-  if (typeof couponId !== "string" || !UUID.test(couponId) || typeof active !== "boolean") return { error: "Invalid coupon." };
-  const supabaseAdmin = createAdminClient();
-  const { error } = await supabaseAdmin
-    .from("referral_coupons")
-    .update({ active })
-    .eq("id", couponId);
-  if (error) return { error: error.message };
-
-  revalidatePath("/admin/coupons");
-  return { success: true };
+  const result = await toggleCouponOp(couponId, active);
+  if (result.success) revalidatePath("/admin/coupons");
+  return result;
 }
 
 export async function grantLifetimeAccess(userId: string) {
   const admin = await requireAdmin();
   if (!admin) redirect("/dashboard");
 
-  if (typeof userId !== "string" || !UUID.test(userId)) return { error: "Invalid account ID." };
-  const supabaseAdmin = createAdminClient();
-  const { error } = await supabaseAdmin.from("subscriptions").upsert(
-    {
-      user_id: userId,
-      plan_type: "lifetime",
-      amount_paid: 0,
-      currency: "BDT",
-      status: "completed",
-      paid_at: new Date().toISOString(),
-    },
-    { onConflict: "user_id" },
-  );
-  if (error) return { error: error.message };
-
-  revalidatePath("/admin/users");
-  return { success: true };
+  const result = await grantLifetimeAccessOp(userId);
+  if (result.success) revalidatePath("/admin/users");
+  return result;
 }

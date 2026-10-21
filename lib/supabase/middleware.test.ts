@@ -34,6 +34,16 @@ describe("updateSession", () => {
     ).toBe(307);
   });
 
+  it("lets /api/admin routes authenticate their own bearer token", async () => {
+    getUserMock.mockResolvedValue({ data: { user: null } });
+    const { updateSession } = await import("./middleware");
+    expect((await updateSession(makeRequest("/api/admin/users"))).status).toBe(200);
+    expect(createServerClientMock).not.toHaveBeenCalled();
+    // Only the /api/admin/ prefix, not lookalikes.
+    expect((await updateSession(makeRequest("/api/administrator"))).status).toBe(307);
+    expect((await updateSession(makeRequest("/admin/users"))).status).toBe(307);
+  });
+
   it("redirects to /login when there is no session and the path is private", async () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     const { updateSession } = await import("./middleware");

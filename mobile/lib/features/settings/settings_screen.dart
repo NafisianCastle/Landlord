@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/crypto/key_vault.dart';
+import '../../core/env.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
 import '../../core/push/push_service.dart';
@@ -64,6 +65,20 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => context.go('/settings/offline-maps'),
             ),
           ),
+          // Shown only to admins; the server re-checks is_admin on every call.
+          if (ref.watch(profileProvider).value?['is_admin'] == true) ...[
+            SectionHeader(l.adminTitle),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.admin_panel_settings_outlined),
+                title: Text(l.adminTitle),
+                subtitle: Text(Env.webUrl.isEmpty ? l.adminNotConfigured : l.adminHint),
+                trailing: const Icon(Icons.chevron_right),
+                enabled: Env.webUrl.isNotEmpty,
+                onTap: () => context.go('/settings/admin'),
+              ),
+            ),
+          ],
           const SizedBox(height: 24),
           OutlinedButton.icon(
             icon: const Icon(Icons.logout),

@@ -60,7 +60,7 @@ const _plotColumns =
     'dolil_area,dolil_area_unit,actual_area,actual_area_unit,sensitive_encrypted,'
     'sensitive_iv,created_at,updated_at';
 const _profileColumns =
-    'id,full_name,preferred_language,encryption_enabled,dek_salt,dek_wrapped_by_passphrase,'
+    'id,full_name,preferred_language,is_admin,encryption_enabled,dek_salt,dek_wrapped_by_passphrase,'
     'dek_wrapped_by_passphrase_iv,recovery_salt,dek_wrapped_by_recovery,dek_wrapped_by_recovery_iv';
 
 const _billColumns =

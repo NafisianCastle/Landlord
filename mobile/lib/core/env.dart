@@ -10,6 +10,10 @@ class Env {
   static const supabasePublishableKey =
       String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
 
+  /// The web app's base URL (e.g. https://landlord.example). Only needed for
+  /// admin screens, which go through its /api/admin routes.
+  static const webUrl = String.fromEnvironment('WEB_URL');
+
   /// Deep link Supabase redirects back to after Google sign-in. Must be in the
   /// Supabase dashboard's Auth → URL Configuration → Redirect URLs.
   static const authRedirect = 'io.landlord.app://login-callback';
