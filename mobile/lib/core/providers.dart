@@ -28,6 +28,17 @@ class DataRevision extends Notifier<int> {
   void bump() => state++;
 }
 
+/// Rows deleted with an Undo window: hidden from lists until the delete
+/// commits (and the cache drops them) or the user undoes it.
+final hiddenRowsProvider = NotifierProvider<HiddenRows, Set<String>>(HiddenRows.new);
+
+class HiddenRows extends Notifier<Set<String>> {
+  @override
+  Set<String> build() => const {};
+  void hide(String id) => state = {...state, id};
+  void show(String id) => state = {...state}..remove(id);
+}
+
 final repositoryProvider = Provider<Repository>((ref) {
   final client = ref.watch(supabaseProvider);
   final db = ref.watch(localDbProvider);

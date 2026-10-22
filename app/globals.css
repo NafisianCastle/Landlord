@@ -51,6 +51,20 @@
   --radius-lg: var(--radius);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Entrance motion for lists and toasts; use with motion-safe: so it is
+     skipped for users who prefer reduced motion. */
+  --animate-fade-up: fade-up 240ms ease-out both;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 /* System preference is the default when the user hasn't toggled manually

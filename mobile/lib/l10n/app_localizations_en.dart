@@ -1194,4 +1194,31 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get adminNotConfigured =>
       'Admin needs the web app address in this build (WEB_URL).';
+
+  @override
+  String get deleted => 'Deleted';
+
+  @override
+  String get searchProperties => 'Search by name or location';
+
+  @override
+  String get allDistricts => 'All districts';
+
+  @override
+  String get sortBy => 'Sort';
+
+  @override
+  String get sortNewest => 'Newest first';
+
+  @override
+  String get sortName => 'Name';
+
+  @override
+  String get sortArea => 'Largest area';
+
+  @override
+  String get noSearchResults => 'Nothing matches your search.';
+
+  @override
+  String get loading => 'Loading…';
 }

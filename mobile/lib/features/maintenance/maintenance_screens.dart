@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/data/property_kind.dart';
+import '../../core/data/repository.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
 import '../../core/validation/forms.dart';
@@ -19,7 +21,11 @@ class MaintenanceSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final repo = ref.read(repositoryProvider);
-    final requests = ref.watch(maintenanceProvider((kind, propertyId))).value ?? [];
+    final hidden = ref.watch(hiddenRowsProvider);
+    final requests = [
+      for (final m in ref.watch(maintenanceProvider((kind, propertyId))).value ?? <DbRow>[])
+        if (!hidden.contains(m['id'])) m,
+    ];
     final vendorNames = {
       for (final v in ref.watch(vendorsProvider).value ?? []) v['id']: v['name'] as String?
     };
@@ -43,37 +49,42 @@ class MaintenanceSection extends ConsumerWidget {
           child: Column(children: [
             if (requests.isEmpty) ListTile(title: Text(l.noMaintenance)),
             for (final m in requests)
-              ListTile(
-                leading: Icon(m['status'] == 'resolved'
-                    ? Icons.check_circle_outline
-                    : Icons.build_outlined),
-                title: Text(m['title'] as String? ?? ''),
-                subtitle: Text([
-                  l.maintenanceStatus(m['status'] as String? ?? 'open'),
-                  l.reportedOn('${m['reported_date'] ?? ''}'),
-                  if (m['cost'] != null) formatBdt(context, m['cost']),
-                  ?vendorNames[m['vendor_id']],
-                  if ((m['description'] as String?)?.isNotEmpty ?? false) m['description'] as String,
-                ].join(' · ')),
-                isThreeLine: (m['description'] as String?)?.isNotEmpty ?? false,
-                trailing: PopupMenuButton<String>(
-                  onSelected: (action) async {
-                    final id = m['id'] as String;
-                    if (action == 'delete') {
-                      if (await confirmDelete(context)) await repo.deleteMaintenance(id);
-                    } else {
-                      await repo.setMaintenanceStatus(id, action);
-                    }
-                  },
-                  itemBuilder: (_) => [
-                    if (m['status'] == 'open')
-                      PopupMenuItem(value: 'in_progress', child: Text(l.markInProgress)),
-                    if (m['status'] != 'resolved')
-                      PopupMenuItem(value: 'resolved', child: Text(l.markResolved))
-                    else
-                      PopupMenuItem(value: 'open', child: Text(l.reopen)),
-                    PopupMenuItem(value: 'delete', child: Text(l.delete)),
-                  ],
+              SwipeToDelete(
+                id: m['id'] as String,
+                onDelete: () => repo.deleteMaintenance(m['id'] as String),
+                child: ListTile(
+                  leading: Icon(m['status'] == 'resolved'
+                      ? Icons.check_circle_outline
+                      : Icons.build_outlined),
+                  title: Text(m['title'] as String? ?? ''),
+                  subtitle: Text([
+                    l.maintenanceStatus(m['status'] as String? ?? 'open'),
+                    l.reportedOn('${m['reported_date'] ?? ''}'),
+                    if (m['cost'] != null) formatBdt(context, m['cost']),
+                    ?vendorNames[m['vendor_id']],
+                    if ((m['description'] as String?)?.isNotEmpty ?? false) m['description'] as String,
+                  ].join(' · ')),
+                  isThreeLine: (m['description'] as String?)?.isNotEmpty ?? false,
+                  trailing: PopupMenuButton<String>(
+                    onSelected: (action) async {
+                      final id = m['id'] as String;
+                      if (action == 'delete') {
+                        await deleteWithUndo(context, ref, id, () => repo.deleteMaintenance(id));
+                      } else {
+                        HapticFeedback.selectionClick();
+                        await repo.setMaintenanceStatus(id, action);
+                      }
+                    },
+                    itemBuilder: (_) => [
+                      if (m['status'] == 'open')
+                        PopupMenuItem(value: 'in_progress', child: Text(l.markInProgress)),
+                      if (m['status'] != 'resolved')
+                        PopupMenuItem(value: 'resolved', child: Text(l.markResolved))
+                      else
+                        PopupMenuItem(value: 'open', child: Text(l.reopen)),
+                      PopupMenuItem(value: 'delete', child: Text(l.delete)),
+                    ],
+                  ),
                 ),
               ),
           ]),

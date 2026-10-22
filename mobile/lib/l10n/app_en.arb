@@ -575,5 +575,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "deleted": "Deleted",
+  "searchProperties": "Search by name or location",
+  "allDistricts": "All districts",
+  "sortBy": "Sort",
+  "sortNewest": "Newest first",
+  "sortName": "Name",
+  "sortArea": "Largest area",
+  "noSearchResults": "Nothing matches your search.",
+  "loading": "Loading…"
 }

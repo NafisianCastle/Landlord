@@ -354,5 +354,14 @@
   "couponRedeemed": "{count}/{max} ব্যবহৃত",
   "couponExpires": "মেয়াদ শেষ {date}",
   "adminHint": "ব্যবহারকারী, কুপন, মূল্য ও ট্রায়াল সেটিংস।",
-  "adminNotConfigured": "অ্যাডমিনের জন্য এই বিল্ডে ওয়েব অ্যাপের ঠিকানা (WEB_URL) প্রয়োজন।"
+  "adminNotConfigured": "অ্যাডমিনের জন্য এই বিল্ডে ওয়েব অ্যাপের ঠিকানা (WEB_URL) প্রয়োজন।",
+  "deleted": "মুছে ফেলা হয়েছে",
+  "searchProperties": "নাম বা অবস্থান দিয়ে খুঁজুন",
+  "allDistricts": "সব জেলা",
+  "sortBy": "সাজান",
+  "sortNewest": "নতুন আগে",
+  "sortName": "নাম",
+  "sortArea": "বড় আয়তন আগে",
+  "noSearchResults": "আপনার খোঁজের সাথে কিছু মেলেনি।",
+  "loading": "লোড হচ্ছে…"
 }

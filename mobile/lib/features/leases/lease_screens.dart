@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -148,7 +149,10 @@ class _PaymentTile extends ConsumerWidget {
     final overdue = !paid && due.compareTo(_today()) < 0;
     return CheckboxListTile(
       value: paid,
-      onChanged: (v) => ref.read(repositoryProvider).setPaymentPaid(payment, v ?? false),
+      onChanged: (v) {
+        HapticFeedback.selectionClick();
+        ref.read(repositoryProvider).setPaymentPaid(payment, v ?? false);
+      },
       title: Text(formatBdt(context, payment['paid_amount'] ?? payment['amount'])),
       subtitle: Text(paid ? l.paidOn('${payment['paid_date'] ?? ''}') : l.dueOn(due)),
       secondary: overdue

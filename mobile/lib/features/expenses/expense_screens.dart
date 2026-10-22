@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/data/property_kind.dart';
+import '../../core/data/repository.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
 import '../../core/validation/forms.dart';
@@ -17,7 +18,11 @@ class ExpensesSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
-    final expenses = ref.watch(expensesProvider((kind, propertyId))).value ?? [];
+    final hidden = ref.watch(hiddenRowsProvider);
+    final expenses = [
+      for (final e in ref.watch(expensesProvider((kind, propertyId))).value ?? <DbRow>[])
+        if (!hidden.contains(e['id'])) e,
+    ];
     final repo = ref.read(repositoryProvider);
     // Only apartment owners can share expenses with tenants.
     final canShare = kind == PropertyKind.apartment &&
@@ -41,34 +46,35 @@ class ExpensesSection extends ConsumerWidget {
           child: Column(children: [
             if (expenses.isEmpty) ListTile(title: Text(l.noExpenses)),
             for (final e in expenses)
-              ListTile(
-                leading: const Icon(Icons.receipt_long_outlined),
-                title: Text(l.expenseCategory(e['category'] as String? ?? 'other')),
-                subtitle: Text([e['expense_date'], e['notes']]
-                    .whereType<String>()
-                    .where((s) => s.isNotEmpty)
-                    .join(' · ')),
-                trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Text(formatBdt(context, e['amount'])),
-                  if (canShare)
+              SwipeToDelete(
+                id: e['id'] as String,
+                onDelete: () => repo.deleteExpense(e['id'] as String),
+                child: ListTile(
+                  leading: const Icon(Icons.receipt_long_outlined),
+                  title: Text(l.expenseCategory(e['category'] as String? ?? 'other')),
+                  subtitle: Text([e['expense_date'], e['notes']]
+                      .whereType<String>()
+                      .where((s) => s.isNotEmpty)
+                      .join(' · ')),
+                  trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Text(formatBdt(context, e['amount'])),
+                    if (canShare)
+                      IconButton(
+                        tooltip: e['visible_to_tenants'] == true ? l.hideExpense : l.shareExpense,
+                        icon: Icon(e['visible_to_tenants'] == true
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined),
+                        onPressed: () =>
+                            repo.setExpenseVisibility(e, e['visible_to_tenants'] != true),
+                      ),
                     IconButton(
-                      tooltip: e['visible_to_tenants'] == true ? l.hideExpense : l.shareExpense,
-                      icon: Icon(e['visible_to_tenants'] == true
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined),
-                      onPressed: () =>
-                          repo.setExpenseVisibility(e, e['visible_to_tenants'] != true),
+                      tooltip: l.delete,
+                      icon: const Icon(Icons.delete_outline),
+                      onPressed: () => deleteWithUndo(context, ref, e['id'] as String,
+                          () => repo.deleteExpense(e['id'] as String)),
                     ),
-                  IconButton(
-                    tooltip: l.delete,
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: () async {
-                      if (await confirmDelete(context)) {
-                        await repo.deleteExpense(e['id'] as String);
-                      }
-                    },
-                  ),
-                ]),
+                  ]),
+                ),
               ),
             if (expenses.isNotEmpty)
               ListTile(

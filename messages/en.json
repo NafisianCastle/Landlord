@@ -2,7 +2,9 @@
   "Common": {
     "cancel": "Cancel",
     "close": "Close",
-    "noSuggestions": "No suggestions. You can enter your own value."
+    "noSuggestions": "No suggestions. You can enter your own value.",
+    "undo": "Undo",
+    "deleted": "Deleted."
   },
   "Nav": {
     "dashboard": "Dashboard",
@@ -130,7 +132,13 @@
     "noPlotsYet": "No plots yet. Add your first one.",
     "sharedBadge": "Shared",
     "searchPlaceholder": "Search by name, village, or district",
-    "noSearchResults": "No plots match your search."
+    "noSearchResults": "No plots match your search.",
+    "allDistricts": "All districts",
+    "sortBy": "Sort by",
+    "sortNewest": "Newest",
+    "sortName": "Name",
+    "sortArea": "Largest area",
+    "filterDistrict": "Filter by district"
   },
   "ApartmentsPage": {
     "title": "Your apartments",
@@ -141,7 +149,12 @@
     "noApartmentsYet": "No apartments yet. Add your first one.",
     "sharedBadge": "Shared",
     "searchPlaceholder": "Search by name, upazila, or district",
-    "noSearchResults": "No apartments match your search."
+    "noSearchResults": "No apartments match your search.",
+    "allDistricts": "All districts",
+    "sortBy": "Sort by",
+    "sortNewest": "Newest",
+    "sortName": "Name",
+    "filterDistrict": "Filter by district"
   },
   "PlotsMapClient": {
     "loadingMap": "Loading map…",

@@ -2,7 +2,9 @@
   "Common": {
     "cancel": "বাতিল",
     "close": "বন্ধ করুন",
-    "noSuggestions": "কোনো পরামর্শ নেই। আপনি নিজের মান লিখতে পারেন।"
+    "noSuggestions": "কোনো পরামর্শ নেই। আপনি নিজের মান লিখতে পারেন।",
+    "undo": "ফিরিয়ে আনুন",
+    "deleted": "মুছে ফেলা হয়েছে।"
   },
   "Nav": {
     "dashboard": "ড্যাশবোর্ড",
@@ -130,7 +132,13 @@
     "noPlotsYet": "এখনো কোনো প্লট নেই। প্রথমটি যোগ করুন।",
     "sharedBadge": "শেয়ারকৃত",
     "searchPlaceholder": "নাম, গ্রাম বা জেলা দিয়ে খুঁজুন",
-    "noSearchResults": "আপনার খোঁজের সাথে মিলে এমন কোনো প্লট নেই।"
+    "noSearchResults": "আপনার খোঁজের সাথে মিলে এমন কোনো প্লট নেই।",
+    "allDistricts": "সব জেলা",
+    "sortBy": "সাজান",
+    "sortNewest": "নতুন আগে",
+    "sortName": "নাম",
+    "sortArea": "বড় আয়তন আগে",
+    "filterDistrict": "জেলা অনুযায়ী ফিল্টার"
   },
   "ApartmentsPage": {
     "title": "আপনার অ্যাপার্টমেন্টসমূহ",
@@ -141,7 +149,12 @@
     "noApartmentsYet": "এখনো কোনো অ্যাপার্টমেন্ট নেই। প্রথমটি যোগ করুন।",
     "sharedBadge": "শেয়ারকৃত",
     "searchPlaceholder": "নাম, উপজেলা বা জেলা দিয়ে খুঁজুন",
-    "noSearchResults": "আপনার খোঁজের সাথে মিলে এমন কোনো অ্যাপার্টমেন্ট নেই।"
+    "noSearchResults": "আপনার খোঁজের সাথে মিলে এমন কোনো অ্যাপার্টমেন্ট নেই।",
+    "allDistricts": "সব জেলা",
+    "sortBy": "সাজান",
+    "sortNewest": "নতুন আগে",
+    "sortName": "নাম",
+    "filterDistrict": "জেলা অনুযায়ী ফিল্টার"
   },
   "PlotsMapClient": {
     "loadingMap": "মানচিত্র লোড হচ্ছে…",
