@@ -1188,4 +1188,31 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get adminNotConfigured =>
       'অ্যাডমিনের জন্য এই বিল্ডে ওয়েব অ্যাপের ঠিকানা (WEB_URL) প্রয়োজন।';
+
+  @override
+  String get deleted => 'মুছে ফেলা হয়েছে';
+
+  @override
+  String get searchProperties => 'নাম বা অবস্থান দিয়ে খুঁজুন';
+
+  @override
+  String get allDistricts => 'সব জেলা';
+
+  @override
+  String get sortBy => 'সাজান';
+
+  @override
+  String get sortNewest => 'নতুন আগে';
+
+  @override
+  String get sortName => 'নাম';
+
+  @override
+  String get sortArea => 'বড় আয়তন আগে';
+
+  @override
+  String get noSearchResults => 'আপনার খোঁজের সাথে কিছু মেলেনি।';
+
+  @override
+  String get loading => 'লোড হচ্ছে…';
 }

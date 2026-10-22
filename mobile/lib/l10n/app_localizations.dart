@@ -2227,6 +2227,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Admin needs the web app address in this build (WEB_URL).'**
   String get adminNotConfigured;
+
+  /// No description provided for @deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted'**
+  String get deleted;
+
+  /// No description provided for @searchProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name or location'**
+  String get searchProperties;
+
+  /// No description provided for @allDistricts.
+  ///
+  /// In en, this message translates to:
+  /// **'All districts'**
+  String get allDistricts;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get sortBy;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first'**
+  String get sortNewest;
+
+  /// No description provided for @sortName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get sortName;
+
+  /// No description provided for @sortArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Largest area'**
+  String get sortArea;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing matches your search.'**
+  String get noSearchResults;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading…'**
+  String get loading;
 }
 
 class _AppLocalizationsDelegate

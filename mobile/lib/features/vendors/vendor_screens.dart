@@ -24,37 +24,45 @@ class VendorsScreen extends ConsumerWidget {
       ),
       body: AsyncBody(
         value: ref.watch(vendorsProvider),
-        builder: (vendors) => ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            if (vendors.isEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 48),
-                child: Center(child: Text(l.noVendors)),
-              ),
-            for (final v in vendors)
-              Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
-                  leading: const Icon(Icons.handyman_outlined),
-                  title: Text(v['name'] as String? ?? ''),
-                  subtitle: Text([v['trade'], v['phone']]
-                      .whereType<String>()
-                      .where((s) => s.isNotEmpty)
-                      .join(' · ')),
-                  onTap: () => context.go('/settings/vendors/${v['id']}'),
-                  trailing: v['phone'] == null
-                      ? null
-                      : IconButton(
-                          tooltip: l.call,
-                          icon: const Icon(Icons.call_outlined),
-                          onPressed: () => launchUrl(Uri(scheme: 'tel', path: v['phone'] as String)),
-                        ),
+        builder: (all) {
+          final hidden = ref.watch(hiddenRowsProvider);
+          final vendors = [for (final v in all) if (!hidden.contains(v['id'])) v];
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              if (vendors.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 48),
+                  child: Center(child: Text(l.noVendors)),
                 ),
-              ),
-            const SizedBox(height: 80),
-          ],
-        ),
+              for (final v in vendors)
+                SwipeToDelete(
+                  id: v['id'] as String,
+                  onDelete: () => ref.read(repositoryProvider).deleteVendor(v['id'] as String),
+                  child: Card(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: ListTile(
+                      leading: const Icon(Icons.handyman_outlined),
+                      title: Text(v['name'] as String? ?? ''),
+                      subtitle: Text([v['trade'], v['phone']]
+                          .whereType<String>()
+                          .where((s) => s.isNotEmpty)
+                          .join(' · ')),
+                      onTap: () => context.go('/settings/vendors/${v['id']}'),
+                      trailing: v['phone'] == null
+                          ? null
+                          : IconButton(
+                              tooltip: l.call,
+                              icon: const Icon(Icons.call_outlined),
+                              onPressed: () => launchUrl(Uri(scheme: 'tel', path: v['phone'] as String)),
+                            ),
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 80),
+            ],
+          );
+        },
       ),
     );
   }

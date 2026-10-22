@@ -8,6 +8,8 @@ import {
   type MaintenanceSubjectType,
 } from "@/app/actions/maintenance";
 import { Button } from "@/components/ui/button";
+import UndoToast from "@/components/ui/undo-toast";
+import { useUndoableDelete } from "@/lib/hooks/useUndoableDelete";
 
 export interface MaintenanceRequestRow {
   id: string;
@@ -49,20 +51,17 @@ export default function MaintenanceRequestsList({
     });
   }
 
-  function remove(id: string) {
-    setError(null);
-    setPendingId(id);
-    startTransition(async () => {
-      const result = await deleteMaintenanceRequest(id, subjectType, subjectId);
-      if (result?.error) setError(result.error);
-    });
-  }
+  const { hidden, pendingUndo, remove, undo } = useUndoableDelete(
+    (id) => deleteMaintenanceRequest(id, subjectType, subjectId),
+    setError,
+  );
+  const shown = requests.filter((r) => !hidden.has(r.id));
 
   return (
     <div className="flex flex-col gap-2">
       <ul className="flex flex-col divide-y divide-border rounded-lg border border-border">
-        {requests.map((row) => (
-          <li key={row.id} className="flex flex-col gap-2 p-3 text-sm">
+        {shown.map((row) => (
+          <li key={row.id} className="flex flex-col gap-2 p-3 text-sm motion-safe:animate-fade-up">
             <div className="flex items-start justify-between gap-2">
               <div className="flex min-w-0 flex-col">
                 <span className="truncate font-medium">{row.title}</span>
@@ -124,19 +123,22 @@ export default function MaintenanceRequestsList({
                 type="button"
                 variant="ghost"
                 size="sm"
-                disabled={pending && pendingId === row.id}
-                onClick={() => remove(row.id)}
+                onClick={() => {
+                  setError(null);
+                  remove(row.id);
+                }}
               >
                 {t("delete")}
               </Button>
             </div>
           </li>
         ))}
-        {requests.length === 0 && (
+        {shown.length === 0 && (
           <li className="p-3 text-sm text-muted-foreground">{t("noRequestsYet")}</li>
         )}
       </ul>
       {error && <p className="text-sm text-destructive">{error}</p>}
+      <UndoToast open={pendingUndo} onUndo={undo} />
     </div>
   );
 }
