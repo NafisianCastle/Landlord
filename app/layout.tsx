@@ -7,7 +7,7 @@ import "./globals.css";
 import RegisterServiceWorker from "@/components/system/RegisterServiceWorker";
 import ReferralCapture from "@/components/system/ReferralCapture";
 import Footer from "@/components/system/Footer";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, SOCIAL_IMAGE } from "@/lib/site";
 
 const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("landlord-theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.classList.add(t);}catch(e){}})();`;
 
@@ -37,10 +37,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Landlord",
+    url: SITE_URL,
+    images: [SOCIAL_IMAGE],
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
+    images: [SOCIAL_IMAGE],
   },
 };
 
