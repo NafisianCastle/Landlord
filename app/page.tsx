@@ -18,7 +18,7 @@ import {
   LockKeyhole,
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/supabase/current-user";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, SOCIAL_IMAGE } from "@/lib/site";
 import Logo from "@/components/system/Logo";
 import ThemeToggle from "@/components/system/ThemeToggle";
 import LocaleSwitcher from "@/components/system/LocaleSwitcher";
@@ -34,9 +34,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title: t("metaTitle"),
       description: t("metaDescription"),
       url: SITE_URL,
+      type: "website",
+      siteName: "Landlord",
+      images: [SOCIAL_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
+      images: [SOCIAL_IMAGE],
       title: t("metaTitle"),
       description: t("metaDescription"),
     },
