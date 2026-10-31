@@ -80,7 +80,7 @@ class AnalyticsScreen extends ConsumerWidget {
             Expanded(
               child: _Tile(
                 label: l.portfolioProfit12mo,
-                value: formatBdt(context, view.profit),
+                value: formatMoney(context, view.profit),
                 negative: view.profit < 0,
               ),
             ),
@@ -99,7 +99,7 @@ class AnalyticsScreen extends ConsumerWidget {
               for (final row in view.roi)
                 ListTile(
                   title: Text(row.name, overflow: TextOverflow.ellipsis),
-                  subtitle: Text(formatBdt(context, row.annualIncome)),
+                  subtitle: Text(formatMoney(context, row.annualIncome)),
                   trailing: Text(row.roi == null ? '—' : l.roiValue(row.roi!.toStringAsFixed(1))),
                   onTap: () => context.go(row.route),
                 ),
@@ -192,8 +192,8 @@ class _TrendChartState extends State<TrendChart> {
             for (final p in points)
               TableRow(children: [
                 Text(DateFormat.yMMM(locale).format(p.month)),
-                Text(formatBdt(context, p.income), textAlign: TextAlign.end),
-                Text(formatBdt(context, p.expense), textAlign: TextAlign.end),
+                Text(formatMoney(context, p.income), textAlign: TextAlign.end),
+                Text(formatMoney(context, p.expense), textAlign: TextAlign.end),
               ]),
           ],
         )
@@ -205,8 +205,8 @@ class _TrendChartState extends State<TrendChart> {
               ? null
               : Text(
                   '${DateFormat.yMMM(locale).format(selected.month)} · '
-                  '${l.income} ${formatBdt(context, selected.income)} · '
-                  '${l.expense} ${formatBdt(context, selected.expense)}',
+                  '${l.income} ${formatMoney(context, selected.income)} · '
+                  '${l.expense} ${formatMoney(context, selected.expense)}',
                   style: theme.textTheme.bodySmall,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

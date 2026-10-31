@@ -8,6 +8,7 @@ import '../../core/env.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
 import '../../core/push/push_service.dart';
+import '../../core/region.dart';
 import '../common.dart';
 
 final _pushServiceProvider = Provider((ref) => PushService(ref.watch(supabaseProvider)));
@@ -39,6 +40,8 @@ class SettingsScreen extends ConsumerWidget {
             selected: {language},
             onSelectionChanged: (s) => ref.read(repositoryProvider).setLanguage(s.first),
           ),
+          SectionHeader(l.regionAndUnits),
+          const _RegionCard(),
           SectionHeader(l.encryption),
           const _EncryptionCard(),
           SectionHeader(l.biometricLock),
@@ -230,6 +233,156 @@ class _PushCard extends ConsumerWidget {
                 }
                 ref.invalidate(_pushEnabledProvider);
               },
+      ),
+    );
+  }
+}
+
+/// Country, currency, area unit and length units. Each override can go back
+/// to the country default; the country itself can follow the phone.
+class _RegionCard extends ConsumerWidget {
+  const _RegionCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final profile = ref.watch(profileProvider).value;
+    final region = ref.watch(regionProvider);
+    final preset = region.preset;
+    final repo = ref.read(repositoryProvider);
+    String countryName(CountryPreset p) => p.code == otherCountry ? l.otherCountry : p.name;
+    String? override(String column) => profile?[column] as String?;
+
+    Future<void> pick(String column, String title, List<(String?, String)> options,
+        {bool search = false}) async {
+      final choice = await showModalBottomSheet<(String?,)>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (_) => _OptionSheet(
+            title: title, options: options, selected: override(column), search: search),
+      );
+      if (choice != null) await repo.setRegion({column: choice.$1});
+    }
+
+    final defaultSystem = preset.imperial ? l.imperial : l.metric;
+    return Card(
+      child: Column(children: [
+        ListTile(
+          leading: const Icon(Icons.public),
+          title: Text(l.country),
+          subtitle: Text(override('country_code') == null
+              ? l.countryAutomatic(countryName(preset))
+              : countryName(preset)),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => pick(
+            'country_code',
+            l.country,
+            [
+              (null, l.countryAutomatic(countryName(presetFor(
+                  WidgetsBinding.instance.platformDispatcher.locale.countryCode)))),
+              for (final p in [...countryPresets]..sort((a, b) => a.name.compareTo(b.name)))
+                (p.code, p.name),
+              (otherCountry, l.otherCountry),
+            ],
+            search: true,
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.payments_outlined),
+          title: Text(l.currency),
+          subtitle: Text(region.currency),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => pick(
+            'currency_code',
+            l.currency,
+            [
+              (null, l.countryDefault(preset.currency ?? region.currency)),
+              for (final c in {for (final p in countryPresets) p.currency!}.toList()..sort())
+                (c, c),
+            ],
+            search: true,
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.straighten),
+          title: Text(l.areaUnitForTotals),
+          subtitle: Text(areaUnitLabel(context, region.areaUnit)),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => pick('area_unit', l.areaUnitForTotals, [
+            (null, l.countryDefault(areaUnitLabel(context, preset.areaUnit))),
+            for (final u in region.unitChoices(land: true)) (u, areaUnitLabel(context, u)),
+          ]),
+        ),
+        ListTile(
+          leading: const Icon(Icons.social_distance),
+          title: Text(l.lengthUnits),
+          subtitle: Text(region.imperial ? l.imperial : l.metric),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => pick('measurement_system', l.lengthUnits, [
+            (null, l.countryDefault(defaultSystem)),
+            ('metric', l.metric),
+            ('imperial', l.imperial),
+          ]),
+        ),
+        ListTile(dense: true, subtitle: Text(l.regionSyncHint)),
+      ]),
+    );
+  }
+}
+
+/// A bottom-sheet list of options; pops `(value,)` so "default" (null) is
+/// distinguishable from dismissing the sheet.
+class _OptionSheet extends StatefulWidget {
+  const _OptionSheet(
+      {required this.title, required this.options, required this.selected, required this.search});
+  final String title;
+  final List<(String?, String)> options;
+  final String? selected;
+  final bool search;
+
+  @override
+  State<_OptionSheet> createState() => _OptionSheetState();
+}
+
+class _OptionSheetState extends State<_OptionSheet> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final q = _query.trim().toLowerCase();
+    final shown = widget.options
+        .where((o) => q.isEmpty || o.$2.toLowerCase().contains(q) || (o.$1?.toLowerCase() == q))
+        .toList();
+    return SafeArea(
+      child: SizedBox(
+        height: MediaQuery.sizeOf(context).height * 0.7,
+        child: Column(children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
+          ),
+          if (widget.search)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                autofocus: true,
+                decoration: InputDecoration(
+                    hintText: context.l10n.search, prefixIcon: const Icon(Icons.search)),
+                onChanged: (v) => setState(() => _query = v),
+              ),
+            ),
+          Expanded(
+            child: ListView(children: [
+              for (final o in shown)
+                ListTile(
+                  title: Text(o.$2),
+                  trailing: o.$1 == widget.selected ? const Icon(Icons.check) : null,
+                  onTap: () => Navigator.pop(context, (o.$1,)),
+                ),
+            ]),
+          ),
+        ]),
       ),
     );
   }

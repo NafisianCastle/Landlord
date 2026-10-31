@@ -13,6 +13,7 @@ encrypted fields stay in sync between the two.
 | **Biometric lock and secure keystore** | Fingerprint or face is required to open the app. The encryption key is kept in Keychain or Android secure storage, so you don't have to type the passphrase on every launch. |
 | **Native push** | Rent-due and lease-expiry reminders come through FCM. The existing cron routes now also send to `device_push_tokens` (migration `20261021160000_device_push_tokens.sql`). |
 | **Offline data** | Everything is cached in SQLite. Changes made offline wait in a queue (`lib/core/offline/`) and upload when you're back online. If two edits conflict, the last one saved wins. Uploading and opening documents still needs a connection. |
+| **Country, currency and units** | **Settings → Region & units** picks the country (default: the phone's region), currency, the unit for area totals, and metric or imperial lengths. About 35 countries have presets with local land units (e.g. marla/kanal, ropani, rai, tsubo, hectare), the local currency and address labels; other countries get m²/hectare. Saved amounts and areas are never converted; only how they're shown changes. The setting syncs through the profile (migration `20261031120000_profile_region.sql`). Without that migration it stays on the phone (`lib/core/region.dart`). |
 | **Offline maps** | Save the satellite tiles for any area, up to 3,000 tiles (same limit as the web). Areas you've already looked at are cached too. |
 
 ## Admin

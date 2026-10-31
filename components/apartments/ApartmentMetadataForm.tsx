@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Autocomplete } from "@/components/ui/autocomplete";
 import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { unitOptions } from "@/lib/units";
 import { Textarea } from "@/components/ui/textarea";
 import { encryptJSON, decryptJSON, toPgBytea, fromPgBytea } from "@/lib/crypto/encryption";
 import { getSessionDEK, onSessionChange } from "@/lib/crypto/session";
@@ -30,7 +31,7 @@ const EMPTY_SENSITIVE: ApartmentSensitiveValues = {
   notes: "",
 };
 
-const SIZE_UNITS = ["sqft", "sqmeter", "katha", "decimal"] as const;
+const SIZE_UNITS = ["sqft", "sqmeter", "katha", "decimal"];
 
 export interface ApartmentMetadataValues {
   name?: string;
@@ -270,7 +271,7 @@ export default function ApartmentMetadataForm({
             name="sizeUnit"
             defaultValue={initial?.sizeUnit ?? "sqft"}
           >
-            {SIZE_UNITS.map((unit) => (
+            {unitOptions(SIZE_UNITS, initial?.sizeUnit).map((unit) => (
               <option key={unit} value={unit}>
                 {unit}
               </option>

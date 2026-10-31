@@ -54,7 +54,12 @@ export function validateForm(form: FormData, rules: Rules): string | null {
 
 export const money: Rule = { kind: "number", max: 32 };
 const date: Rule = { kind: "date", max: 10 };
-const areaUnits = ["decimal", "bigha", "katha", "kani", "gonda", "acre", "sqft", "sqmeter", "sqm", "sq_meters", "sq_ft", "sq_km", "sq_mile"];
+const areaUnits = [
+  "decimal", "bigha", "katha", "kani", "gonda", "acre", "sqft", "sqmeter", "sqm", "sq_meters", "sq_ft", "sq_km", "sq_mile",
+  // Other countries' units, chosen in the mobile app's region settings.
+  "sq_yard", "hectare", "are", "marla", "kanal", "ropani", "aana", "guntha", "cent", "perch",
+  "rai", "ngan", "tsubo", "pyeong", "ping", "mu", "dunam", "feddan",
+];
 export const propertyRules: Rules = {
   name: { max: 200, required: true }, upazila: { max: 100 }, district: { max: 100 }, division: { max: 100 },
   village: { max: 200 }, mutationNumber: { max: 100 }, buildingName: { max: 200 },

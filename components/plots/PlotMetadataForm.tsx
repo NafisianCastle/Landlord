@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Autocomplete } from "@/components/ui/autocomplete";
 import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { unitOptions } from "@/lib/units";
 import { Textarea } from "@/components/ui/textarea";
 import { encryptJSON, decryptJSON, toPgBytea, fromPgBytea } from "@/lib/crypto/encryption";
 import { getSessionDEK, onSessionChange } from "@/lib/crypto/session";
@@ -30,7 +31,7 @@ const EMPTY_SENSITIVE: SensitiveValues = {
   notes: "",
 };
 
-const AREA_UNITS = ["decimal", "katha", "bigha", "acre", "sqft", "sqmeter"] as const;
+const AREA_UNITS = ["decimal", "katha", "bigha", "acre", "sqft", "sqmeter"];
 
 export interface PlotMetadataValues {
   name?: string;
@@ -256,7 +257,7 @@ export default function PlotMetadataForm({
               name="dolilAreaUnit"
               defaultValue={initial?.dolilAreaUnit ?? "decimal"}
             >
-              {AREA_UNITS.map((unit) => (
+              {unitOptions(AREA_UNITS, initial?.dolilAreaUnit).map((unit) => (
                 <option key={unit} value={unit}>
                   {unit}
                 </option>
@@ -284,7 +285,7 @@ export default function PlotMetadataForm({
               name="actualAreaUnit"
               defaultValue={initial?.actualAreaUnit ?? "decimal"}
             >
-              {AREA_UNITS.map((unit) => (
+              {unitOptions(AREA_UNITS, initial?.actualAreaUnit).map((unit) => (
                 <option key={unit} value={unit}>
                   {unit}
                 </option>

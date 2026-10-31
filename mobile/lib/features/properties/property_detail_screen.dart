@@ -8,7 +8,6 @@ import '../../core/crypto/key_vault.dart';
 import '../../core/data/property_kind.dart';
 import '../../core/data/repository.dart';
 import '../../core/geo/geo.dart';
-import '../../core/geo/units.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
 import '../common.dart';
@@ -141,7 +140,7 @@ class _BoundaryCard extends StatelessWidget {
       row['boundary_geojson'] as Map<String, dynamic>?,
     );
     final areaSqM = (row['area_sq_meters'] as num?)?.toDouble();
-    final area = areaSqM == null ? null : AreaConversions(areaSqM);
+    final area = areaSqM == null ? null : formatArea(context, areaSqM);
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -167,10 +166,7 @@ class _BoundaryCard extends StatelessWidget {
           if (area != null)
             ListTile(
               title: Text(l.area),
-              subtitle: Text(
-                '${l.decimalValue(formatNumber(context, area.decimal))} · '
-                '${l.areaSub(formatNumber(context, area.bigha), formatNumber(context, area.acre))}',
-              ),
+              subtitle: Text([area.main, area.sub].where((s) => s.isNotEmpty).join(' · ')),
             ),
           OverflowBar(
             alignment: MainAxisAlignment.end,

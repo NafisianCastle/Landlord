@@ -7,6 +7,7 @@ import '../../core/data/property_kind.dart';
 import '../../core/data/repository.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
+import '../../core/region.dart';
 import '../../core/validation/forms.dart';
 import '../common.dart';
 
@@ -48,7 +49,9 @@ class _PropertyFormScreenState extends ConsumerState<PropertyFormScreen> {
         for (final f in widget.kind.fields) {
           final value = f.sensitive ? (sensitive?[f.key]) : row[f.column];
           if (f.type == FieldType.unit) {
-            _units[f.key] = f.units.contains(value) ? value as String : null;
+            // Kept even when it's not one of this country's units, so
+            // editing never drops a unit chosen on the web or elsewhere.
+            _units[f.key] = (value as String?)?.isNotEmpty == true ? value : null;
           } else {
             _controllers[f.key]!.text = value?.toString() ?? '';
           }
@@ -123,13 +126,15 @@ class _PropertyFormScreenState extends ConsumerState<PropertyFormScreen> {
   Widget _field(BuildContext context, FieldSpec f) {
     final l = context.l10n;
     final disabled = f.sensitive && _sensitiveLocked;
-    final label = f.type == FieldType.unit ? l.unit : l.field(f.key);
+    final label = f.type == FieldType.unit ? l.unit : propertyFieldLabel(context, f.key);
     final Widget input = switch (f.type) {
       FieldType.unit => DropdownButtonFormField<String>(
           initialValue: _units[f.key],
           decoration: InputDecoration(labelText: label),
           items: [
-            for (final u in f.units) DropdownMenuItem(value: u, child: Text(l.areaUnit(u))),
+            for (final u in RegionScope.of(context).unitChoices(
+                land: widget.kind == PropertyKind.plot, current: _units[f.key]))
+              DropdownMenuItem(value: u, child: Text(areaUnitLabel(context, u))),
           ],
           onChanged: (v) => _units[f.key] = v,
         ),
@@ -182,10 +187,21 @@ class _Notice extends StatelessWidget {
       );
 }
 
+/// A field's label; the address levels are named for the account's country.
+String propertyFieldLabel(BuildContext context, String key) {
+  final l = context.l10n;
+  final labels = RegionScope.of(context).labels;
+  return switch (addressFieldKeys.indexOf(key)) {
+    0 => l.addressLabel(labels.$1),
+    1 => l.addressLabel(labels.$2),
+    2 => l.addressLabel(labels.$3),
+    _ => l.field(key),
+  };
+}
+
 /// Read-only rendering of a property's fields for the detail screen.
 List<Widget> propertyFieldTiles(
     BuildContext context, PropertyKind kind, DbRow row, Map<String, dynamic>? sensitive) {
-  final l = context.l10n;
   final tiles = <Widget>[];
   for (final f in kind.fields) {
     if (f.type == FieldType.unit || f.key == 'name') continue;
@@ -193,12 +209,13 @@ List<Widget> propertyFieldTiles(
     if (f.sensitive && sensitive == null) continue;
     if (value == null || '$value'.isEmpty) continue;
     var text = f.key.contains('Price') || f.key.contains('Value')
-        ? formatBdt(context, value)
+        ? formatMoney(context, value)
         : '$value';
     final unitField = kind.fields.where((u) => u.key == '${f.key}Unit').firstOrNull;
     final unit = unitField == null ? null : row[unitField.column] as String?;
-    if (unit != null) text = '$text ${l.areaUnit(unit)}';
-    tiles.add(ListTile(dense: true, title: Text(l.field(f.key)), subtitle: Text(text)));
+    if (unit != null) text = '$text ${areaUnitLabel(context, unit)}';
+    tiles.add(ListTile(
+        dense: true, title: Text(propertyFieldLabel(context, f.key)), subtitle: Text(text)));
   }
   return tiles;
 }

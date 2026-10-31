@@ -37,7 +37,7 @@ class LeasesSection extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.person_outline),
                 title: Text(lease['tenant_name'] as String? ?? ''),
-                subtitle: Text('${formatBdt(context, lease['rent_amount'])} · '
+                subtitle: Text('${formatMoney(context, lease['rent_amount'])} · '
                     '${l.frequencyLabel(lease['frequency'] as String? ?? 'monthly')}'),
                 trailing: Chip(label: Text(l.statusLabel(lease['status'] as String? ?? 'active'))),
                 onTap: () => context.go('/${kind.route}/$propertyId/leases/${lease['id']}'),
@@ -95,7 +95,7 @@ class LeaseDetailScreen extends ConsumerWidget {
                 Card(
                   child: Column(children: [
                     ListTile(
-                      title: Text(formatBdt(context, lease['rent_amount'])),
+                      title: Text(formatMoney(context, lease['rent_amount'])),
                       subtitle: Text(l.frequencyLabel(lease['frequency'] as String)),
                       trailing:
                           Chip(label: Text(l.statusLabel(lease['status'] as String? ?? 'active'))),
@@ -153,7 +153,7 @@ class _PaymentTile extends ConsumerWidget {
         HapticFeedback.selectionClick();
         ref.read(repositoryProvider).setPaymentPaid(payment, v ?? false);
       },
-      title: Text(formatBdt(context, payment['paid_amount'] ?? payment['amount'])),
+      title: Text(formatMoney(context, payment['paid_amount'] ?? payment['amount'])),
       subtitle: Text(paid ? l.paidOn('${payment['paid_date'] ?? ''}') : l.dueOn(due)),
       secondary: overdue
           ? Icon(Icons.warning_amber, color: Theme.of(context).colorScheme.error, semanticLabel: l.overdue)

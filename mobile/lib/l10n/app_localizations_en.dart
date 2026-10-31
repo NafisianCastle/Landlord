@@ -131,16 +131,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get receivedThisMonth => 'Received this month';
 
   @override
-  String decimalValue(String value) {
-    return '$value decimal';
-  }
-
-  @override
-  String areaSub(String bigha, String acre) {
-    return '$bigha bigha · $acre acre';
-  }
-
-  @override
   String get addPlot => 'Add plot';
 
   @override
@@ -257,8 +247,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get redrawBoundary => 'Redraw boundary';
 
   @override
-  String gpsAccuracy(String meters) {
-    return 'GPS ±$meters m';
+  String gpsAccuracy(String distance) {
+    return 'GPS ±$distance';
   }
 
   @override
@@ -276,8 +266,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String cornerAdded(String meters) {
-    return 'Corner added (±$meters m)';
+  String cornerAdded(String distance) {
+    return 'Corner added (±$distance)';
   }
 
   @override
@@ -305,7 +295,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String pointsAndArea(int count, String area) {
-    return '$count points · ~$area decimal';
+    return '$count points · ~$area';
   }
 
   @override
@@ -1221,4 +1211,147 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loading => 'Loading…';
+
+  @override
+  String get unit_kani => 'Kani';
+
+  @override
+  String get unit_gonda => 'Gonda';
+
+  @override
+  String get unit_sq_yard => 'Sq yard';
+
+  @override
+  String get unit_hectare => 'Hectare';
+
+  @override
+  String get unit_are => 'Are';
+
+  @override
+  String get unit_sq_km => 'Sq km';
+
+  @override
+  String get unit_sq_mile => 'Sq mile';
+
+  @override
+  String get unit_marla => 'Marla';
+
+  @override
+  String get unit_kanal => 'Kanal';
+
+  @override
+  String get unit_ropani => 'Ropani';
+
+  @override
+  String get unit_aana => 'Aana';
+
+  @override
+  String get unit_guntha => 'Guntha';
+
+  @override
+  String get unit_cent => 'Cent';
+
+  @override
+  String get unit_perch => 'Perch';
+
+  @override
+  String get unit_rai => 'Rai';
+
+  @override
+  String get unit_ngan => 'Ngan';
+
+  @override
+  String get unit_tsubo => 'Tsubo';
+
+  @override
+  String get unit_pyeong => 'Pyeong';
+
+  @override
+  String get unit_ping => 'Ping';
+
+  @override
+  String get unit_mu => 'Mu';
+
+  @override
+  String get unit_dunam => 'Dunam';
+
+  @override
+  String get unit_feddan => 'Feddan';
+
+  @override
+  String get addr_tehsil => 'Tehsil';
+
+  @override
+  String get addr_city => 'City';
+
+  @override
+  String get addr_municipality => 'Municipality';
+
+  @override
+  String get addr_locality => 'Locality';
+
+  @override
+  String get addr_county => 'County';
+
+  @override
+  String get addr_state => 'State';
+
+  @override
+  String get addr_province => 'Province';
+
+  @override
+  String get addr_region => 'Region';
+
+  @override
+  String get addr_emirate => 'Emirate';
+
+  @override
+  String get addr_governorate => 'Governorate';
+
+  @override
+  String get addr_prefecture => 'Prefecture';
+
+  @override
+  String get addr_department => 'Department';
+
+  @override
+  String get regionAndUnits => 'Region & units';
+
+  @override
+  String get country => 'Country';
+
+  @override
+  String countryAutomatic(String country) {
+    return 'Automatic ($country)';
+  }
+
+  @override
+  String get otherCountry => 'Other';
+
+  @override
+  String get currency => 'Currency';
+
+  @override
+  String get areaUnitForTotals => 'Area unit for totals';
+
+  @override
+  String get lengthUnits => 'Lengths';
+
+  @override
+  String get metric => 'Metric (m)';
+
+  @override
+  String get imperial => 'Imperial (ft)';
+
+  @override
+  String countryDefault(String value) {
+    return 'Country default ($value)';
+  }
+
+  @override
+  String get regionSyncHint =>
+      'Changes amounts and areas shown in the app; saved values are not converted.';
+
+  @override
+  String get search => 'Search';
 }

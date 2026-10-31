@@ -163,7 +163,7 @@ class BillsScreen extends ConsumerWidget {
                       .whereType<String>()
                       .where((s) => s.isNotEmpty)
                       .join(' · ')),
-                  trailing: Text(formatBdt(context, e['amount'])),
+                  trailing: Text(formatMoney(context, e['amount'])),
                 ),
             ]),
           ),
@@ -217,7 +217,7 @@ class BillCard extends ConsumerWidget {
                 backgroundColor: status == 'overdue' ? scheme.errorContainer : null,
               ),
             ]),
-            Text('${formatBdt(context, bill['amount'])} · ${l.billDue('${bill['due_date']}')}'),
+            Text('${formatMoney(context, bill['amount'])} · ${l.billDue('${bill['due_date']}')}'),
             if (bill['storage_path'] != null)
               Align(
                 alignment: Alignment.centerLeft,

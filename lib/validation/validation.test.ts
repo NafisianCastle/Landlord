@@ -23,6 +23,10 @@ describe("untrusted user input", () => {
   it("accepts legitimate Unicode, punctuation, multiline notes and decimal amounts", () => {
     expect(validateProperty(form({ name: "ঢাকার জমি — O'Neil", notes: "line one\nline two", purchasePrice: "123.45", actualAreaUnit: "sqmeter" }))).toBeNull();
   });
+  it("accepts other countries' units saved from the mobile app, but not unknown ones", () => {
+    expect(validateProperty(form({ name: "Farm", actualAreaUnit: "hectare", dolilAreaUnit: "marla" }))).toBeNull();
+    expect(validateProperty(form({ name: "Farm", actualAreaUnit: "furlong" }))).toBeTruthy();
+  });
   it("rejects excessive text, including whitespace-only fields", () => {
     expect(validateProperty(form({ name: "x".repeat(201) }))).toBeTruthy();
     expect(validateForm(form({ notes: " ".repeat(10001) }), vendorRules)).toBeTruthy();

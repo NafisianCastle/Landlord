@@ -14,6 +14,7 @@ import 'core/l10n.dart';
 import 'core/offline/local_db.dart';
 import 'core/offline/tile_cache.dart';
 import 'core/providers.dart';
+import 'core/region.dart';
 import 'core/push/push_service.dart';
 import 'core/router.dart';
 import 'core/theme.dart';
@@ -103,6 +104,8 @@ class _LandlordAppState extends ConsumerState<LandlordApp> with WidgetsBindingOb
       theme: buildTheme(Brightness.light),
       darkTheme: buildTheme(Brightness.dark),
       locale: ref.watch(localeProvider),
+      builder: (context, child) =>
+          RegionScope(region: ref.watch(regionProvider), child: child ?? const SizedBox()),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,

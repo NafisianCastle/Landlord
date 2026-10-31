@@ -130,16 +130,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get receivedThisMonth => 'এ মাসে প্রাপ্ত';
 
   @override
-  String decimalValue(String value) {
-    return '$value ডেসিমেল';
-  }
-
-  @override
-  String areaSub(String bigha, String acre) {
-    return '$bigha বিঘা · $acre একর';
-  }
-
-  @override
   String get addPlot => 'প্লট যোগ করুন';
 
   @override
@@ -256,8 +246,8 @@ class AppLocalizationsBn extends AppLocalizations {
   String get redrawBoundary => 'সীমানা আবার আঁকুন';
 
   @override
-  String gpsAccuracy(String meters) {
-    return 'জিপিএস ±$meters মি.';
+  String gpsAccuracy(String distance) {
+    return 'জিপিএস ±$distance';
   }
 
   @override
@@ -275,8 +265,8 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
-  String cornerAdded(String meters) {
-    return 'কোণা যোগ হয়েছে (±$meters মি.)';
+  String cornerAdded(String distance) {
+    return 'কোণা যোগ হয়েছে (±$distance)';
   }
 
   @override
@@ -304,7 +294,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String pointsAndArea(int count, String area) {
-    return '$countটি বিন্দু · ~$area ডেসিমেল';
+    return '$countটি বিন্দু · ~$area';
   }
 
   @override
@@ -1215,4 +1205,147 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get loading => 'লোড হচ্ছে…';
+
+  @override
+  String get unit_kani => 'কানি';
+
+  @override
+  String get unit_gonda => 'গণ্ডা';
+
+  @override
+  String get unit_sq_yard => 'বর্গগজ';
+
+  @override
+  String get unit_hectare => 'হেক্টর';
+
+  @override
+  String get unit_are => 'এয়র';
+
+  @override
+  String get unit_sq_km => 'বর্গকিলোমিটার';
+
+  @override
+  String get unit_sq_mile => 'বর্গমাইল';
+
+  @override
+  String get unit_marla => 'মারলা';
+
+  @override
+  String get unit_kanal => 'কানাল';
+
+  @override
+  String get unit_ropani => 'রোপানি';
+
+  @override
+  String get unit_aana => 'আনা';
+
+  @override
+  String get unit_guntha => 'গুন্ঠা';
+
+  @override
+  String get unit_cent => 'সেন্ট';
+
+  @override
+  String get unit_perch => 'পার্চ';
+
+  @override
+  String get unit_rai => 'রাই';
+
+  @override
+  String get unit_ngan => 'ঙান';
+
+  @override
+  String get unit_tsubo => 'সুবো';
+
+  @override
+  String get unit_pyeong => 'পিয়ং';
+
+  @override
+  String get unit_ping => 'পিং';
+
+  @override
+  String get unit_mu => 'মু';
+
+  @override
+  String get unit_dunam => 'দুনাম';
+
+  @override
+  String get unit_feddan => 'ফেদ্দান';
+
+  @override
+  String get addr_tehsil => 'তহসিল';
+
+  @override
+  String get addr_city => 'শহর';
+
+  @override
+  String get addr_municipality => 'পৌরসভা';
+
+  @override
+  String get addr_locality => 'এলাকা';
+
+  @override
+  String get addr_county => 'কাউন্টি';
+
+  @override
+  String get addr_state => 'রাজ্য';
+
+  @override
+  String get addr_province => 'প্রদেশ';
+
+  @override
+  String get addr_region => 'অঞ্চল';
+
+  @override
+  String get addr_emirate => 'আমিরাত';
+
+  @override
+  String get addr_governorate => 'গভর্নরেট';
+
+  @override
+  String get addr_prefecture => 'প্রিফেকচার';
+
+  @override
+  String get addr_department => 'ডিপার্টমেন্ট';
+
+  @override
+  String get regionAndUnits => 'অঞ্চল ও একক';
+
+  @override
+  String get country => 'দেশ';
+
+  @override
+  String countryAutomatic(String country) {
+    return 'স্বয়ংক্রিয় ($country)';
+  }
+
+  @override
+  String get otherCountry => 'অন্যান্য';
+
+  @override
+  String get currency => 'মুদ্রা';
+
+  @override
+  String get areaUnitForTotals => 'মোট আয়তনের একক';
+
+  @override
+  String get lengthUnits => 'দৈর্ঘ্য';
+
+  @override
+  String get metric => 'মেট্রিক (মি.)';
+
+  @override
+  String get imperial => 'ইম্পেরিয়াল (ফুট)';
+
+  @override
+  String countryDefault(String value) {
+    return 'দেশের ডিফল্ট ($value)';
+  }
+
+  @override
+  String get regionSyncHint =>
+      'অ্যাপে দেখানো টাকা ও আয়তনের একক বদলায়; সংরক্ষিত মান রূপান্তরিত হয় না।';
+
+  @override
+  String get search => 'খুঁজুন';
 }

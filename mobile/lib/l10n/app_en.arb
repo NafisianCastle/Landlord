@@ -57,25 +57,6 @@
   "overdueRent": "Overdue rent",
   "upcomingRent": "Due in 30 days",
   "receivedThisMonth": "Received this month",
-  "decimalValue": "{value} decimal",
-  "@decimalValue": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
-  "areaSub": "{bigha} bigha · {acre} acre",
-  "@areaSub": {
-    "placeholders": {
-      "bigha": {
-        "type": "String"
-      },
-      "acre": {
-        "type": "String"
-      }
-    }
-  },
   "addPlot": "Add plot",
   "addApartment": "Add apartment",
   "noPlots": "No plots yet.",
@@ -114,10 +95,10 @@
   "noBoundary": "No boundary yet.",
   "captureBoundary": "Capture boundary",
   "redrawBoundary": "Redraw boundary",
-  "gpsAccuracy": "GPS ±{meters} m",
+  "gpsAccuracy": "GPS ±{distance}",
   "@gpsAccuracy": {
     "placeholders": {
-      "meters": {
+      "distance": {
         "type": "String"
       }
     }
@@ -133,10 +114,10 @@
       }
     }
   },
-  "cornerAdded": "Corner added (±{meters} m)",
+  "cornerAdded": "Corner added (±{distance})",
   "@cornerAdded": {
     "placeholders": {
-      "meters": {
+      "distance": {
         "type": "String"
       }
     }
@@ -148,7 +129,7 @@
   "saveBoundary": "Save boundary",
   "needThreePoints": "A boundary needs at least 3 points.",
   "invalidPolygon": "The boundary edges cross each other. Adjust the points.",
-  "pointsAndArea": "{count} points · ~{area} decimal",
+  "pointsAndArea": "{count} points · ~{area}",
   "@pointsAndArea": {
     "placeholders": {
       "count": {
@@ -584,5 +565,65 @@
   "sortName": "Name",
   "sortArea": "Largest area",
   "noSearchResults": "Nothing matches your search.",
-  "loading": "Loading…"
+  "loading": "Loading…",
+  "unit_kani": "Kani",
+  "unit_gonda": "Gonda",
+  "unit_sq_yard": "Sq yard",
+  "unit_hectare": "Hectare",
+  "unit_are": "Are",
+  "unit_sq_km": "Sq km",
+  "unit_sq_mile": "Sq mile",
+  "unit_marla": "Marla",
+  "unit_kanal": "Kanal",
+  "unit_ropani": "Ropani",
+  "unit_aana": "Aana",
+  "unit_guntha": "Guntha",
+  "unit_cent": "Cent",
+  "unit_perch": "Perch",
+  "unit_rai": "Rai",
+  "unit_ngan": "Ngan",
+  "unit_tsubo": "Tsubo",
+  "unit_pyeong": "Pyeong",
+  "unit_ping": "Ping",
+  "unit_mu": "Mu",
+  "unit_dunam": "Dunam",
+  "unit_feddan": "Feddan",
+  "addr_tehsil": "Tehsil",
+  "addr_city": "City",
+  "addr_municipality": "Municipality",
+  "addr_locality": "Locality",
+  "addr_county": "County",
+  "addr_state": "State",
+  "addr_province": "Province",
+  "addr_region": "Region",
+  "addr_emirate": "Emirate",
+  "addr_governorate": "Governorate",
+  "addr_prefecture": "Prefecture",
+  "addr_department": "Department",
+  "regionAndUnits": "Region & units",
+  "country": "Country",
+  "countryAutomatic": "Automatic ({country})",
+  "otherCountry": "Other",
+  "currency": "Currency",
+  "areaUnitForTotals": "Area unit for totals",
+  "lengthUnits": "Lengths",
+  "metric": "Metric (m)",
+  "imperial": "Imperial (ft)",
+  "countryDefault": "Country default ({value})",
+  "regionSyncHint": "Changes amounts and areas shown in the app; saved values are not converted.",
+  "@countryAutomatic": {
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "@countryDefault": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "search": "Search"
 }

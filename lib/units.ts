@@ -48,3 +48,9 @@ export function convertArea(sqMeters: number): AreaConversions {
     sqKm: sqMeters / SQ_METERS_PER_SQKM,
   };
 }
+
+/** A form's unit choices plus a saved unit it doesn't list (e.g. "hectare"
+ * chosen in the mobile app), so editing on the web never changes the unit. */
+export function unitOptions(units: readonly string[], saved?: string | null): string[] {
+  return saved && !units.includes(saved) ? [...units, saved] : [...units];
+}
