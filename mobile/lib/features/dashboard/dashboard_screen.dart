@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/geo/units.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
+import '../../core/region.dart';
 import '../bills/bill_screens.dart';
 import '../common.dart';
 import '../shell/home_shell.dart';
@@ -28,7 +28,8 @@ class DashboardScreen extends ConsumerWidget {
         builder: (stats) {
           final plots = stats.plots ?? const {};
           final rent = stats.rent ?? const {};
-          final area = AreaConversions(((plots['total_area_sq_meters'] ?? 0) as num).toDouble());
+          final areaSqM = ((plots['total_area_sq_meters'] ?? 0) as num).toDouble();
+          final areaUnit = ref.watch(regionProvider).areaUnit;
           void analytics() => context.go('/dashboard/analytics');
           return RefreshableList(children: [
             const BillAlerts(),
@@ -42,30 +43,30 @@ class DashboardScreen extends ConsumerWidget {
             _StatCard(
               icon: Icons.straighten,
               label: l.totalArea,
-              amount: area.decimal,
-              format: (n) => l.decimalValue(formatNumber(context, n)),
+              amount: fromSqMeters(areaSqM, areaUnit),
+              format: (n) => '${formatNumber(context, n)} ${areaUnitLabel(context, areaUnit)}',
               onTap: () => context.go('/plots'),
-              sub: l.areaSub(formatNumber(context, area.bigha), formatNumber(context, area.acre)),
+              sub: formatArea(context, areaSqM).sub,
             ),
             _StatCard(
               icon: Icons.payments_outlined,
               label: l.totalPurchasePrice,
               amount: (plots['total_purchase_price'] ?? 0) as num,
-              format: (n) => formatBdt(context, n),
+              format: (n) => formatMoney(context, n),
               onTap: analytics,
             ),
             _StatCard(
               icon: Icons.trending_up,
               label: l.totalCurrentValue,
               amount: (plots['total_current_value'] ?? 0) as num,
-              format: (n) => formatBdt(context, n),
+              format: (n) => formatMoney(context, n),
               onTap: analytics,
             ),
             _StatCard(
               icon: Icons.warning_amber,
               label: l.overdueRent,
               amount: (rent['overdue_amount'] ?? 0) as num,
-              format: (n) => formatBdt(context, n),
+              format: (n) => formatMoney(context, n),
               onTap: analytics,
               sub: '${rent['overdue_count'] ?? 0}',
               highlight: ((rent['overdue_count'] ?? 0) as num) > 0,
@@ -81,7 +82,7 @@ class DashboardScreen extends ConsumerWidget {
               icon: Icons.savings_outlined,
               label: l.receivedThisMonth,
               amount: (rent['received_this_month_amount'] ?? 0) as num,
-              format: (n) => formatBdt(context, n),
+              format: (n) => formatMoney(context, n),
               onTap: analytics,
             ),
             Card(
@@ -128,7 +129,7 @@ class _StatCard extends StatelessWidget {
         child: ListTile(
           leading: Icon(icon, color: scheme.primary),
           title: Text(label),
-          subtitle: sub == null ? null : Text(sub!),
+          subtitle: (sub ?? '').isEmpty ? null : Text(sub!),
           // Counts up from 0 on first show; instant with reduced motion.
           trailing: Row(mainAxisSize: MainAxisSize.min, children: [
             TweenAnimationBuilder<double>(

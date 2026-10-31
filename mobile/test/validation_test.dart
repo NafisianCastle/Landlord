@@ -17,7 +17,7 @@ void main() {
         validateFields(
             {'name': 'P', 'purchasePrice': '1000000000001'}, propertyRules),
         'Invalid purchasePrice.');
-    expect(validateFields({'name': 'P', 'dolilAreaUnit': 'hectare'}, propertyRules),
+    expect(validateFields({'name': 'P', 'dolilAreaUnit': 'furlong'}, propertyRules),
         'Invalid dolilAreaUnit.');
   });
 

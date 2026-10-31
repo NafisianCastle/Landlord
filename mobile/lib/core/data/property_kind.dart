@@ -1,20 +1,21 @@
-import '../geo/units.dart';
 
 enum FieldType { text, multiline, number, date, unit }
 
 /// One form field. [key] is the camelCase name the web app uses (and that
 /// encrypted JSON blobs are keyed by); [column] is the database column.
 class FieldSpec {
-  const FieldSpec(this.key, this.column, this.type,
-      {this.sensitive = false, this.units = const []});
+  const FieldSpec(this.key, this.column, this.type, {this.sensitive = false});
   final String key;
   final String column;
   final FieldType type;
 
   /// Encrypted into sensitive_encrypted when the user's key is unlocked.
   final bool sensitive;
-  final List<String> units;
 }
+
+/// Address columns whose labels follow the account's country, in the
+/// order of [AddressLabels].
+const addressFieldKeys = ['upazila', 'district', 'division'];
 
 const _sharedSensitive = [
   FieldSpec('purchasePrice', 'purchase_price', FieldType.number, sensitive: true),
@@ -44,9 +45,9 @@ enum PropertyKind {
       FieldSpec('division', 'division', FieldType.text),
       FieldSpec('mutationNumber', 'mutation_number', FieldType.text, sensitive: true),
       FieldSpec('dolilArea', 'dolil_area', FieldType.number),
-      FieldSpec('dolilAreaUnit', 'dolil_area_unit', FieldType.unit, units: plotAreaUnits),
+      FieldSpec('dolilAreaUnit', 'dolil_area_unit', FieldType.unit),
       FieldSpec('actualArea', 'actual_area', FieldType.number),
-      FieldSpec('actualAreaUnit', 'actual_area_unit', FieldType.unit, units: plotAreaUnits),
+      FieldSpec('actualAreaUnit', 'actual_area_unit', FieldType.unit),
       ..._sharedSensitive,
     ],
   ),
@@ -68,7 +69,7 @@ enum PropertyKind {
       FieldSpec('district', 'district', FieldType.text),
       FieldSpec('division', 'division', FieldType.text),
       FieldSpec('size', 'size', FieldType.number),
-      FieldSpec('sizeUnit', 'size_unit', FieldType.unit, units: apartmentSizeUnits),
+      FieldSpec('sizeUnit', 'size_unit', FieldType.unit),
       ..._sharedSensitive,
     ],
   );

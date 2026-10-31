@@ -63,6 +63,9 @@ const _date = Rule(kind: RuleKind.date, max: 10);
 const _areaUnits = [
   'decimal', 'bigha', 'katha', 'kani', 'gonda', 'acre', 'sqft', 'sqmeter', //
   'sqm', 'sq_meters', 'sq_ft', 'sq_km', 'sq_mile',
+  // Other countries' units (mobile region settings, core/region.dart).
+  'sq_yard', 'hectare', 'are', 'marla', 'kanal', 'ropani', 'aana', 'guntha', 'cent', 'perch', //
+  'rai', 'ngan', 'tsubo', 'pyeong', 'ping', 'mu', 'dunam', 'feddan',
 ];
 
 const propertyRules = <String, Rule>{

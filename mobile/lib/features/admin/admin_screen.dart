@@ -78,7 +78,7 @@ class _Overview extends ConsumerWidget {
             (l.totalUsers, '${o['totalUsers'] ?? 0}'),
             (l.activeTrials, '${o['activeTrials'] ?? 0}'),
             (l.paidUsers, '${o['paidUsers'] ?? 0}'),
-            (l.totalRevenue, formatBdt(context, o['revenue'] ?? 0)),
+            (l.totalRevenue, formatMoney(context, o['revenue'] ?? 0, currency: 'BDT')),
             (l.referredSignups, '${o['referredSignups'] ?? 0}'),
           ])
             Card(
@@ -279,7 +279,7 @@ class _Coupons extends ConsumerWidget {
                   subtitle: Text([
                     c['discountType'] == 'percent'
                         ? '${c['discountValue']}%'
-                        : formatBdt(context, c['discountValue']),
+                        : formatMoney(context, c['discountValue'], currency: 'BDT'),
                     l.couponRedeemed('${c['timesRedeemed'] ?? 0}', '${c['maxRedemptions'] ?? '∞'}'),
                     if (c['expiresAt'] != null) l.couponExpires('${c['expiresAt']}'.split('T').first),
                   ].join(' · ')),

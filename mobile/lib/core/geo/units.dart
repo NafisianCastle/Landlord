@@ -27,7 +27,3 @@ class AreaConversions {
   double get acre => sqMeters / _sqMetersPerAcre;
   double get sqFt => sqMeters / _sqMetersPerSqFt;
 }
-
-/// Unit choices offered by the web forms (PlotMetadataForm / ApartmentMetadataForm).
-const plotAreaUnits = ['decimal', 'katha', 'bigha', 'acre', 'sqft', 'sqmeter'];
-const apartmentSizeUnits = ['sqft', 'sqmeter', 'katha', 'decimal'];

@@ -7,6 +7,7 @@ import 'data/repository.dart';
 import 'offline/local_db.dart';
 import 'offline/sync.dart';
 import 'offline/tile_cache.dart';
+import 'region.dart';
 
 /// Overridden in main() once the database file is open.
 final localDbProvider = Provider<LocalDb>((ref) => throw UnimplementedError());
@@ -163,4 +164,15 @@ final pendingCountProvider = FutureProvider<int>((ref) {
 final localeProvider = Provider<Locale?>((ref) {
   final code = ref.watch(profileProvider).value?['preferred_language'] as String?;
   return code == null ? null : Locale(code);
+});
+
+/// Country, currency and units for display. Follows the profile (synced
+/// with other devices) and falls back to the phone's region.
+final regionProvider = Provider<RegionSettings>((ref) {
+  final device = WidgetsBinding.instance.platformDispatcher.locale;
+  return RegionSettings.resolve(
+    profile: ref.watch(profileProvider).value,
+    deviceCountry: device.countryCode,
+    deviceLocale: device.toString(),
+  );
 });

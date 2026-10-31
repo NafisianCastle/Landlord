@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/data/property_kind.dart';
-import '../../core/geo/units.dart';
 import '../../core/list_controls.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
@@ -120,7 +119,7 @@ class _PropertyListScreenState extends ConsumerState<PropertyListScreen> {
     final area = row['area_sq_meters'] as num?;
     final areaText = area == null
         ? null
-        : context.l10n.decimalValue(formatNumber(context, AreaConversions(area.toDouble()).decimal));
+        : formatArea(context, area.toDouble()).main;
     return [place, ?areaText].where((s) => s.isNotEmpty).join(' · ');
   }
 }

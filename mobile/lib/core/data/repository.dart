@@ -59,6 +59,8 @@ const _plotColumns =
     'purchase_date,current_estimated_value,notes,area_sq_meters,boundary_geojson,'
     'dolil_area,dolil_area_unit,actual_area,actual_area_unit,sensitive_encrypted,'
     'sensitive_iv,created_at,updated_at';
+const regionColumns = ['country_code', 'currency_code', 'area_unit', 'measurement_system'];
+
 const _profileColumns =
     'id,full_name,preferred_language,is_admin,encryption_enabled,dek_salt,dek_wrapped_by_passphrase,'
     'dek_wrapped_by_passphrase_iv,recovery_salt,dek_wrapped_by_recovery,dek_wrapped_by_recovery_iv';
@@ -175,7 +177,10 @@ class Repository {
       await _db.replaceTable('occupancy_stats', occupancy);
       await _db.replaceTable('portfolio_monthly_stats', monthly, idKey: 'month');
       await _db.replaceTable('property_financial_stats', financials, idKey: 'subject_id');
-      await _db.replaceTable('profiles', profile);
+      final region = await _regionSettings();
+      await _db.replaceTable('profiles', [
+        for (final p in profile) {...p, ...region},
+      ]);
       await _db.replaceTable('plot_stats', plotStats);
       await _db.replaceTable('lease_payment_stats', rentStats);
     } catch (e) {
@@ -496,6 +501,26 @@ class Repository {
       }
     }
     await _delete('vendors', id);
+  }
+
+  /// Region columns (migration 20261031120000) are fetched on their own so
+  /// a database without them still syncs; the phone then keeps its local
+  /// choice instead of losing it on every refresh.
+  Future<DbRow> _regionSettings() async {
+    try {
+      final rows = await _client.from('profiles').select(regionColumns.join(',')).eq('id', _userId);
+      return rows.isEmpty ? {} : rows.first;
+    } on PostgrestException {
+      final local = await profile();
+      return {for (final c in regionColumns) c: local?[c]};
+    }
+  }
+
+  /// Saves region overrides; null resets a setting to the country default.
+  Future<void> setRegion(Map<String, String?> values) async {
+    assert(values.keys.every(regionColumns.contains));
+    await _db.upsertRow('profiles', _userId, values);
+    await _write([OutboxOp(kind: 'update', target: 'profiles', rowId: _userId, payload: values)]);
   }
 
   Future<void> setLanguage(String code) async {

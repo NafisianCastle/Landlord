@@ -60,7 +60,7 @@ class MaintenanceSection extends ConsumerWidget {
                   subtitle: Text([
                     l.maintenanceStatus(m['status'] as String? ?? 'open'),
                     l.reportedOn('${m['reported_date'] ?? ''}'),
-                    if (m['cost'] != null) formatBdt(context, m['cost']),
+                    if (m['cost'] != null) formatMoney(context, m['cost']),
                     ?vendorNames[m['vendor_id']],
                     if ((m['description'] as String?)?.isNotEmpty ?? false) m['description'] as String,
                   ].join(' · ')),

@@ -11,7 +11,6 @@ import 'package:latlong2/latlong.dart';
 import '../../core/data/property_kind.dart';
 import '../../core/geo/geo.dart';
 import '../../core/geo/gps_filter.dart';
-import '../../core/geo/units.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
 import '../../core/theme.dart';
@@ -118,7 +117,7 @@ class _BoundaryScreenState extends ConsumerState<BoundaryScreen> {
     if (point == null) return;
     _points.add(point);
     showMessage(
-        context, context.l10n.cornerAdded(averagedAccuracyM(fixes)!.toStringAsFixed(1)));
+        context, context.l10n.cornerAdded(formatLength(context, averagedAccuracyM(fixes)!)));
   }
 
   Future<void> _save() async {
@@ -144,7 +143,7 @@ class _BoundaryScreenState extends ConsumerState<BoundaryScreen> {
     final l = context.l10n;
     final fix = _lastFix;
     final weak = fix != null && goodFixes([fix]).isEmpty;
-    final area = AreaConversions(polygonAreaSqMeters(_points)).decimal;
+    final areaSqM = polygonAreaSqMeters(_points);
     return Scaffold(
       appBar: AppBar(
         title: Text(l.boundary),
@@ -201,9 +200,9 @@ class _BoundaryScreenState extends ConsumerState<BoundaryScreen> {
                       ? l.waitingForGps
                       : weak
                           ? l.gpsTooWeak
-                          : l.gpsAccuracy(fix.accuracyM.toStringAsFixed(1)),
+                          : l.gpsAccuracy(formatLength(context, fix.accuracyM)),
                   weak: weak || fix == null,
-                  summary: l.pointsAndArea(_points.length, formatNumber(context, area)),
+                  summary: l.pointsAndArea(_points.length, formatArea(context, areaSqM).main),
                   help: l.boundaryHelp,
                   marking: _cornerFixes == null
                       ? null

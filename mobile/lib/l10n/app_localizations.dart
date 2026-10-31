@@ -314,18 +314,6 @@ abstract class AppLocalizations {
   /// **'Received this month'**
   String get receivedThisMonth;
 
-  /// No description provided for @decimalValue.
-  ///
-  /// In en, this message translates to:
-  /// **'{value} decimal'**
-  String decimalValue(String value);
-
-  /// No description provided for @areaSub.
-  ///
-  /// In en, this message translates to:
-  /// **'{bigha} bigha · {acre} acre'**
-  String areaSub(String bigha, String acre);
-
   /// No description provided for @addPlot.
   ///
   /// In en, this message translates to:
@@ -557,8 +545,8 @@ abstract class AppLocalizations {
   /// No description provided for @gpsAccuracy.
   ///
   /// In en, this message translates to:
-  /// **'GPS ±{meters} m'**
-  String gpsAccuracy(String meters);
+  /// **'GPS ±{distance}'**
+  String gpsAccuracy(String distance);
 
   /// No description provided for @waitingForGps.
   ///
@@ -587,8 +575,8 @@ abstract class AppLocalizations {
   /// No description provided for @cornerAdded.
   ///
   /// In en, this message translates to:
-  /// **'Corner added (±{meters} m)'**
-  String cornerAdded(String meters);
+  /// **'Corner added (±{distance})'**
+  String cornerAdded(String distance);
 
   /// No description provided for @autoTrace.
   ///
@@ -635,7 +623,7 @@ abstract class AppLocalizations {
   /// No description provided for @pointsAndArea.
   ///
   /// In en, this message translates to:
-  /// **'{count} points · ~{area} decimal'**
+  /// **'{count} points · ~{area}'**
   String pointsAndArea(int count, String area);
 
   /// No description provided for @locationPermissionDenied.
@@ -2281,6 +2269,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading…'**
   String get loading;
+
+  /// No description provided for @unit_kani.
+  ///
+  /// In en, this message translates to:
+  /// **'Kani'**
+  String get unit_kani;
+
+  /// No description provided for @unit_gonda.
+  ///
+  /// In en, this message translates to:
+  /// **'Gonda'**
+  String get unit_gonda;
+
+  /// No description provided for @unit_sq_yard.
+  ///
+  /// In en, this message translates to:
+  /// **'Sq yard'**
+  String get unit_sq_yard;
+
+  /// No description provided for @unit_hectare.
+  ///
+  /// In en, this message translates to:
+  /// **'Hectare'**
+  String get unit_hectare;
+
+  /// No description provided for @unit_are.
+  ///
+  /// In en, this message translates to:
+  /// **'Are'**
+  String get unit_are;
+
+  /// No description provided for @unit_sq_km.
+  ///
+  /// In en, this message translates to:
+  /// **'Sq km'**
+  String get unit_sq_km;
+
+  /// No description provided for @unit_sq_mile.
+  ///
+  /// In en, this message translates to:
+  /// **'Sq mile'**
+  String get unit_sq_mile;
+
+  /// No description provided for @unit_marla.
+  ///
+  /// In en, this message translates to:
+  /// **'Marla'**
+  String get unit_marla;
+
+  /// No description provided for @unit_kanal.
+  ///
+  /// In en, this message translates to:
+  /// **'Kanal'**
+  String get unit_kanal;
+
+  /// No description provided for @unit_ropani.
+  ///
+  /// In en, this message translates to:
+  /// **'Ropani'**
+  String get unit_ropani;
+
+  /// No description provided for @unit_aana.
+  ///
+  /// In en, this message translates to:
+  /// **'Aana'**
+  String get unit_aana;
+
+  /// No description provided for @unit_guntha.
+  ///
+  /// In en, this message translates to:
+  /// **'Guntha'**
+  String get unit_guntha;
+
+  /// No description provided for @unit_cent.
+  ///
+  /// In en, this message translates to:
+  /// **'Cent'**
+  String get unit_cent;
+
+  /// No description provided for @unit_perch.
+  ///
+  /// In en, this message translates to:
+  /// **'Perch'**
+  String get unit_perch;
+
+  /// No description provided for @unit_rai.
+  ///
+  /// In en, this message translates to:
+  /// **'Rai'**
+  String get unit_rai;
+
+  /// No description provided for @unit_ngan.
+  ///
+  /// In en, this message translates to:
+  /// **'Ngan'**
+  String get unit_ngan;
+
+  /// No description provided for @unit_tsubo.
+  ///
+  /// In en, this message translates to:
+  /// **'Tsubo'**
+  String get unit_tsubo;
+
+  /// No description provided for @unit_pyeong.
+  ///
+  /// In en, this message translates to:
+  /// **'Pyeong'**
+  String get unit_pyeong;
+
+  /// No description provided for @unit_ping.
+  ///
+  /// In en, this message translates to:
+  /// **'Ping'**
+  String get unit_ping;
+
+  /// No description provided for @unit_mu.
+  ///
+  /// In en, this message translates to:
+  /// **'Mu'**
+  String get unit_mu;
+
+  /// No description provided for @unit_dunam.
+  ///
+  /// In en, this message translates to:
+  /// **'Dunam'**
+  String get unit_dunam;
+
+  /// No description provided for @unit_feddan.
+  ///
+  /// In en, this message translates to:
+  /// **'Feddan'**
+  String get unit_feddan;
+
+  /// No description provided for @addr_tehsil.
+  ///
+  /// In en, this message translates to:
+  /// **'Tehsil'**
+  String get addr_tehsil;
+
+  /// No description provided for @addr_city.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get addr_city;
+
+  /// No description provided for @addr_municipality.
+  ///
+  /// In en, this message translates to:
+  /// **'Municipality'**
+  String get addr_municipality;
+
+  /// No description provided for @addr_locality.
+  ///
+  /// In en, this message translates to:
+  /// **'Locality'**
+  String get addr_locality;
+
+  /// No description provided for @addr_county.
+  ///
+  /// In en, this message translates to:
+  /// **'County'**
+  String get addr_county;
+
+  /// No description provided for @addr_state.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get addr_state;
+
+  /// No description provided for @addr_province.
+  ///
+  /// In en, this message translates to:
+  /// **'Province'**
+  String get addr_province;
+
+  /// No description provided for @addr_region.
+  ///
+  /// In en, this message translates to:
+  /// **'Region'**
+  String get addr_region;
+
+  /// No description provided for @addr_emirate.
+  ///
+  /// In en, this message translates to:
+  /// **'Emirate'**
+  String get addr_emirate;
+
+  /// No description provided for @addr_governorate.
+  ///
+  /// In en, this message translates to:
+  /// **'Governorate'**
+  String get addr_governorate;
+
+  /// No description provided for @addr_prefecture.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefecture'**
+  String get addr_prefecture;
+
+  /// No description provided for @addr_department.
+  ///
+  /// In en, this message translates to:
+  /// **'Department'**
+  String get addr_department;
+
+  /// No description provided for @regionAndUnits.
+  ///
+  /// In en, this message translates to:
+  /// **'Region & units'**
+  String get regionAndUnits;
+
+  /// No description provided for @country.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get country;
+
+  /// No description provided for @countryAutomatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic ({country})'**
+  String countryAutomatic(String country);
+
+  /// No description provided for @otherCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get otherCountry;
+
+  /// No description provided for @currency.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get currency;
+
+  /// No description provided for @areaUnitForTotals.
+  ///
+  /// In en, this message translates to:
+  /// **'Area unit for totals'**
+  String get areaUnitForTotals;
+
+  /// No description provided for @lengthUnits.
+  ///
+  /// In en, this message translates to:
+  /// **'Lengths'**
+  String get lengthUnits;
+
+  /// No description provided for @metric.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric (m)'**
+  String get metric;
+
+  /// No description provided for @imperial.
+  ///
+  /// In en, this message translates to:
+  /// **'Imperial (ft)'**
+  String get imperial;
+
+  /// No description provided for @countryDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Country default ({value})'**
+  String countryDefault(String value);
+
+  /// No description provided for @regionSyncHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes amounts and areas shown in the app; saved values are not converted.'**
+  String get regionSyncHint;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
 }
 
 class _AppLocalizationsDelegate

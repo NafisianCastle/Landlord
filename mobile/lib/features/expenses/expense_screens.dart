@@ -57,7 +57,7 @@ class ExpensesSection extends ConsumerWidget {
                       .where((s) => s.isNotEmpty)
                       .join(' · ')),
                   trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                    Text(formatBdt(context, e['amount'])),
+                    Text(formatMoney(context, e['amount'])),
                     if (canShare)
                       IconButton(
                         tooltip: e['visible_to_tenants'] == true ? l.hideExpense : l.shareExpense,
@@ -79,7 +79,7 @@ class ExpensesSection extends ConsumerWidget {
             if (expenses.isNotEmpty)
               ListTile(
                 dense: true,
-                title: Text(l.expensesTotal(formatBdt(context, total)),
+                title: Text(l.expensesTotal(formatMoney(context, total)),
                     textAlign: TextAlign.end),
               ),
           ]),

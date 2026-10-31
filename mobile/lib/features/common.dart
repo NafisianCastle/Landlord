@@ -6,15 +6,43 @@ import 'package:intl/intl.dart';
 import '../core/data/repository.dart';
 import '../core/l10n.dart';
 import '../core/providers.dart';
+import '../core/region.dart';
 import '../core/offline/sync.dart';
 
-String formatBdt(BuildContext context, Object? amount) {
+/// Money in the account's currency (see [RegionScope]), or [currency] for
+/// amounts that are always in one (the app's own BDT billing). Whole
+/// amounts drop the decimals, as the BDT-only formatting did.
+String formatMoney(BuildContext context, Object? amount, {String? currency}) {
   final value = amount is num ? amount : num.tryParse('${amount ?? ''}');
   if (value == null) return '—';
-  return NumberFormat.currency(
-          locale: Localizations.localeOf(context).toString(), symbol: '৳', decimalDigits: 0)
-      .format(value);
+  return NumberFormat.simpleCurrency(
+    locale: Localizations.localeOf(context).toString(),
+    name: currency ?? RegionScope.of(context).currency,
+    decimalDigits: value % 1 == 0 ? 0 : null,
+  ).format(value);
 }
+
+String areaUnitLabel(BuildContext context, String unit) =>
+    areaUnitSymbols[unit] ?? context.l10n.areaUnit(unit);
+
+/// [sqMeters] in [unit], e.g. "12.35 decimal" or "1,250 m²".
+String formatAreaIn(BuildContext context, double sqMeters, String unit) =>
+    '${formatNumber(context, fromSqMeters(sqMeters, unit))} ${areaUnitLabel(context, unit)}';
+
+/// An area total in the account's units: the main figure, then the
+/// country's other units joined with " · " (empty when there are none).
+({String main, String sub}) formatArea(BuildContext context, double sqMeters) {
+  final units = RegionScope.of(context).totalUnits;
+  return (
+    main: formatAreaIn(context, sqMeters, units.first),
+    sub: units.skip(1).map((u) => formatAreaIn(context, sqMeters, u)).join(' · '),
+  );
+}
+
+/// A distance in metres or feet, one decimal (GPS accuracy).
+String formatLength(BuildContext context, double meters) => RegionScope.of(context).imperial
+    ? '${(meters / 0.3048).toStringAsFixed(1)} ft'
+    : '${meters.toStringAsFixed(1)} m';
 
 String formatNumber(BuildContext context, num value, {int digits = 2}) =>
     NumberFormat.decimalPatternDigits(
