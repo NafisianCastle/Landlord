@@ -81,11 +81,11 @@ Alt text per card:
 
 Post the three frames together. Keep any platform UI away from the main headline and button.
 
-## Reel: 16-second brand introduction
+## Reel: 18-second brand introduction
 
-The supplied MP4 is silent, 1080 × 1920, 25 fps. It uses gentle movement and short fades. All key messages are already visible on screen; the SRT is supplied for an optional matching voiceover.
+The supplied MP4 is 1080 × 1920 at 30 fps, with gentle movement and crossfades. It has a synthetic English voiceover reading the lines below over an original music bed (see BRAND-GUIDE.md for credits). All key messages are also on screen, and the SRT matches the voiceover. Scene timings follow the narration, so they run slightly longer than the 4-second slots below.
 
-| Time | Visual | Optional voiceover |
+| Time | Visual | Voiceover |
 | --- | --- | --- |
 | 0–4 s | Property admin taking over? | Property admin taking over? |
 | 4–8 s | Bring it together. | Bring your land, apartments, documents and rent records together. |
@@ -94,7 +94,7 @@ The supplied MP4 is silent, 1080 × 1920, 25 fps. It uses gentle movement and sh
 
 Caption: Less keeping track. A clearer view. Meet Landlord: a free place to organise property records in Bangladesh. Start with one property through our profile link. #LandlordApp #PropertyManagement #Bangladesh
 
-Cover: use reel-scenes/04.png; keep the central text in the platform's preview crop. Use licensed music or record the voiceover yourself. No music rights are bundled.
+Cover: use reel-scenes/04.png; keep the central text in the platform's preview crop. The music is original and generated with the kit, so no music rights are needed. To use a human voice instead, record these lines and replace the audio in the platform editor.
 
 Bangla voiceover option:
 - 0–4: “সম্পত্তির হিসাব রাখতে হিমশিম খাচ্ছেন?”

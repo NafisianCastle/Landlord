@@ -756,14 +756,19 @@ const vertical = (s, tag) =>
     1.5,
   ) +
   (s.art || "");
-const timing = (scenes, D, T) =>
-  scenes.map((s, i) => [
-    i * (D - T),
-    i === scenes.length - 1
-      ? scenes.length * D - (scenes.length - 1) * T
-      : (i + 1) * (D - T),
-    s.caption,
-  ]);
+// Scene i starts once the previous scene's crossfade (T) begins; returns
+// [start, end, caption] cues and the total length.
+const timing = (scenes, durations, T) => {
+  let start = 0;
+  const cues = scenes.map((s, i) => {
+    const cue = [start, start + durations[i] - T, s.caption];
+    start += durations[i] - T;
+    return cue;
+  });
+  const total = start + T;
+  cues[cues.length - 1][1] = total;
+  return { cues, total };
+};
 const stamp = (t, sep) => {
   const ms = Math.round(t * 1000);
   const p = (n, l = 2) => String(n).padStart(l, "0");
@@ -787,14 +792,100 @@ async function captions(dir, lang, cues) {
         .join("\n"),
   );
 }
+// Voiceover: Piper text-to-speech, installed by scripts/setup-voice.sh into
+// work/ (override with PIPER and PIPER_VOICES). Without it, videos get the
+// music bed only.
+const piper = process.env.PIPER || "work/piper/bin/piper";
+const voiceDir = process.env.PIPER_VOICES || "work/voices";
+const voices = {
+  en: { model: "en_GB-cori-high.onnx", speaker: 0 },
+  // 16 speakers; change the id to pick a different Bangla voice.
+  bn: { model: "bn_BD-google-medium.onnx", speaker: 0 },
+};
+const hasVoice = await fs
+  .access(piper)
+  .then(() => fs.access(path.join(voiceDir, voices.bn.model)))
+  .then(() => fs.access(path.join(voiceDir, voices.en.model)))
+  .then(
+    () => true,
+    () => false,
+  );
+if (!hasVoice)
+  console.warn(
+    "Piper voices not found (run scripts/setup-voice.sh): videos get music only.",
+  );
+const seconds = (file) =>
+  Number(
+    execFileSync("ffprobe", [
+      "-v",
+      "error",
+      "-show_entries",
+      "format=duration",
+      "-of",
+      "csv=p=0",
+      file,
+    ]).toString(),
+  );
 const videos = [];
+// Each scene lasts at least D seconds, or longer when its narration needs it,
+// so speech always finishes before the next crossfade.
+async function addVideo(dir, file, lang, scenes, w, h, D, T, prefix) {
+  const narration = [];
+  if (hasVoice) {
+    const tmp = path.join("work/voiceover", dir);
+    await fs.mkdir(tmp, { recursive: true });
+    for (let i = 0; i < scenes.length; i++) {
+      const v = voices[scenes[i].lang || lang];
+      const wav = path.join(tmp, `${i + 1}.wav`);
+      execFileSync(
+        piper,
+        [
+          "-m",
+          path.join(voiceDir, v.model),
+          "-s",
+          String(v.speaker),
+          "--length-scale",
+          "0.9",
+          "-f",
+          wav,
+        ],
+        {
+          input: scenes[i].voice || scenes[i].caption,
+          stdio: ["pipe", "ignore", "ignore"],
+        },
+      );
+      narration.push({ wav, length: seconds(wav) });
+    }
+  }
+  const durations = scenes.map((_, i) =>
+    Math.max(
+      D,
+      narration[i]
+        ? narration[i].length + (i === scenes.length - 1 ? 1.6 : 1.2)
+        : 0,
+    ),
+  );
+  const { cues, total } = timing(scenes, durations, T);
+  await captions(dir, lang, cues);
+  // The MP4 sits next to its scene folder.
+  const mp4 = path.join(path.dirname(dir), file);
+  videos.push({
+    dir,
+    file: mp4,
+    prefix,
+    durations,
+    cues,
+    total,
+    narration,
+    w,
+    h,
+    T,
+  });
+}
 async function scenesVideo(dir, file, lang, scenes, w, h, D, T, draw) {
   for (let i = 0; i < scenes.length; i++)
     await save(`${dir}/scene-0${i + 1}`, w, h, draw(scenes[i], i));
-  await captions(dir, lang, timing(scenes, D, T));
-  // The MP4 sits next to its scene folder.
-  const mp4 = path.join(path.dirname(dir), file);
-  videos.push({ dir, file: mp4, count: scenes.length, w, h, D, T });
+  await addVideo(dir, file, lang, scenes, w, h, D, T, "scene-0");
 }
 
 // 06 · Reel (EN): scattered records → one place. 5 scenes, ~15 s.
@@ -841,6 +932,8 @@ const reelEn = [
     sub: ["Landlord is free to use.", "landlordsbd.com"],
     caption:
       "Your property, in order. Landlord is free to use. landlordsbd.com",
+    voice:
+      "Your property, in order. Landlord is free to use, at landlord S B D dot com.",
     art:
       parcel(560, 1150, 1.1, true) + button(80, 1430, "Get started free", true),
   },
@@ -909,6 +1002,7 @@ const reelBn = [
     sub: ["Landlord ফ্রিতে ব্যবহার করুন।", "landlordsbd.com"],
     caption:
       "আপনার সম্পত্তি, গুছিয়ে রাখুন। Landlord ফ্রিতে ব্যবহার করুন। landlordsbd.com",
+    voice: "আপনার সম্পত্তি, গুছিয়ে রাখুন। ল্যান্ডলর্ড ফ্রিতে ব্যবহার করুন।",
     art:
       parcel(560, 1180, 1.1, true) + button(80, 1430, "ফ্রিতে শুরু করুন", true),
   },
@@ -934,12 +1028,15 @@ const story = [
     title: ["সম্পত্তির কাগজ", "কোথায় রাখেন?"],
     sub: ["ফাইলে, ফোনে, নাকি", "আত্মীয়ের কাছে?"],
     caption: "সম্পত্তির কাগজ কোথায় রাখেন?",
+    voice:
+      "সম্পত্তির কাগজ কোথায় রাখেন? ফাইলে, ফোনে, নাকি আত্মীয়ের কাছে? উত্তর দিন।",
     art: text(80, 1560, "উত্তর দিন ↑", 32, C.lime, 600),
   },
   {
     title: ["Land. Apartments.", "Rent. Documents."],
     sub: ["One place for all four,", "organised by property."],
     caption: "Land. Apartments. Rent. Documents. One place for all four.",
+    lang: "en",
     art: mapCard(260, 1060, "Plot boundary · saved"),
   },
   {
@@ -948,6 +1045,7 @@ const story = [
     title: ["আপনার সম্পত্তি,", "গুছিয়ে রাখুন।"],
     sub: ["Free to use · ফ্রিতে ব্যবহার করুন"],
     caption: "আপনার সম্পত্তি, গুছিয়ে রাখুন। Free to use.",
+    voice: "আপনার সম্পত্তি, গুছিয়ে রাখুন। ফ্রিতে ব্যবহার করুন।",
     art: text(80, 1560, "landlordsbd.com", 34, C.lime, 600),
   },
 ];
@@ -968,9 +1066,9 @@ const howItWorks = [
   {
     dark: true,
     kicker: "HOW LANDLORD WORKS",
-    title: ["Your property,", "in 30 seconds."],
+    title: ["Your property,", "in four steps."],
     sub: ["Four things, one place."],
-    caption: "How Landlord works: your property, in 30 seconds.",
+    caption: "How Landlord works: your property, in four steps.",
     art: parcel(640, 640, 0.95, true),
   },
   {
@@ -979,6 +1077,8 @@ const howItWorks = [
     sub: ["The boundary is saved with the plot."],
     caption:
       "01. Draw your plot on the map. The boundary is saved with the plot.",
+    voice:
+      "One. Draw your plot on the map. The boundary is saved with the plot.",
     art: mapCard(440, 640, "Plot boundary · saved"),
   },
   {
@@ -987,6 +1087,8 @@ const howItWorks = [
     sub: ["Keep tenant details with each unit."],
     caption:
       "02. Add apartments and tenants. Keep tenant details with each unit.",
+    voice:
+      "Two. Add apartments and tenants. Keep tenant details with each unit.",
     art: rows(80, 640, [
       ["Flat 2A · Rahman", "Leased"],
       ["Flat 3B · Vacant", "Vacant", "due"],
@@ -999,6 +1101,8 @@ const howItWorks = [
     sub: ["See what is recorded and what is due."],
     caption:
       "03. Record rent each month. See what is recorded and what is due.",
+    voice:
+      "Three. Record rent each month. See what is recorded and what is due.",
     art: rentCard(
       80,
       680,
@@ -1014,6 +1118,8 @@ const howItWorks = [
     sub: ["Deeds and records as PDFs."],
     caption:
       "04. Keep papers together. Deeds and records as PDFs, with optional encryption before upload.",
+    voice:
+      "Four. Keep papers together. Deeds and records as PDFs, with optional encryption before upload.",
     art: docCard(
       80,
       680,
@@ -1029,6 +1135,8 @@ const howItWorks = [
     sub: ["Start with one property.", "landlordsbd.com"],
     caption:
       "Your property, in order. Start with one property at landlordsbd.com.",
+    voice:
+      "Your property, in order. Start with one property at landlord S B D dot com.",
     art: button(80, 850, "Get started free", true),
   },
 ];
@@ -1283,6 +1391,8 @@ const reelRentEn = [
     sub: ["Landlord is free to use.", "landlordsbd.com"],
     caption:
       "Your property, in order. Landlord is free to use. landlordsbd.com",
+    voice:
+      "Your property, in order. Landlord is free to use, at landlord S B D dot com.",
     art:
       parcel(560, 1150, 1.1, true) + button(80, 1430, "Get started free", true),
   },
@@ -1361,9 +1471,67 @@ await imagesToPdf(
   ),
 );
 
-// Render the videos: gentle push-in per scene, crossfades, silent H.264 at
-// 30 fps (feeds autoplay muted; text is burned in and captions are provided
-// as SRT/VTT).
+// The original brand reel (scenes drawn above) goes through the same
+// pipeline; its narration is the voiceover script in SOCIAL-CONTENT.md.
+await addVideo(
+  "reel-scenes",
+  "landlord-reel.mp4",
+  "en",
+  [
+    "Property admin taking over?",
+    "Bring your land, apartments, documents and rent records together.",
+    "A little less keeping track. A clearer view of your property.",
+    "Landlord. Your property, in order. Get started free.",
+  ].map((caption) => ({ caption })),
+  1080,
+  1920,
+  4,
+  0.4,
+  "0",
+);
+
+// Original music bed, composed here: a slow C–Am–F–G pad of soft sines with
+// a breathing envelope per chord. Generated, so there are no rights to clear.
+const chords = [
+  [130.81, 261.63, 329.63, 392.0],
+  [110.0, 220.0, 261.63, 329.63],
+  [87.31, 174.61, 220.0, 261.63],
+  [98.0, 196.0, 246.94, 293.66],
+];
+// Each chord sounds for 5 s on a 4 s grid, so neighbours overlap by 1 s and
+// the pad never drops to silence between chords.
+const pad = (detune) =>
+  chords
+    .map((freqs, k) => {
+      const u = `mod(t+${16 - k * 4}\\,16)`;
+      return `lt(${u}\\,5)*pow(sin(PI*min(${u}\\,5)/5)\\,0.7)*(${freqs
+        .map(
+          (f, n) =>
+            `${n === 0 ? 0.5 : 0.28}*sin(2*PI*${(f * detune).toFixed(3)}*t)+0.06*sin(4*PI*${(f * detune).toFixed(3)}*t)`,
+        )
+        .join("+")})`;
+    })
+    .join("+") + `)*0.18`;
+function music(total, wav) {
+  execFileSync("ffmpeg", [
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-f",
+    "lavfi",
+    "-i",
+    `aevalsrc=(${pad(1)}|(${pad(1.003)}:s=48000:d=${total.toFixed(2)}`,
+    "-af",
+    `lowpass=f=1600,aecho=0.8:0.7:120|240:0.25|0.15,afade=t=in:d=1,afade=t=out:st=${Math.max(0, total - 1.5).toFixed(2)}:d=1.5`,
+    wav,
+  ]);
+}
+
+// Render the videos: gentle push-in per scene, crossfades, H.264 at 30 fps.
+// Audio: narration over the music bed, which ducks under the voice; mixed to
+// -14 LUFS, AAC 48 kHz stereo. Text stays burned in and SRT/VTT captions are
+// provided, since many viewers watch muted.
 let ffmpeg = true;
 try {
   execFileSync("ffmpeg", ["-version"], { stdio: "ignore" });
@@ -1372,25 +1540,56 @@ try {
   console.warn("ffmpeg not found: skipped rendering videos.");
 }
 for (const v of ffmpeg ? videos : []) {
+  const n = v.durations.length;
   const args = ["-hide_banner", "-loglevel", "error", "-y"];
   const chains = [];
-  for (let i = 0; i < v.count; i++) {
-    args.push("-loop", "1", "-framerate", "30", "-t", String(v.D));
-    args.push("-i", path.join(out, v.dir, `scene-0${i + 1}.png`));
+  for (let i = 0; i < n; i++) {
+    args.push(
+      "-loop",
+      "1",
+      "-framerate",
+      "30",
+      "-t",
+      v.durations[i].toFixed(2),
+    );
+    args.push("-i", path.join(out, v.dir, `${v.prefix}${i + 1}.png`));
     chains.push(
       `[${i}:v]scale=${v.w * 2}:${v.h * 2},zoompan=z='1+0.0004*on':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=${v.w}x${v.h}:fps=30,setsar=1[s${i}]`,
     );
   }
   let last = "s0";
-  for (let i = 1; i < v.count; i++) {
+  for (let i = 1; i < n; i++) {
     chains.push(
-      `[${last}][s${i}]xfade=transition=fade:duration=${v.T}:offset=${(i * (v.D - v.T)).toFixed(2)}[x${i}]`,
+      `[${last}][s${i}]xfade=transition=fade:duration=${v.T}:offset=${v.cues[i][0].toFixed(2)}[x${i}]`,
     );
     last = `x${i}`;
   }
   chains.push(`[${last}]format=yuv420p[v]`);
-  args.push("-filter_complex", chains.join(";"), "-map", "[v]");
+  const bed = path.join("work/voiceover", v.dir + "-music.wav");
+  await fs.mkdir(path.dirname(bed), { recursive: true });
+  music(v.total, bed);
+  args.push("-i", bed);
+  const end = `atrim=0:${v.total.toFixed(2)},aformat=sample_rates=48000:channel_layouts=stereo`;
+  if (v.narration.length) {
+    v.narration.forEach(({ wav }, i) => {
+      args.push("-i", wav);
+      const ms = Math.round((v.cues[i][0] + (i ? v.T : 0) + 0.25) * 1000);
+      chains.push(
+        `[${n + 1 + i}:a]aresample=48000,aformat=channel_layouts=stereo,adelay=${ms}|${ms}[n${i}]`,
+      );
+    });
+    chains.push(
+      `${v.narration.map((_, i) => `[n${i}]`).join("")}amix=inputs=${v.narration.length}:normalize=0,apad,${end},asplit[vo][key]`,
+      `[${n}:a]volume=1.4[bed]`,
+      `[bed][key]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=500[duck]`,
+      `[duck][vo]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11,${end}[a]`,
+    );
+  } else {
+    chains.push(`[${n}:a]loudnorm=I=-14:TP=-1.5:LRA=11,${end}[a]`);
+  }
+  args.push("-filter_complex", chains.join(";"), "-map", "[v]", "-map", "[a]");
   args.push("-c:v", "libx264", "-preset", "medium", "-crf", "22");
+  args.push("-c:a", "aac", "-b:a", "128k", "-ar", "48000");
   args.push("-movflags", "+faststart", path.join(out, v.file));
   execFileSync("ffmpeg", args, { stdio: "inherit" });
 }
