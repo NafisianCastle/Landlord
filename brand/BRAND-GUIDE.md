@@ -16,7 +16,9 @@ Do not position the app as a marketplace, a payment collection service, a legal 
 
 ## Identity
 
-The symbol combines a mapped parcel, four boundary points, and an L. It retains the original plot motif while making the initial and colour system distinctive. Use the lowercase **landlord.** wordmark in artwork; use **Landlord** in ordinary text.
+The symbol combines a mapped parcel, four boundary points, and an L. The 2026 refresh keeps the colours but draws the mark with bolder geometry: a heavier white parcel outline, a thicker lime L, and larger boundary points with a forest ring, so it reads at app-icon and avatar sizes. Use the lowercase **landlord.** wordmark (bold type with a round full stop: lime on forest, forest on paper) in artwork; use **Landlord** in ordinary text.
+
+Below 48 px, use the simplified symbol (`assets/logos/landlord-symbol-small.svg`: tile, L and four corner points, with no parcel outline). The favicon and the smallest Android launcher sizes use it. Lockups: horizontal wordmark, reversed wordmark on forest, and a stacked version for square spaces.
 
 | Role | Colour | Use |
 | --- | --- | --- |
@@ -62,15 +64,17 @@ Start with Instagram and Facebook. Repurpose to other channels only where the in
 
 ## Export inventory
 
-- Logo symbol and wordmark: SVG and PNG; reversed wordmark and social avatar included.
+- Logo symbol, simplified small symbol, wordmark, reversed and stacked lockups: SVG and PNG; social avatar included.
+- Facebook page kit (`assets/facebook/`): 720 × 720 profile picture, 1640 × 624 cover photo in English and Bangla, and ten launch posts. Those are two image launch posts, two text posts, a 4-card carousel, an English and a Bangla reel, a 3-frame story, a 30-second square feed video, and a Bangla documents post. Page details are in `FACEBOOK-PAGE.md`; captions, alt text and the schedule are in `FACEBOOK-POSTS.md`.
+- Flutter launcher icons (Android mipmaps and adaptive foregrounds, iOS AppIcon set) are written by the generator.
 - Feed: 4 posts at 1080 × 1350, including a Bangla brand post.
 - Carousel: 5 ordered cards at 1080 × 1350.
 - Stories: 3 frames at 1080 × 1920. Add the platform's link sticker in the open lower area.
-- Reel: 16-second silent MP4 at 1080 × 1920, H.264, 25 fps, plus 4 editable scenes and subtitle file. Add licensed music or voiceover in the platform editor if desired.
+- Reel: 16-second silent MP4 (`assets/landlord-reel.mp4`) at 1080 × 1920, H.264, 25 fps, plus 4 editable scenes and subtitle file. Add licensed music or voiceover in the platform editor if desired.
 - Social link preview: 1200 × 630, installed as Open Graph and Twitter image.
 - Website and PWA: SVG icon, favicon, Apple icon, and regular/maskable icons.
 
-The source generator is `scripts/generate-brand-assets.mjs`; it uses the project's existing Sharp dependency. Regenerate using `node scripts/generate-brand-assets.mjs work/brand-kit`. The vector artwork uses no stock photos or external image requests.
+The source generator is `scripts/generate-brand-assets.mjs`; it uses the project's existing Sharp dependency and, when available, ffmpeg for the Facebook videos. Regenerate using `node scripts/generate-brand-assets.mjs brand/assets`. The vector artwork uses no stock photos or external image requests.
 
 ## Before posting
 
