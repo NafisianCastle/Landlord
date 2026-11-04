@@ -2,9 +2,9 @@
 
 Open `index.html` locally to browse the artwork and play the reel. Ready-to-publish files and editable SVGs live in `assets/`. Use `BRAND-GUIDE.md` for identity rules and `SOCIAL-CONTENT.md` for captions, alt text, story prompts, voiceover scripts, and a two-week launch cadence.
 
-Facebook Page setup (name, intro, About, cover) is in `FACEBOOK-PAGE.md`; the ten launch posts with captions, alt text and schedule are in `FACEBOOK-POSTS.md`.
+Facebook Page setup (name, intro, About, cover) is in `FACEBOOK-PAGE.md`; the ten launch posts with captions, alt text and schedule are in `FACEBOOK-POSTS.md`. The same ten posts adapted for Instagram and LinkedIn are in `INSTAGRAM-POSTS.md` and `LINKEDIN-POSTS.md` (new artwork in `assets/instagram/` and `assets/linkedin/`).
 
-Regenerate images, the Facebook videos and the app/mobile icons from the repository root (writes into this folder):
+Regenerate images, the social videos and the app/mobile icons from the repository root (writes into this folder):
 
 ```sh
 node scripts/generate-brand-assets.mjs brand/assets

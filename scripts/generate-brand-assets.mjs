@@ -18,6 +18,8 @@ for (const dir of [
   "facebook/posts/07-reel-bn",
   "facebook/posts/08-story",
   "facebook/posts/09-video",
+  "instagram/posts",
+  "linkedin/posts/07-reel-rent-en",
 ])
   await fs.mkdir(path.join(out, dir), { recursive: true });
 const C = {
@@ -790,7 +792,9 @@ async function scenesVideo(dir, file, lang, scenes, w, h, D, T, draw) {
   for (let i = 0; i < scenes.length; i++)
     await save(`${dir}/scene-0${i + 1}`, w, h, draw(scenes[i], i));
   await captions(dir, lang, timing(scenes, D, T));
-  videos.push({ dir, file, count: scenes.length, w, h, D, T });
+  // The MP4 sits next to its scene folder.
+  const mp4 = path.join(path.dirname(dir), file);
+  videos.push({ dir, file: mp4, count: scenes.length, w, h, D, T });
 }
 
 // 06 · Reel (EN): scattered records → one place. 5 scenes, ~15 s.
@@ -1083,15 +1087,289 @@ await save(
     footer(1350, false, "এনক্রিপশন পাসফ্রেজটি নিরাপদে সংরক্ষণ করুন"),
 );
 
-// Render the Facebook videos: gentle push-in per scene, crossfades, silent
-// H.264 at 30 fps (Facebook autoplays muted; text is burned in and captions
-// are provided as SRT/VTT).
+// ---------------------------------------------------------------------------
+// Instagram and LinkedIn versions of the 10 posts. Posts that work unchanged
+// reuse the Facebook files; only platform gaps get new artwork here.
+// Copy and the per-platform mapping: brand/INSTAGRAM-POSTS.md and
+// brand/LINKEDIN-POSTS.md.
+// ---------------------------------------------------------------------------
+
+// Instagram has no text-only posts: 03 and 04 become image cards.
+await save(
+  "instagram/posts/03-question",
+  1080,
+  1350,
+  `<rect width="1080" height="1350" fill="${C.forest}"/>` +
+    brand(true) +
+    text(80, 304, "QUICK QUESTION", 22, C.lime, 600) +
+    lines(
+      80,
+      440,
+      [
+        "If you needed your",
+        "plot's deed today,",
+        "how long would it",
+        "take to find it?",
+      ],
+      76,
+      C.paper,
+      600,
+      1.2,
+    ) +
+    text(80, 870, "Tell us in the comments ↓", 32, "#C5D9CC") +
+    parcel(640, 900, 0.95, true) +
+    footer(1350, true, "LANDLORD · YOUR PROPERTY, IN ORDER"),
+);
+const habits = [
+  "প্রতিটি জমি ও ফ্ল্যাটের তালিকা রাখুন",
+  "দলিল ও রসিদের স্ক্যান এক জায়গায় রাখুন",
+  "ভাড়া পেলেই সাথে সাথে লিখে রাখুন",
+  "ভাড়াটিয়ার তথ্য হাতের কাছে রাখুন",
+  "বছরে একবার সব কাগজ মিলিয়ে দেখুন",
+];
+await save(
+  "instagram/posts/04-habits-bn",
+  1080,
+  1350,
+  `<rect width="1080" height="1350" fill="${C.paper}"/>` +
+    brand() +
+    text(80, 305, "৫টি সহজ অভ্যাস", 32, C.forest, 600) +
+    lines(80, 440, ["সম্পত্তির হিসাব", "গুছিয়ে রাখুন"], 72, C.ink, 600, 1.3) +
+    habits
+      .map(
+        (h, i) =>
+          `<circle cx="112" cy="${672 + i * 100}" r="30" fill="${C.forest}"/>` +
+          text(101, 683 + i * 100, "১২৩৪৫"[i], 30, C.lime, 600) +
+          text(170, 683 + i * 100, h, 32, C.ink, 400),
+      )
+      .join("") +
+    footer(1350, false, "সংরক্ষণ করে রাখুন · LANDLORDSBD.COM"),
+);
+
+// LinkedIn company page: 400 × 400 logo and 1128 × 191 cover banner. The
+// logo overlaps the banner's lower left on desktop, so text starts at x 300.
+await save(
+  "linkedin/logo",
+  400,
+  400,
+  `<rect width="400" height="400" fill="${C.forest}"/>` + mark(80, 80, 240),
+);
+await save(
+  "linkedin/cover-banner",
+  1128,
+  191,
+  `<rect width="1128" height="191" fill="${C.forest}"/>` +
+    text(300, 88, "Your property, in order.", 40, C.paper, 600) +
+    text(
+      300,
+      134,
+      "Land · Apartments · Rent · Documents — landlordsbd.com",
+      20,
+      "#C5D9CC",
+    ) +
+    `<g opacity="0.9">${parcel(930, 30, 0.47, true)}</g>`,
+);
+// LinkedIn posts are in English. 02 replaces the Bangla launch post with an
+// English post for owners managing property from another city or abroad.
+await save(
+  "linkedin/posts/02-from-afar",
+  1080,
+  1350,
+  `<rect width="1080" height="1350" fill="${C.forest}"/>` +
+    brand(true) +
+    text(80, 304, "MANAGING FROM ANOTHER CITY OR ABROAD?", 22, C.lime, 600) +
+    lines(
+      80,
+      440,
+      ["Your property", "records, wherever", "you are."],
+      80,
+      C.paper,
+      600,
+      1.18,
+    ) +
+    lines(
+      80,
+      770,
+      [
+        "Keep plots, flats, rent records and",
+        "documents together, and check them online.",
+      ],
+      30,
+      "#C5D9CC",
+      400,
+      1.5,
+    ) +
+    button(80, 1040, "Get started free", true) +
+    parcel(640, 870, 0.8, true) +
+    footer(1350, true, "LANDLORDSBD.COM · FREE TO USE"),
+);
+await save(
+  "linkedin/posts/10-documents-en",
+  1080,
+  1350,
+  `<rect width="1080" height="1350" fill="${C.paper}"/>` +
+    brand() +
+    text(80, 305, "THE IMPORTANT PAPERS, CLOSE", 22, C.muted, 600) +
+    lines(
+      80,
+      450,
+      ["Deeds, records and", "receipts in one", "place."],
+      76,
+      C.ink,
+      600,
+      1.18,
+    ) +
+    lines(
+      80,
+      770,
+      ["Keep each property's PDFs with", "the property they belong to."],
+      30,
+      C.muted,
+      400,
+      1.5,
+    ) +
+    docCard(
+      80,
+      900,
+      "Deed & ownership records",
+      "PDFs, together in one place.",
+      "Optional encryption before upload.",
+    ) +
+    footer(1350, false, "KEEP YOUR ENCRYPTION PASSPHRASE SAFE"),
+);
+// 07 · English version of the rent-day reel. Figures are illustrative.
+const reelRentEn = [
+  {
+    dark: true,
+    title: ["Rent day.", "Where's the", "notebook?"],
+    sub: ["Who has paid, who hasn't —", "hard to keep in your head."],
+    caption:
+      "Rent day. Where's the notebook? Who has paid, who hasn't — hard to keep in your head.",
+    art: parcel(560, 1250, 1.1, true),
+  },
+  {
+    title: ["Tenants and rent,", "together."],
+    sub: ["Every flat, every month."],
+    caption: "Tenants and rent, together. Every flat, every month.",
+    art: rentCard(
+      80,
+      1060,
+      "THIS MONTH · ILLUSTRATIVE EXAMPLE",
+      "৳25,000",
+      "Recorded rent",
+      "Recorded",
+    ),
+  },
+  {
+    title: ["Each month at", "a glance."],
+    sub: ["See what's recorded", "and what's due."],
+    caption: "Each month at a glance. See what's recorded and what's due.",
+    art: rows(80, 1090, [
+      ["November", "Due", "due"],
+      ["October", "Recorded"],
+      ["September", "Recorded"],
+    ]),
+  },
+  {
+    title: ["Plots and papers", "in the same place."],
+    sub: ["All of your property", "details, organised."],
+    caption:
+      "Plots and papers in the same place. All of your property details, organised.",
+    art: mapCard(260, 1090, "Plot boundary · saved"),
+  },
+  {
+    dark: true,
+    title: ["Your property,", "in order."],
+    sub: ["Landlord is free to use.", "landlordsbd.com"],
+    caption:
+      "Your property, in order. Landlord is free to use. landlordsbd.com",
+    art:
+      parcel(560, 1150, 1.1, true) + button(80, 1430, "Get started free", true),
+  },
+];
+await scenesVideo(
+  "linkedin/posts/07-reel-rent-en",
+  "07-reel-rent-en.mp4",
+  "en",
+  reelRentEn,
+  1080,
+  1920,
+  3.4,
+  0.4,
+  (s, i) => vertical(s, `RENT RECORDS, SIMPLY   0${i + 1}`),
+);
+// 05 · LinkedIn shows carousels as document posts, so the Facebook carousel
+// cards are bundled into a PDF (one JPEG per page, no extra dependencies).
+async function imagesToPdf(file, pngs) {
+  const pages = [];
+  for (const p of pngs) {
+    const { data, info } = await sharp(p)
+      .flatten({ background: "#fff" })
+      .jpeg({ quality: 90 })
+      .toBuffer({ resolveWithObject: true });
+    pages.push({ data, w: info.width, h: info.height });
+  }
+  const objects = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    `<< /Type /Pages /Kids [${pages.map((_, i) => `${3 + i * 3} 0 R`).join(" ")}] /Count ${pages.length} >>`,
+  ];
+  pages.forEach(({ data, w, h }, i) => {
+    const id = 3 + i * 3;
+    const draw = `q ${w} 0 0 ${h} 0 0 cm /Im0 Do Q`;
+    objects.push(
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${w} ${h}] /Resources << /XObject << /Im0 ${id + 2} 0 R >> >> /Contents ${id + 1} 0 R >>`,
+      `<< /Length ${draw.length} >>\nstream\n${draw}\nendstream`,
+      Buffer.concat([
+        Buffer.from(
+          `<< /Type /XObject /Subtype /Image /Width ${w} /Height ${h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${data.length} >>\nstream\n`,
+          "latin1",
+        ),
+        data,
+        Buffer.from("\nendstream", "latin1"),
+      ]),
+    );
+  });
+  const parts = [Buffer.from("%PDF-1.4\n", "latin1")];
+  let size = parts[0].length;
+  const offsets = objects.map((body, i) => {
+    const at = size;
+    const chunk = Buffer.concat([
+      Buffer.from(`${i + 1} 0 obj\n`, "latin1"),
+      Buffer.isBuffer(body) ? body : Buffer.from(body, "latin1"),
+      Buffer.from("\nendobj\n", "latin1"),
+    ]);
+    parts.push(chunk);
+    size += chunk.length;
+    return at;
+  });
+  parts.push(
+    Buffer.from(
+      `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n` +
+        offsets
+          .map((o) => `${String(o).padStart(10, "0")} 00000 n \n`)
+          .join("") +
+        `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${size}\n%%EOF\n`,
+      "latin1",
+    ),
+  );
+  await fs.writeFile(file, Buffer.concat(parts));
+}
+await imagesToPdf(
+  path.join(out, "linkedin/posts/05-carousel.pdf"),
+  [1, 2, 3, 4].map((i) =>
+    path.join(out, `facebook/posts/05-carousel/0${i}.png`),
+  ),
+);
+
+// Render the videos: gentle push-in per scene, crossfades, silent H.264 at
+// 30 fps (feeds autoplay muted; text is burned in and captions are provided
+// as SRT/VTT).
 let ffmpeg = true;
 try {
   execFileSync("ffmpeg", ["-version"], { stdio: "ignore" });
 } catch {
   ffmpeg = false;
-  console.warn("ffmpeg not found: skipped rendering Facebook videos.");
+  console.warn("ffmpeg not found: skipped rendering videos.");
 }
 for (const v of ffmpeg ? videos : []) {
   const args = ["-hide_banner", "-loglevel", "error", "-y"];
@@ -1113,11 +1391,7 @@ for (const v of ffmpeg ? videos : []) {
   chains.push(`[${last}]format=yuv420p[v]`);
   args.push("-filter_complex", chains.join(";"), "-map", "[v]");
   args.push("-c:v", "libx264", "-preset", "medium", "-crf", "22");
-  args.push(
-    "-movflags",
-    "+faststart",
-    path.join(out, "facebook/posts", v.file),
-  );
+  args.push("-movflags", "+faststart", path.join(out, v.file));
   execFileSync("ffmpeg", args, { stdio: "inherit" });
 }
 console.log(`Brand kit generated at ${out}`);
