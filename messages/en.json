@@ -542,7 +542,7 @@
     "sharedByOwner": "Shared with you by the plot owner.",
     "sharedAsRole": "Your role: {role}",
     "roleTenant": "Tenant — bills only",
-    "tenantHelp": "Tenants open Bills from the menu. They can see assigned bills and expenses you share, without ownership records or private documents. Viewer and Editor roles have broader access.",
+    "tenantHelp": "Tenants do not need an account. Add their email, create bills, then use Share link to send a private 90-day bill portal. Signed-in tenants can still use Bills from the menu.",
     "removeBroadAccess": "Remove this account’s Viewer or Editor access before inviting them as a tenant."
   },
   "PlotAuditLog": {
@@ -912,6 +912,32 @@
     "chartLabel": "Monthly income and expense trend",
     "month": "Month"
   },
+  "TenantPortalLink": {
+    "shareLink": "Share link",
+    "working": "Creating…",
+    "copy": "Copy",
+    "revoke": "Revoke",
+    "copied": "Link copied. Send it to the tenant.",
+    "revoked": "The tenant link has been revoked.",
+    "failed": "Could not create the tenant link.",
+    "shareTitle": "Your apartment bills",
+    "shareText": "Open this private link to view your apartment bills. No account is required.",
+    "linkLabel": "Tenant bill portal link"
+  },
+  "TenantPortal": {
+    "tenantPortal": "Private tenant portal",
+    "bills": "Your bills",
+    "hint": "You do not need a Landlord account to view these bills. Keep this private link safe.",
+    "noBills": "There are no shared bills yet.",
+    "due": "Due {date}",
+    "viewBill": "View bill copy",
+    "expires": "This link expires {date}.",
+    "status": {
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "unpaid": "Unpaid"
+    }
+  },
   "Bills": {
     "title": "Apartment bills",
     "billTitle": "Bill title",
@@ -924,7 +950,7 @@
     "paymentProof": "Payment proof",
     "fileHint": "JPEG, PNG, WebP or PDF · up to 10 MB.",
     "visible": "Share this bill with the selected tenant",
-    "inviteFirst": "Add a tenant using Shared with → Tenant — bills only above, then create a bill. The tenant needs a Landlord account.",
+    "inviteFirst": "Add a tenant using Shared with → Tenant — bills only above, then create a bill. The tenant does not need a Landlord account.",
     "createBill": "Add monthly bill",
     "submitProof": "Upload payment proof",
     "saving": "Saving…",

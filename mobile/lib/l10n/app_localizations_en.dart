@@ -728,7 +728,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get billInviteFirst =>
-      'Add a tenant above (Tenant — bills only), then create a bill. The tenant needs a Landlord account.';
+      'Add a tenant above (Tenant — bills only), then create a bill. The tenant does not need a Landlord account.';
 
   @override
   String get createBill => 'Add monthly bill';
@@ -911,7 +911,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tenantHelp =>
-      'Tenants open the Bills tab. They can see assigned bills and expenses you share, without ownership records or private documents. Viewer and Editor roles have broader access.';
+      'Tenants do not need an account. Add their email, create bills, then share their private 90-day bill portal link. Signed-in tenants can still use the Bills tab.';
+
+  @override
+  String get shareTenantLink => 'Share tenant bill link';
+
+  @override
+  String get tenantLinkCopied =>
+      'Private bill link copied. Send it to the tenant.';
 
   @override
   String removeTenantConfirm(String email) {

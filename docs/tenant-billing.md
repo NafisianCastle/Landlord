@@ -1,10 +1,17 @@
 # Tenant utility bills
 
-Owners invite an existing Landlord account from an apartment’s **Shared with** form,
-choosing **Tenant — bills only**. Tenants use **Bills** in the menu. This role does
-not grant access to apartment ownership data, purchase prices, leases or deeds.
+Owners add a tenant's email from an apartment’s **Shared with** form, choosing
+**Tenant — bills only**. A Landlord account is optional. **Share link** creates a
+private, read-only bill portal that works for 90 days; creating another link replaces
+the old one, and **Revoke** disables it immediately. The mobile share button creates
+the same link and copies it for sending. Keep the link private because anyone who has
+it can view that tenant's shared bills and copies until it expires or is revoked.
+
+Tenants who already have a Landlord account can also use **Bills** in the menu and
+upload payment proof. The guest portal does not accept payment proof. Tenant access
+does not include apartment ownership data, purchase prices, leases or deeds.
 Viewer/editor sharing retains its broader existing permissions; remove that access
-before inviting the same account as a tenant.
+before adding the same account as a tenant.
 
 Each monthly bill has a title, one tenant, an amount in BDT, a due date and an image
 or PDF copy. Uncheck sharing to keep a bill private, or hide it later. Uploaded files
@@ -41,8 +48,10 @@ does not restore its old bills automatically. Downloaded copies cannot be recall
 1. Apply `supabase/migrations/20261021150040_tenant_utility_bills.sql` before deploying
    the application. It creates the tenant, bill and proof tables, restrictive grants,
    RLS, review function, expense visibility and private `apartment-bills` bucket.
-2. Deploy the application and `vercel.json` cron configuration.
-3. Complete [Web Push setup](push-notifications.md) for browser reminders:
+2. Apply `supabase/migrations/20261104074008_tenant_portal_links.sql`. It permits
+   account-free tenant records and creates the server-only hashed portal token table.
+3. Deploy the application and `vercel.json` cron configuration.
+4. Complete [Web Push setup](push-notifications.md) for browser reminders:
    VAPID public/private keys and subject, `CRON_SECRET`, and the server-only Supabase
    service-role key. Tenant devices must opt in under Bills → Bill notifications.
 

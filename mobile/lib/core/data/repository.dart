@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
+import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../crypto/encryption.dart';
+import '../env.dart';
 import '../geo/geo.dart';
 import '../offline/local_db.dart';
 import '../offline/sync.dart';
@@ -618,16 +621,17 @@ class Repository {
   Future<void> inviteTenant(String apartmentId, String apartmentName, String email) async {
     final tenantId = await _client.rpc('find_apartment_tenant_account',
         params: {'p_apartment_id': apartmentId, 'p_email': email}) as String?;
-    if (tenantId == null) throw const ActionException(ActionError.noAccountFound);
     if (tenantId == _userId) throw const ActionException(ActionError.cannotInviteSelf);
     // A tenant label must not imply privacy while viewer/editor access remains.
-    final existing = await _client
-        .from('apartment_collaborators')
-        .select('id')
-        .eq('apartment_id', apartmentId)
-        .eq('user_id', tenantId)
-        .limit(1);
-    if (existing.isNotEmpty) throw const ActionException(ActionError.removeBroadAccess);
+    if (tenantId != null) {
+      final existing = await _client
+          .from('apartment_collaborators')
+          .select('id')
+          .eq('apartment_id', apartmentId)
+          .eq('user_id', tenantId)
+          .limit(1);
+      if (existing.isNotEmpty) throw const ActionException(ActionError.removeBroadAccess);
+    }
     try {
       await _client.from('apartment_tenants').insert({
         'apartment_id': apartmentId,
@@ -641,6 +645,32 @@ class Repository {
       rethrow;
     }
     await refresh();
+  }
+
+  Future<String> createTenantPortalLink(String tenantShareId) async {
+    if (Env.webUrl.isEmpty) throw const ActionException(ActionError.saveFailed);
+    final token = _client.auth.currentSession?.accessToken;
+    if (token == null) throw const ActionException(ActionError.saveFailed);
+    try {
+      final response = await http.post(
+        Uri.parse('${Env.webUrl.replaceAll(RegExp(r'/+$'), '')}/api/tenant-links'),
+        headers: {
+          'authorization': 'Bearer $token',
+          'content-type': 'application/json',
+        },
+        body: jsonEncode({'tenantShareId': tenantShareId}),
+      );
+      final decoded = jsonDecode(response.body);
+      final url = decoded is Map<String, dynamic> ? decoded['url'] : null;
+      if (response.statusCode != 200 || url is! String) {
+        throw const ActionException(ActionError.saveFailed);
+      }
+      return url;
+    } on ActionException {
+      rethrow;
+    } catch (_) {
+      throw const ActionException(ActionError.saveFailed);
+    }
   }
 
   Future<void> removeTenant(DbRow share) async {

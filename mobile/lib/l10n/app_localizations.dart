@@ -1715,8 +1715,20 @@ abstract class AppLocalizations {
   /// No description provided for @tenantHelp.
   ///
   /// In en, this message translates to:
-  /// **'Tenants open the Bills tab. They can see assigned bills and expenses you share, without ownership records or private documents. Viewer and Editor roles have broader access.'**
+  /// **'Tenants do not need an account. Add their email, create bills, then share their private 90-day bill portal link. Signed-in tenants can still use the Bills tab.'**
   String get tenantHelp;
+
+  /// No description provided for @shareTenantLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Share tenant bill link'**
+  String get shareTenantLink;
+
+  /// No description provided for @tenantLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Private bill link copied. Send it to the tenant.'**
+  String get tenantLinkCopied;
 
   /// No description provided for @removeTenantConfirm.
   ///

@@ -239,14 +239,15 @@ export async function inviteApartmentCollaborator(
     if (!apartment) return { error: t("invalidRole") };
     const { data: tenantId, error: lookupError } = await supabase.rpc("find_apartment_tenant_account", { p_apartment_id: apartmentId, p_email: email });
     if (lookupError) return { error: lookupError.message };
-    if (!tenantId) return { error: t("noAccountFound") };
     if (tenantId === auth.user.id) return { error: t("cannotInviteSelf") };
     // Require removing broader access first; a tenant label must not imply privacy
     // while the same account still has a viewer/editor invitation.
-    const { data: existing, error: existingError } = await supabase.from("apartment_collaborators").select("id")
-      .eq("apartment_id", apartmentId).eq("user_id", tenantId).limit(1);
-    if (existingError) return { error: existingError.message };
-    if (existing?.length) return { error: t("removeBroadAccess") };
+    if (tenantId) {
+      const { data: existing, error: existingError } = await supabase.from("apartment_collaborators").select("id")
+        .eq("apartment_id", apartmentId).eq("user_id", tenantId).limit(1);
+      if (existingError) return { error: existingError.message };
+      if (existing?.length) return { error: t("removeBroadAccess") };
+    }
     const { error } = await supabase.from("apartment_tenants").insert({
       apartment_id: apartmentId, owner_id: auth.user.id, user_id: tenantId,
       invited_email: email, apartment_label: apartment.name,

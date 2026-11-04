@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -381,6 +382,23 @@ class ApartmentBillsSection extends ConsumerWidget {
             apartment['id'] as String, apartment['name'] as String, value));
   }
 
+  Future<void> _shareTenantLink(BuildContext context, WidgetRef ref, DbRow tenant) async {
+    final l = context.l10n;
+    try {
+      final url = await ref
+          .read(repositoryProvider)
+          .createTenantPortalLink(tenant['id'] as String);
+      await Clipboard.setData(ClipboardData(text: url));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.tenantLinkCopied)));
+      }
+    } on ActionException catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.error.message(l))));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
@@ -428,26 +446,36 @@ class ApartmentBillsSection extends ConsumerWidget {
                 onTap: leaseFor(t) == null
                     ? null
                     : () => context.go('/apartments/$id/leases/${leaseFor(t)!['id']}'),
-                trailing: TextButton(
-                  child: Text(l.remove),
-                  onPressed: () async {
-                    final ok = await showDialog<bool>(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        content: Text(l.removeTenantConfirm(t['invited_email'] as String)),
-                        actions: [
-                          TextButton(
-                              onPressed: () => Navigator.pop(context, false), child: Text(l.cancel)),
-                          FilledButton(
-                              onPressed: () => Navigator.pop(context, true), child: Text(l.remove)),
-                        ],
-                      ),
-                    );
-                    if (ok == true && context.mounted) {
-                      await runOnlineAction(context, () => ref.read(repositoryProvider).removeTenant(t));
-                    }
-                  },
-                ),
+                trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                  IconButton(
+                    tooltip: l.shareTenantLink,
+                    icon: const Icon(Icons.ios_share_outlined),
+                    onPressed: () => _shareTenantLink(context, ref, t),
+                  ),
+                  TextButton(
+                    child: Text(l.remove),
+                    onPressed: () async {
+                      final ok = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          content: Text(l.removeTenantConfirm(t['invited_email'] as String)),
+                          actions: [
+                            TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: Text(l.cancel)),
+                            FilledButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: Text(l.remove)),
+                          ],
+                        ),
+                      );
+                      if (ok == true && context.mounted) {
+                        await runOnlineAction(
+                            context, () => ref.read(repositoryProvider).removeTenant(t));
+                      }
+                    },
+                  ),
+                ]),
               ),
           ]),
         ),
