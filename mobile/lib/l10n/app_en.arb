@@ -331,7 +331,7 @@
   "paymentProof": "Payment proof",
   "billFileHint": "JPEG, PNG, WebP or PDF · up to 10 MB.",
   "billVisible": "Share this bill with the selected tenant",
-  "billInviteFirst": "Add a tenant above (Tenant — bills only), then create a bill. The tenant needs a Landlord account.",
+  "billInviteFirst": "Add a tenant above (Tenant — bills only), then create a bill. The tenant does not need a Landlord account.",
   "createBill": "Add monthly bill",
   "submitProof": "Upload payment proof",
   "billCreated": "Bill saved.",
@@ -408,7 +408,9 @@
   "tenants": "Tenants",
   "inviteTenant": "Invite tenant",
   "roleTenant": "Tenant — bills only",
-  "tenantHelp": "Tenants open the Bills tab. They can see assigned bills and expenses you share, without ownership records or private documents. Viewer and Editor roles have broader access.",
+  "tenantHelp": "Tenants do not need an account. Add their email, create bills, then share their private 90-day bill portal link. Signed-in tenants can still use the Bills tab.",
+  "shareTenantLink": "Share tenant bill link",
+  "tenantLinkCopied": "Private bill link copied. Send it to the tenant.",
   "removeTenantConfirm": "Remove {email}? Their bill, proof and shared-expense access ends; history stays with you.",
   "@removeTenantConfirm": {
     "placeholders": {

@@ -10,8 +10,8 @@ class Env {
   static const supabasePublishableKey =
       String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
 
-  /// The web app's base URL (e.g. https://landlord.example). Only needed for
-  /// admin screens, which go through its /api/admin routes.
+  /// The web app's base URL (e.g. https://landlord.example). Used by admin
+  /// screens and to create private tenant bill portal links.
   static const webUrl = String.fromEnvironment('WEB_URL');
 
   /// Deep link Supabase redirects back to after Google sign-in. Must be in the

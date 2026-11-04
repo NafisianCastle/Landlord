@@ -727,7 +727,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get billInviteFirst =>
-      'উপরে একজন ভাড়াটিয়া যোগ করুন (ভাড়াটিয়া — শুধু বিল), তারপর বিল তৈরি করুন। ভাড়াটিয়ার Landlord অ্যাকাউন্ট থাকতে হবে।';
+      'উপরে একজন ভাড়াটিয়া যোগ করুন (ভাড়াটিয়া — শুধু বিল), তারপর বিল তৈরি করুন। ভাড়াটিয়ার Landlord অ্যাকাউন্ট লাগবে না।';
 
   @override
   String get createBill => 'মাসিক বিল যোগ করুন';
@@ -907,7 +907,14 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get tenantHelp =>
-      'ভাড়াটিয়া মেনুর বিল থেকে তার বিল ও আপনার শেয়ার করা ব্যয় দেখতে পাবেন। মালিকানার তথ্য ও ব্যক্তিগত দলিল দেখতে পাবেন না। দর্শক ও সম্পাদকের প্রবেশাধিকার বেশি।';
+      'ভাড়াটিয়ার অ্যাকাউন্ট লাগবে না। ইমেইল যোগ করে বিল তৈরি করুন, তারপর ৯০ দিনের ব্যক্তিগত বিল পোর্টাল লিংক শেয়ার করুন। অ্যাকাউন্ট থাকা ভাড়াটিয়া বিল মেনুও ব্যবহার করতে পারবেন।';
+
+  @override
+  String get shareTenantLink => 'ভাড়াটিয়ার বিল লিংক শেয়ার করুন';
+
+  @override
+  String get tenantLinkCopied =>
+      'ব্যক্তিগত বিল লিংক কপি হয়েছে। ভাড়াটিয়াকে পাঠান।';
 
   @override
   String removeTenantConfirm(String email) {

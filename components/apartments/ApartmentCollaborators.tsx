@@ -12,6 +12,7 @@ import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
+import TenantPortalLinkButton from "@/components/bills/TenantPortalLinkButton";
 
 interface Collaborator {
   id: string;
@@ -71,10 +72,13 @@ export default function ApartmentCollaborators({
       <div className="flex flex-col gap-3 rounded-lg border border-border p-3">
         <ul className="flex flex-col divide-y divide-border">
           {[...collaborators, ...tenants].map((c) => (
-            <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm">
-              <span className="flex min-w-0 flex-wrap items-center gap-2">
-                <span className="break-all">{c.invited_email}</span> <Badge>{c.role === "tenant" ? t("roleTenant") : c.role}</Badge>
-              </span>
+            <li key={c.id} className="flex flex-wrap items-start justify-between gap-3 py-3 text-sm">
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <span className="flex min-w-0 flex-wrap items-center gap-2">
+                  <span className="break-all">{c.invited_email}</span> <Badge>{c.role === "tenant" ? t("roleTenant") : c.role}</Badge>
+                </span>
+                {c.role === "tenant" && <TenantPortalLinkButton tenantShareId={c.id} />}
+              </div>
               <ConfirmDialog
                 trigger={
                   <Button

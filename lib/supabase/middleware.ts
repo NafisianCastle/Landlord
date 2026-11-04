@@ -8,6 +8,8 @@ const PUBLIC_PATHS = [
   "/signup",
   "/auth/callback",
   "/api/payments",
+  "/api/tenant-portal",
+  "/tenant/bills",
   "/terms",
   "/privacy",
   "/refund",
@@ -25,7 +27,8 @@ export async function updateSession(request: NextRequest) {
     ["/api/cron/rent-reminders", "/api/cron/lease-expiry", "/api/cron/bill-reminders"].includes(
       request.nextUrl.pathname,
     ) ||
-    request.nextUrl.pathname.startsWith("/api/admin/")
+    request.nextUrl.pathname.startsWith("/api/admin/") ||
+    request.nextUrl.pathname === "/api/tenant-links"
   ) {
     return NextResponse.next({ request });
   }
