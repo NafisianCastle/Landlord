@@ -770,6 +770,12 @@ abstract class AppLocalizations {
   /// **'Tenant email'**
   String get tenantEmail;
 
+  /// No description provided for @tenantEmailHistoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the same email as the tenant's Bills invitation to include bills and payment proofs in this history.'**
+  String get tenantEmailHistoryHint;
+
   /// No description provided for @rentAmount.
   ///
   /// In en, this message translates to:
@@ -835,6 +841,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'End lease'**
   String get endLease;
+
+  /// No description provided for @tenantHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenant history'**
+  String get tenantHistory;
+
+  /// No description provided for @financialSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Financial summary'**
+  String get financialSummary;
+
+  /// No description provided for @totalRent.
+  ///
+  /// In en, this message translates to:
+  /// **'Total scheduled rent'**
+  String get totalRent;
+
+  /// No description provided for @rentPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Rent paid'**
+  String get rentPaid;
+
+  /// No description provided for @outstandingRent.
+  ///
+  /// In en, this message translates to:
+  /// **'Outstanding rent'**
+  String get outstandingRent;
+
+  /// No description provided for @unpaidBills.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid bills'**
+  String get unpaidBills;
+
+  /// No description provided for @transactionHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction history'**
+  String get transactionHistory;
+
+  /// No description provided for @leaseNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Lease notes'**
+  String get leaseNotes;
+
+  /// No description provided for @noTenantBills.
+  ///
+  /// In en, this message translates to:
+  /// **'No apartment bills recorded for this tenant.'**
+  String get noTenantBills;
 
   /// No description provided for @payments.
   ///

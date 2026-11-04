@@ -126,24 +126,53 @@ class _StatCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Card(
         color: highlight ? scheme.errorContainer : null,
-        child: ListTile(
-          leading: Icon(icon, color: scheme.primary),
-          title: Text(label),
-          subtitle: (sub ?? '').isEmpty ? null : Text(sub!),
-          // Counts up from 0 on first show; instant with reduced motion.
-          trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-            TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0, end: amount.toDouble()),
-              duration: MediaQuery.disableAnimationsOf(context)
-                  ? Duration.zero
-                  : const Duration(milliseconds: 600),
-              curve: Curves.easeOutCubic,
-              builder: (context, value, _) =>
-                  Text(format(value), style: Theme.of(context).textTheme.titleMedium),
-            ),
-            const Icon(Icons.chevron_right),
-          ]),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
           onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(icon, color: highlight ? scheme.onErrorContainer : scheme.primary),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: highlight ? scheme.onErrorContainer : scheme.onSurfaceVariant,
+                      )),
+                      const SizedBox(height: 4),
+                      // Let large amounts and enlarged text wrap within the card.
+                      TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0, end: amount.toDouble()),
+                        duration: MediaQuery.disableAnimationsOf(context)
+                            ? Duration.zero
+                            : const Duration(milliseconds: 600),
+                        curve: Curves.easeOutCubic,
+                        builder: (context, value, _) => Text(
+                          format(value),
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: highlight ? scheme.onErrorContainer : scheme.onSurface,
+                          ),
+                        ),
+                      ),
+                      if ((sub ?? '').isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(sub!, style: TextStyle(
+                          color: highlight ? scheme.onErrorContainer : scheme.onSurfaceVariant,
+                        )),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(Icons.chevron_right,
+                    color: highlight ? scheme.onErrorContainer : scheme.onSurfaceVariant),
+              ],
+            ),
+          ),
         ),
       ),
     );

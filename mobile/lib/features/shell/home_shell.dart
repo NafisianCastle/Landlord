@@ -71,13 +71,17 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       body: Column(
         children: [
           if (offline || pending > 0)
-            MaterialBanner(
-              content: Text([
-                if (offline) l.offlineBanner,
-                if (pending > 0) l.pendingChanges(pending),
-              ].join(' · ')),
-              leading: const Icon(Icons.cloud_off),
-              actions: [TextButton(onPressed: _refresh, child: Text(l.retry))],
+            SafeArea(
+              bottom: false,
+              child: MaterialBanner(
+                content: Text([
+                  if (offline) l.offlineBanner,
+                  if (pending > 0) l.pendingChanges(pending),
+                ].join(' · ')),
+                leading: Icon(offline ? Icons.cloud_off : Icons.cloud_upload_outlined),
+                forceActionsBelow: true,
+                actions: [TextButton(onPressed: _refresh, child: Text(l.retry))],
+              ),
             ),
           Expanded(child: widget.shell),
         ],
@@ -100,8 +104,18 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
 /// Pull-to-refresh wrapper used by the list screens.
 class RefreshableList extends ConsumerWidget {
-  const RefreshableList({super.key, required this.children});
-  final List<Widget> children;
+  const RefreshableList({super.key, required this.children})
+      : itemCount = null,
+        itemBuilder = null;
+  const RefreshableList.builder({
+    super.key,
+    required this.itemCount,
+    required this.itemBuilder,
+  }) : children = null;
+
+  final List<Widget>? children;
+  final int? itemCount;
+  final IndexedWidgetBuilder? itemBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => RefreshIndicator(
@@ -109,10 +123,12 @@ class RefreshableList extends ConsumerWidget {
           final result = await ref.read(repositoryProvider).refresh();
           ref.read(_offlineProvider.notifier).set(result.offline);
         },
-        child: ListView(
+        child: ListView.builder(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16),
-          children: children,
+          itemCount: itemCount ?? children!.length,
+          itemBuilder: itemBuilder ?? ((_, index) => children![index]),
         ),
       );
 }

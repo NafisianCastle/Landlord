@@ -14,10 +14,11 @@ function subjectPath(subjectType: LeaseSubjectType, subjectId: string) {
 }
 
 function leaseFieldsFromForm(formData: FormData) {
+  const tenantEmail = String(formData.get("tenantEmail") ?? "").trim().toLowerCase();
   return {
     tenant_name: String(formData.get("tenantName") ?? "").trim(),
     tenant_phone: String(formData.get("tenantPhone") ?? "") || null,
-    tenant_email: String(formData.get("tenantEmail") ?? "") || null,
+    tenant_email: tenantEmail || null,
     rent_amount: Number(formData.get("rentAmount") ?? 0),
     frequency: String(formData.get("frequency") ?? "monthly"),
     start_date: String(formData.get("startDate") ?? "") || null,
@@ -45,6 +46,7 @@ export async function createLease(
 
   const fields = leaseFieldsFromForm(formData);
   if (!fields.tenant_name) return { error: t("tenantNameRequired") };
+  if (subjectType === "apartment" && !fields.tenant_email) return { error: t("tenantEmailRequired") };
   if (!fields.rent_amount || fields.rent_amount <= 0) return { error: t("rentAmountRequired") };
   if (!fields.start_date) return { error: t("startDateRequired") };
 
@@ -89,6 +91,7 @@ export async function updateLease(
 
   const fields = leaseFieldsFromForm(formData);
   if (!fields.tenant_name) return { error: t("tenantNameRequired") };
+  if (subjectType === "apartment" && !fields.tenant_email) return { error: t("tenantEmailRequired") };
   if (!fields.rent_amount || fields.rent_amount <= 0) return { error: t("rentAmountRequired") };
   if (!fields.start_date) return { error: t("startDateRequired") };
 
@@ -179,6 +182,36 @@ export async function deleteLease(
   if (!auth.hasAccess) redirect("/paywall");
 
   const supabase = await createClient();
+  const t = await getTranslations("LeaseActions");
+  const { data: lease, error: leaseError } = await supabase
+    .from("leases")
+    .select("id, apartment_id, tenant_email, start_date, end_date")
+    .eq("id", leaseId)
+    .maybeSingle();
+  if (leaseError) return { error: leaseError.message };
+  if (!lease) return { error: t("historyCannotDelete") };
+
+  const paidResult = await supabase
+    .from("lease_payments")
+    .select("id", { count: "exact", head: true })
+    .eq("lease_id", leaseId)
+    .eq("paid", true);
+  if (paidResult.error) return { error: paidResult.error.message };
+
+  let hasBills = false;
+  if (lease.apartment_id && lease.tenant_email) {
+    const billResult = await supabase
+      .from("apartment_bills")
+      .select("tenant_email, due_date")
+      .eq("apartment_id", lease.apartment_id)
+      .gte("due_date", lease.start_date)
+      .lte("due_date", lease.end_date ?? "9999-12-31");
+    if (billResult.error) return { error: billResult.error.message };
+    const email = lease.tenant_email.trim().toLowerCase();
+    hasBills = (billResult.data ?? []).some((bill) => bill.tenant_email.trim().toLowerCase() === email);
+  }
+
+  if ((paidResult.count ?? 0) > 0 || hasBills) return { error: t("historyCannotDelete") };
   const { error } = await supabase.from("leases").delete().eq("id", leaseId);
   if (error) return { error: error.message };
 
