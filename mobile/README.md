@@ -67,6 +67,11 @@ the pin. Saving works offline and syncs later.
 
 As on the web (`docs/tenant-billing.md`):
 
+Each lease keeps a tenant history with contact and tenancy details, rent transactions,
+outstanding rent, unpaid apartment bills, bill copies, payment proofs and review notes.
+Ended leases remain in the property history, and leases with financial records cannot
+be deleted from the mobile app accidentally.
+
 - **Owners.** On an apartment they own, an owner can:
   - invite or remove tenants ("Tenant — bills only");
   - add a monthly bill with its copy (scan, photo or file);

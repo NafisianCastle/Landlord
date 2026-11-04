@@ -375,6 +375,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tenantEmail => 'Tenant email';
 
   @override
+  String get tenantEmailHistoryHint =>
+      "Use the same email as the tenant's Bills invitation to include bills and payment proofs in this history.";
+
+  @override
   String get rentAmount => 'Rent amount (BDT)';
 
   @override
@@ -406,6 +410,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get endLease => 'End lease';
+
+  @override
+  String get tenantHistory => 'Tenant history';
+
+  @override
+  String get financialSummary => 'Financial summary';
+
+  @override
+  String get totalRent => 'Total scheduled rent';
+
+  @override
+  String get rentPaid => 'Rent paid';
+
+  @override
+  String get outstandingRent => 'Outstanding rent';
+
+  @override
+  String get unpaidBills => 'Unpaid bills';
+
+  @override
+  String get transactionHistory => 'Transaction history';
+
+  @override
+  String get leaseNotes => 'Lease notes';
+
+  @override
+  String get noTenantBills => 'No apartment bills recorded for this tenant.';
 
   @override
   String get payments => 'Payments';

@@ -373,6 +373,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get tenantEmail => 'ভাড়াটিয়ার ইমেইল';
 
   @override
+  String get tenantEmailHistoryHint =>
+      'এই ইতিহাসে বিল ও পরিশোধের প্রমাণ রাখতে ভাড়াটিয়ার বিল আমন্ত্রণের একই ইমেইল ব্যবহার করুন।';
+
+  @override
   String get rentAmount => 'ভাড়ার পরিমাণ (টাকা)';
 
   @override
@@ -404,6 +408,34 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get endLease => 'লিজ শেষ করুন';
+
+  @override
+  String get tenantHistory => 'ভাড়াটিয়ার ইতিহাস';
+
+  @override
+  String get financialSummary => 'আর্থিক সারসংক্ষেপ';
+
+  @override
+  String get totalRent => 'মোট নির্ধারিত ভাড়া';
+
+  @override
+  String get rentPaid => 'পরিশোধিত ভাড়া';
+
+  @override
+  String get outstandingRent => 'বকেয়া ভাড়া';
+
+  @override
+  String get unpaidBills => 'অপরিশোধিত বিল';
+
+  @override
+  String get transactionHistory => 'লেনদেনের ইতিহাস';
+
+  @override
+  String get leaseNotes => 'লিজের নোট';
+
+  @override
+  String get noTenantBills =>
+      'এই ভাড়াটিয়ার জন্য কোনো অ্যাপার্টমেন্ট বিল রেকর্ড করা হয়নি।';
 
   @override
   String get payments => 'পেমেন্ট';

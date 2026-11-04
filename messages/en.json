@@ -257,6 +257,31 @@
   },
   "LeaseSection": {
     "title": "Lease / rent",
+    "tenantHistory": "Tenant history",
+    "historyHint": "Contact details, tenancy periods, rent transactions, unpaid bills and payment evidence stay together for each tenant.",
+    "loadFailed": "Couldn't load tenant history. Try refreshing the page.",
+    "noHistory": "No tenant history yet.",
+    "ongoing": "Ongoing",
+    "active": "Active",
+    "ended": "Ended",
+    "phone": "Phone",
+    "email": "Email",
+    "rent": "Rent",
+    "notes": "Lease notes",
+    "financialSummary": "Financial summary",
+    "scheduledRent": "Total scheduled rent",
+    "rentPaid": "Rent paid",
+    "outstandingRent": "Outstanding rent",
+    "unpaidBills": "Unpaid bills",
+    "billCount": "{count, plural, =1 {# bill} other {# bills}}",
+    "transactions": "Transaction history",
+    "bills": "Apartment bills and payment proofs",
+    "noBills": "No apartment bills recorded for this tenant.",
+    "frequency": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    },
     "addLease": "Add lease",
     "saveChanges": "Save changes",
     "payments": "Payment schedule",
@@ -313,6 +338,8 @@
   },
   "LeaseActions": {
     "tenantNameRequired": "Tenant name is required",
+    "tenantEmailRequired": "Tenant email is required for apartment leases so bills can be included in the tenant history.",
+    "historyCannotDelete": "This lease has payment or bill history and cannot be deleted.",
     "rentAmountRequired": "Rent amount must be greater than 0",
     "startDateRequired": "Lease start date is required",
     "trialEnded": "Your trial has ended — please upgrade to continue.",
@@ -586,6 +613,7 @@
     "tenantName": "Tenant name",
     "tenantPhone": "Tenant phone",
     "tenantEmail": "Tenant email",
+    "tenantEmailHistoryHint": "Use the same email as the tenant's Bills invitation to include bills and payment proofs in this history.",
     "rentAmount": "Rent amount (BDT)",
     "frequency": "Payment frequency",
     "frequencyOption": {
@@ -607,7 +635,8 @@
     "undo": "Undo",
     "updating": "Updating...",
     "noPaymentsYet": "No payments scheduled yet.",
-    "paidDateUnknown": "Paid · payment date not recorded"
+    "paidDateUnknown": "Paid · payment date not recorded",
+    "paidAmount": "Paid amount: {amount}"
   },
   "LandingPage": {
     "metaTitle": "Landlord — Your property, in order",

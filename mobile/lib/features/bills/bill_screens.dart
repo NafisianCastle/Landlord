@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 
+import '../../core/data/property_kind.dart';
 import '../../core/data/repository.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
@@ -387,6 +388,15 @@ class ApartmentBillsSection extends ConsumerWidget {
     final tenants = ref.watch(tenantSharesProvider(id)).value ?? [];
     final bills = ref.watch(apartmentBillsProvider(id)).value ?? [];
     final proofs = ref.watch(billProofsProvider).value ?? [];
+    final leases = ref.watch(leasesProvider((PropertyKind.apartment, id))).value ?? [];
+    DbRow? leaseFor(DbRow tenant) {
+      final email = (tenant['invited_email'] as String? ?? '').trim().toLowerCase();
+      if (email.isEmpty) return null;
+      for (final lease in leases) {
+        if ((lease['tenant_email'] as String? ?? '').trim().toLowerCase() == email) return lease;
+      }
+      return null;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -414,6 +424,10 @@ class ApartmentBillsSection extends ConsumerWidget {
                 dense: true,
                 leading: const Icon(Icons.person_outline),
                 title: Text(t['invited_email'] as String? ?? ''),
+                subtitle: leaseFor(t) == null ? null : Text(l.tenantHistory),
+                onTap: leaseFor(t) == null
+                    ? null
+                    : () => context.go('/apartments/$id/leases/${leaseFor(t)!['id']}'),
                 trailing: TextButton(
                   child: Text(l.remove),
                   onPressed: () async {

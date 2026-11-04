@@ -19,6 +19,16 @@ and payment status update in one database transaction. Amounts, dates and recipi
 of issued bills are immutable; reviewed receipts cannot be replaced by tenants.
 Collections do not alter rent, expense or financial analytics totals.
 
+## Tenant history
+
+The web and mobile property views group each lease with the tenant's contact
+details, tenancy dates, rent schedule and transactions, outstanding rent,
+apartment bills, bill copies, payment proofs and review notes. Bills are matched
+to an apartment lease by the tenant email and the bill due date falling within
+the lease period. Apartment leases therefore require the same email used for the
+tenant's Bills invitation. Ended leases remain visible, and a lease with a paid
+rent transaction or apartment bill cannot be deleted from either interface.
+
 Existing expenses start private. **Share with tenants** exposes their category,
 amount, date and notes to all current tenants of that apartment, as reference
 information, without asking them to pay again. **Make private** revokes that access.

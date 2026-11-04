@@ -18,9 +18,24 @@ class PropertyListScreen extends ConsumerStatefulWidget {
 }
 
 class _PropertyListScreenState extends ConsumerState<PropertyListScreen> {
+  final _searchController = TextEditingController();
   String _query = '';
   String? _district;
   PropertySort _sort = PropertySort.newest;
+
+  void _clearFilters() {
+    _searchController.clear();
+    setState(() {
+      _query = '';
+      _district = null;
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,9 +66,11 @@ class _PropertyListScreenState extends ConsumerState<PropertyListScreen> {
         value: ref.watch(propertiesProvider(kind)),
         builder: (rows) {
           final districts = districtsOf(rows);
+          // A removed district must not leave the list stuck on a hidden filter.
+          final district = districts.contains(_district) ? _district : null;
           final shown =
-              applyListControls(rows, query: _query, district: _district, sort: _sort);
-          return RefreshableList(children: [
+              applyListControls(rows, query: _query, district: district, sort: _sort);
+          final header = Column(children: [
             if (rows.isEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 48),
@@ -61,13 +78,24 @@ class _PropertyListScreenState extends ConsumerState<PropertyListScreen> {
               )
             else ...[
               TextField(
+                controller: _searchController,
+                textInputAction: TextInputAction.search,
+                onSubmitted: (_) => FocusScope.of(context).unfocus(),
                 decoration: InputDecoration(
                   hintText: l.searchProperties,
                   prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _query.isEmpty ? null : IconButton(
+                    tooltip: l.clear,
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() => _query = '');
+                    },
+                  ),
                 ),
                 onChanged: (v) => setState(() => _query = v),
               ),
-              if (districts.length > 1)
+              if (districts.length > 1 || district != null)
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.only(top: 8),
@@ -77,7 +105,7 @@ class _PropertyListScreenState extends ConsumerState<PropertyListScreen> {
                         padding: const EdgeInsets.only(right: 8),
                         child: ChoiceChip(
                           label: Text(d ?? l.allDistricts),
-                          selected: _district == d,
+                          selected: district == d,
                           onSelected: (_) => setState(() => _district = d),
                         ),
                       ),
@@ -88,10 +116,20 @@ class _PropertyListScreenState extends ConsumerState<PropertyListScreen> {
             if (rows.isNotEmpty && shown.isEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 48),
-                child: Center(child: Text(l.noSearchResults)),
+                child: Column(children: [
+                  Text(l.noSearchResults),
+                  const SizedBox(height: 8),
+                  TextButton(onPressed: _clearFilters, child: Text(l.clear)),
+                ]),
               ),
-            for (final row in shown)
-              Card(
+          ]);
+          return RefreshableList.builder(
+            itemCount: shown.length + 2,
+            itemBuilder: (context, index) {
+              if (index == 0) return header;
+              if (index == shown.length + 1) return const SizedBox(height: 96);
+              final row = shown[index - 1];
+              return Card(
                 key: ValueKey(row['id']),
                 margin: const EdgeInsets.only(bottom: 8),
                 child: ListTile(
@@ -103,9 +141,9 @@ class _PropertyListScreenState extends ConsumerState<PropertyListScreen> {
                       : null,
                   onTap: () => context.go('/${kind.route}/${row['id']}'),
                 ),
-              ),
-            const SizedBox(height: 80),
-          ]);
+              );
+            },
+          );
         },
       ),
     );

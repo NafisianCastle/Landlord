@@ -23,11 +23,12 @@ export interface LeaseFormValues {
 
 interface LeaseFormProps {
   action: (prevState: unknown, formData: FormData) => Promise<{ error?: string } | undefined>;
+  subjectType: "plot" | "apartment";
   initial?: LeaseFormValues;
   submitLabel: string;
 }
 
-export default function LeaseForm({ action, initial, submitLabel }: LeaseFormProps) {
+export default function LeaseForm({ action, subjectType, initial, submitLabel }: LeaseFormProps) {
   const [state, formAction, pending] = useActionState(action, undefined);
   const t = useTranslations("LeaseForm");
 
@@ -54,7 +55,9 @@ export default function LeaseForm({ action, initial, submitLabel }: LeaseFormPro
             name="tenantEmail"
             type="email"
             defaultValue={initial?.tenantEmail ?? ""}
+            required={subjectType === "apartment"}
           />
+          {subjectType === "apartment" && <p className="text-xs text-muted-foreground">{t("tenantEmailHistoryHint")}</p>}
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="rentAmount">{t("rentAmount")}</Label>

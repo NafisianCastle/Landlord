@@ -34,6 +34,7 @@ describe("Server Actions reject invalid submissions before writes", () => {
     ["apartment size", () => createApartment(null, form({ name: "flat", size: "-1" }))],
     ["expense category", () => createExpense("plot", propertyId, null, form({ amount: "50", category: "forged" }))],
     ["lease dates", () => createLease("plot", propertyId, null, form({ tenantName: "Tenant", rentAmount: "50", startDate: "2026-05-01", endDate: "2026-04-01" }))],
+    ["apartment lease tenant email", () => createLease("apartment", propertyId, null, form({ tenantName: "Tenant", rentAmount: "50", startDate: "2026-05-01" }))],
     ["vendor field", () => createVendor(null, form({ name: new File(["data"], "x") }))],
     ["maintenance cost", () => createMaintenanceRequest("plot", propertyId, null, form({ title: "Fix", cost: "NaN" }))],
     ["maintenance status", () => updateMaintenanceStatus(propertyId, "plot", propertyId, "forged" as "open")],

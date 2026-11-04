@@ -7,7 +7,9 @@ import '../../core/data/property_kind.dart';
 import '../../core/data/repository.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
+import '../../core/validation/bills.dart';
 import '../../core/validation/forms.dart';
+import '../bills/bill_screens.dart';
 import '../common.dart';
 
 String _today() => DateTime.now().toIso8601String().substring(0, 10);
@@ -64,34 +66,78 @@ class LeaseDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final repo = ref.read(repositoryProvider);
-    final lease = ref.watch(leaseProvider(leaseId)).value;
-    final payments = ref.watch(paymentsProvider(leaseId)).value ?? [];
+    final leaseValue = ref.watch(leaseProvider(leaseId));
+    final paymentsValue = ref.watch(paymentsProvider(leaseId));
+    final billsValue = ref.watch(allBillsProvider);
+    final proofsValue = ref.watch(billProofsProvider);
+    final lease = leaseValue.value;
+    final payments = paymentsValue.value ?? [];
+    final allBills = billsValue.value ?? [];
+    final allProofs = proofsValue.value ?? [];
     final base = '/${kind.route}/$propertyId';
+    final tenantEmail = (lease?['tenant_email'] as String? ?? '').trim().toLowerCase();
+    final leaseStart = lease?['start_date'] as String? ?? '';
+    final leaseEnd = lease?['end_date'] as String?;
+    final tenantBills = kind == PropertyKind.apartment && tenantEmail.isNotEmpty
+        ? allBills
+            .where((bill) =>
+                bill['apartment_id'] == propertyId &&
+                (bill['tenant_email'] as String? ?? '').trim().toLowerCase() == tenantEmail &&
+                (bill['due_date'] as String).compareTo(leaseStart) >= 0 &&
+                (leaseEnd == null || (bill['due_date'] as String).compareTo(leaseEnd) <= 0))
+            .toList()
+        : <DbRow>[];
+    List<DbRow> proofsFor(DbRow bill) =>
+        allProofs.where((proof) => proof['bill_id'] == bill['id']).toList();
+    final unpaidBills = tenantBills
+        .where((bill) => billStatus(bill, proofsFor(bill)) != 'paid')
+        .toList();
+    num sum(Iterable<DbRow> rows, Object? Function(DbRow row) value) => rows.fold<num>(
+        0, (total, row) => total + ((value(row) as num?) ?? 0));
+    final scheduledRent = sum(payments, (row) => row['amount']);
+    final paidRent = sum(payments.where((row) => row['paid'] == true),
+        (row) => row['paid_amount'] ?? row['amount']);
+    final outstandingRent = sum(
+        payments.where((row) => row['paid'] != true), (row) => row['amount']);
+    final unpaidBillTotal = sum(unpaidBills, (row) => row['amount']);
+    final historyLoaded = paymentsValue.hasValue &&
+        (kind != PropertyKind.apartment || (billsValue.hasValue && proofsValue.hasValue));
+    final hasFinancialHistory =
+        payments.any((payment) => payment['paid'] == true) || tenantBills.isNotEmpty;
+    final loadError = leaseValue.error ??
+        paymentsValue.error ??
+        (kind == PropertyKind.apartment ? billsValue.error ?? proofsValue.error : null);
     return Scaffold(
       appBar: AppBar(
-        title: Text(lease?['tenant_name'] as String? ?? ''),
+        title: Text(lease == null ? l.tenantHistory : '${lease['tenant_name']} · ${l.tenantHistory}'),
         actions: [
           IconButton(
             tooltip: l.edit,
             icon: const Icon(Icons.edit),
             onPressed: () => context.go('$base/leases/$leaseId/edit'),
           ),
-          IconButton(
-            tooltip: l.delete,
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () async {
-              if (!await confirmDelete(context)) return;
-              await repo.deleteLease(leaseId);
-              if (context.mounted) context.go(base);
-            },
-          ),
+          if (lease != null && historyLoaded && !hasFinancialHistory)
+            IconButton(
+              tooltip: l.delete,
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () async {
+                if (!await confirmDelete(context)) return;
+                await repo.deleteLease(leaseId);
+                if (context.mounted) context.go(base);
+              },
+            ),
         ],
       ),
-      body: lease == null
+      body: loadError != null
+          ? Center(child: Text(l.errorMessage('$loadError')))
+          : !leaseValue.hasValue || !historyLoaded
+          ? const Center(child: CircularProgressIndicator())
+          : lease == null
           ? Center(child: Text(l.notFound))
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                SectionHeader(l.details),
                 Card(
                   child: Column(children: [
                     ListTile(
@@ -115,6 +161,12 @@ class LeaseDetailScreen extends ConsumerWidget {
                           dense: true,
                           title: Text(l.tenantEmail),
                           subtitle: Text('${lease['tenant_email']}')),
+                    if ((lease['notes'] as String? ?? '').trim().isNotEmpty)
+                      ListTile(
+                        dense: true,
+                        title: Text(l.leaseNotes),
+                        subtitle: Text(lease['notes'] as String),
+                      ),
                     if (lease['status'] == 'active')
                       OverflowBar(alignment: MainAxisAlignment.end, children: [
                         TextButton(
@@ -124,15 +176,107 @@ class LeaseDetailScreen extends ConsumerWidget {
                       ]),
                   ]),
                 ),
-                SectionHeader(l.payments),
+                SectionHeader(l.financialSummary),
+                LayoutBuilder(builder: (context, constraints) {
+                  final tileWidth = constraints.maxWidth < 480
+                      ? constraints.maxWidth
+                      : (constraints.maxWidth - 12) / 2;
+                  return Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: [
+                      _HistorySummary(
+                          width: tileWidth,
+                          label: l.totalRent,
+                          value: formatMoney(context, scheduledRent)),
+                      _HistorySummary(
+                          width: tileWidth,
+                          label: l.rentPaid,
+                          value: formatMoney(context, paidRent)),
+                      _HistorySummary(
+                          width: tileWidth,
+                          label: l.outstandingRent,
+                          value: formatMoney(context, outstandingRent),
+                          warning: outstandingRent > 0),
+                      _HistorySummary(
+                          width: tileWidth,
+                          label: l.unpaidBills,
+                          value: formatMoney(context, unpaidBillTotal),
+                          detail: '${unpaidBills.length} · ${l.bills}',
+                          warning: unpaidBills.isNotEmpty),
+                    ],
+                  );
+                }),
+                SectionHeader(l.transactionHistory),
                 Card(
                   child: Column(children: [
                     if (payments.isEmpty) ListTile(title: Text(l.paymentsAfterSync)),
-                    for (final p in payments) _PaymentTile(payment: p),
+                    for (final p in payments.reversed) _PaymentTile(payment: p),
                   ]),
                 ),
+                if (kind == PropertyKind.apartment) ...[
+                  SectionHeader(l.bills),
+                  if (tenantEmail.isEmpty || tenantBills.isEmpty)
+                    Card(child: ListTile(title: Text(l.noTenantBills)))
+                  else
+                    for (final bill in tenantBills)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: BillCard(
+                          bill: bill,
+                          proofs: proofsFor(bill),
+                          isOwner: bill['owner_id'] == repo.userId,
+                        ),
+                      ),
+                ],
               ],
             ),
+    );
+  }
+}
+
+class _HistorySummary extends StatelessWidget {
+  const _HistorySummary({
+    required this.width,
+    required this.label,
+    required this.value,
+    this.detail,
+    this.warning = false,
+  });
+
+  final double width;
+  final String label;
+  final String value;
+  final String? detail;
+  final bool warning;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return SizedBox(
+      width: width,
+      child: Card(
+        color: warning ? scheme.errorContainer : null,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: warning ? scheme.onErrorContainer : scheme.onSurfaceVariant,
+                  )),
+              const SizedBox(height: 4),
+              Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: warning ? scheme.onErrorContainer : scheme.onSurface,
+                  )),
+              if (detail != null)
+                Text(detail!, style: TextStyle(
+                  color: warning ? scheme.onErrorContainer : scheme.onSurfaceVariant,
+                )),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -147,14 +291,30 @@ class _PaymentTile extends ConsumerWidget {
     final paid = payment['paid'] == true;
     final due = payment['due_date'] as String;
     final overdue = !paid && due.compareTo(_today()) < 0;
+    final amount = payment['amount'] as num?;
+    final paidAmount = payment['paid_amount'] as num?;
+    final paidDate = payment['paid_date'] as String?;
+    final notes = (payment['notes'] as String? ?? '').trim();
+    final status = paid
+        ? (paidDate == null || paidDate.isEmpty
+            ? l.billStatusLabel('paid')
+            : l.paidOn(paidDate))
+        : l.dueOn(due);
+    final detail = [
+      status,
+      if (paid && paidAmount != null && paidAmount != amount)
+        '${l.rentPaid}: ${formatMoney(context, paidAmount)}',
+      if (notes.isNotEmpty) notes,
+    ].join('\n');
     return CheckboxListTile(
       value: paid,
       onChanged: (v) {
         HapticFeedback.selectionClick();
         ref.read(repositoryProvider).setPaymentPaid(payment, v ?? false);
       },
-      title: Text(formatMoney(context, payment['paid_amount'] ?? payment['amount'])),
-      subtitle: Text(paid ? l.paidOn('${payment['paid_date'] ?? ''}') : l.dueOn(due)),
+      title: Text(formatMoney(context, amount)),
+      subtitle: Text(detail),
+      isThreeLine: detail.contains('\n'),
       secondary: overdue
           ? Icon(Icons.warning_amber, color: Theme.of(context).colorScheme.error, semanticLabel: l.overdue)
           : null,
@@ -269,8 +429,15 @@ class _LeaseFormScreenState extends ConsumerState<LeaseFormScreen> {
             gap(TextFormField(
               controller: _c['tenantEmail'],
               keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(labelText: l.tenantEmail),
-              validator: (v) => rule('tenantEmail', v),
+              decoration: InputDecoration(
+                labelText: l.tenantEmail,
+                helperText: widget.kind == PropertyKind.apartment
+                    ? l.tenantEmailHistoryHint
+                    : null,
+              ),
+              validator: (v) => widget.kind == PropertyKind.apartment
+                  ? requiredField(v) ?? rule('tenantEmail', v)
+                  : rule('tenantEmail', v),
             )),
             gap(TextFormField(
               controller: _c['rentAmount'],

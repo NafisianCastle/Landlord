@@ -65,26 +65,34 @@ class AnalyticsScreen extends ConsumerWidget {
       body: AsyncBody(
         value: ref.watch(_analyticsProvider),
         builder: (view) => RefreshableList(children: [
-          Row(children: [
-            Expanded(
-              child: _Tile(
-                label: l.occupancyRate,
-                value: view.occupancy == null ? '—' : '${view.occupancy!.toStringAsFixed(0)}%',
-                sub: view.occupancyRow == null
-                    ? null
-                    : l.unitsLeased('${view.occupancyRow!['leased_units'] ?? 0}',
-                        '${view.occupancyRow!['total_units'] ?? 0}'),
+          LayoutBuilder(builder: (context, constraints) {
+            final stacked = constraints.maxWidth < 400 ||
+                MediaQuery.textScalerOf(context).scale(14) > 18;
+            final width = stacked
+                ? constraints.maxWidth
+                : (constraints.maxWidth - 12) / 2;
+            return Wrap(spacing: 12, runSpacing: 12, children: [
+              SizedBox(
+                width: width,
+                child: _Tile(
+                  label: l.occupancyRate,
+                  value: view.occupancy == null ? '—' : '${view.occupancy!.toStringAsFixed(0)}%',
+                  sub: view.occupancyRow == null
+                      ? null
+                      : l.unitsLeased('${view.occupancyRow!['leased_units'] ?? 0}',
+                          '${view.occupancyRow!['total_units'] ?? 0}'),
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _Tile(
-                label: l.portfolioProfit12mo,
-                value: formatMoney(context, view.profit),
-                negative: view.profit < 0,
+              SizedBox(
+                width: width,
+                child: _Tile(
+                  label: l.portfolioProfit12mo,
+                  value: formatMoney(context, view.profit),
+                  negative: view.profit < 0,
+                ),
               ),
-            ),
-          ]),
+            ]);
+          }),
           SectionHeader(l.incomeVsExpense),
           Card(
             child: Padding(
@@ -170,11 +178,13 @@ class _TrendChartState extends State<TrendChart> {
         ]);
 
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Row(children: [
+      Wrap(
+        spacing: 16,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
         legend(income, l.income),
-        const SizedBox(width: 16),
         legend(expense, l.expense),
-        const Spacer(),
         TextButton(
           onPressed: () => setState(() => _table = !_table),
           child: Text(_table ? l.chart : l.table),
@@ -198,9 +208,9 @@ class _TrendChartState extends State<TrendChart> {
           ],
         )
       else ...[
-        // Fixed height so tapping a month doesn't shift the chart.
-        SizedBox(
-          height: 36,
+        // Reserve space, but let selected values grow with the text size.
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 36),
           child: selected == null
               ? null
               : Text(
@@ -208,8 +218,6 @@ class _TrendChartState extends State<TrendChart> {
                   '${l.income} ${formatMoney(context, selected.income)} · '
                   '${l.expense} ${formatMoney(context, selected.expense)}',
                   style: theme.textTheme.bodySmall,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
         ),
         Semantics(

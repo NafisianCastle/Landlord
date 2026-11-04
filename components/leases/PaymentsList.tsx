@@ -12,6 +12,7 @@ export interface PaymentRow {
   paid: boolean;
   paidDate: string | null;
   paidAmount: number | null;
+  notes?: string | null;
 }
 
 const bdt = new Intl.NumberFormat("en-BD", {
@@ -83,6 +84,12 @@ export default function PaymentsList({
                     ? t("overdue")
                     : t("upcoming")}
               </span>
+              {row.paid && row.paidAmount != null && row.paidAmount !== row.amount && (
+                <span className="text-xs text-muted-foreground">
+                  {t("paidAmount", { amount: bdt.format(row.paidAmount) })}
+                </span>
+              )}
+              {row.notes && <span className="whitespace-pre-wrap break-words text-xs text-muted-foreground">{row.notes}</span>}
             </div>
             <div className="flex shrink-0 items-center gap-3">
               <span className="truncate">{bdt.format(row.paidAmount ?? row.amount)}</span>
