@@ -12,10 +12,12 @@ node scripts/generate-brand-assets.mjs brand/assets
 
 Bangla artwork needs the Noto Sans Bengali font installed (for example in `~/.fonts`, then `fc-cache -f`); without it Bangla text renders as empty boxes. Video rendering needs ffmpeg and is skipped with a warning if it is missing.
 
-Render the silent reel (requires ffmpeg):
+Video voiceovers use Piper text-to-speech. Install it and the two voices into `work/` (gitignored) once, before generating:
 
 ```sh
-bash scripts/render-brand-reel.sh brand/assets
+bash scripts/setup-voice.sh
 ```
+
+Without Piper the generator still renders every video, but with the music bed only. Voice credits are in `BRAND-GUIDE.md`.
 
 The image generator also refreshes the app/PWA icons and social link previews. It uses the project's existing Sharp dependency and system fonts; it adds no package dependencies. PNG and MP4 exports are ready to use. Editable SVGs require DejaVu Sans and Noto Sans Bengali for the same typography.

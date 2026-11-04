@@ -10,7 +10,7 @@ Profile name, bio and Bangla bio are in [SOCIAL-CONTENT.md](SOCIAL-CONTENT.md). 
 
 Stories can carry a link sticker with their own `utm_content`.
 
-**Videos:** Instagram publishes every video as a reel. For each one, upload the subtitles in the editor (or turn on auto-captions and check the Bangla), and pick the cover frame named below. The profile grid crops covers to 3:4. The scene headlines sit inside that crop, but the logo at the very top doesn't.
+**Videos:** every video has a synthetic voiceover over original music (credits in BRAND-GUIDE.md). Instagram publishes every video as a reel. For each one, upload the subtitles in the editor (or turn on auto-captions and check the Bangla), and pick the cover frame named below. The profile grid crops covers to 3:4. The scene headlines sit inside that crop, but the logo at the very top doesn't.
 
 | # | Day | Format | Lang | File(s) | utm_content (story link) |
 |---|---|---|---|---|---|
@@ -144,7 +144,7 @@ Instagram stories cover the top ~250 px with the profile bar and the bottom ~250
 
 The video is 1:1. The feed shows it in full; the Reels tab adds bars above and below.
 
-> How Landlord works, in 30 seconds 🎬
+> How Landlord works, in four steps 🎬
 >
 > 01 Draw your plot on the map
 > 02 Add apartments and tenants
