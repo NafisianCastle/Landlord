@@ -71,13 +71,13 @@ Start with Instagram and Facebook. Repurpose to other channels only where the in
 - Feed: 4 posts at 1080 × 1350, including a Bangla brand post.
 - Carousel: 5 ordered cards at 1080 × 1350.
 - Stories: 3 frames at 1080 × 1920. Add the platform's link sticker in the open lower area.
-- Reel: 18-second MP4 (`assets/landlord-reel.mp4`) at 1080 × 1920, H.264, 30 fps, with voiceover and music, plus 4 editable scenes and subtitle file.
+- Reel: 24-second MP4 (`assets/landlord-reel.mp4`) at 1080 × 1920, H.264, 30 fps, with voiceover and music, plus 4 editable scenes and subtitle file.
 - Social link preview: 1200 × 630, installed as Open Graph and Twitter image.
 - Website and PWA: SVG icon, favicon, Apple icon, and regular/maskable icons.
 
 ### Video audio
 
-Every video has a synthetic voiceover that reads the on-screen line for each scene: a Bangla voice on Bangla videos and an English voice on English ones. It plays over an original music bed (a slow four-chord pad composed in the generator), which ducks under the voice. The mix is about −14 LUFS, AAC 48 kHz stereo. Each scene runs as long as its narration needs, and the SRT/VTT files follow the same timings. On-screen text and captions stay, because many people watch muted. The voices are computer-generated; replace them with a recorded voice later if you prefer, using the captions as the script.
+Every video has a synthetic voiceover from a written script, with one or two spoken sentences per scene. The script talks to the owner and adds context the picture doesn't show, rather than reading the headline back. Bangla videos use a Bangla voice and English videos an English voice. The scripts are in the `voiceover` object in `scripts/generate-brand-assets.mjs`; edit them there and regenerate. It plays over an original music bed (a slow four-chord pad composed in the generator), which ducks under the voice. The mix is about −14 LUFS, AAC 48 kHz stereo. Each scene runs as long as its narration needs, and the SRT/VTT files follow the same timings. On-screen text and captions stay, because many people watch muted. The voices are computer-generated; replace them with a recorded voice later if you prefer, using the subtitle files as the script.
 
 Credits:
 - Text-to-speech: [Piper](https://github.com/rhasspy/piper) (`piper-tts` 1.8.0, GPL-3.0), used only to generate the audio. It is not part of the app.

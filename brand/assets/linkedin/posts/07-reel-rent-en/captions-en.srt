@@ -1,19 +1,19 @@
 1
-00:00:00,000 --> 00:00:05,665
-Rent day. Where's the notebook? Who has paid, who hasn't — hard to keep in your head.
+00:00:00,000 --> 00:00:05,990
+It's the first of the month. Who has paid, who hasn't, and where did you write it down last time?
 
 2
-00:00:05,665 --> 00:00:10,215
-Tenants and rent, together. Every flat, every month.
+00:00:05,990 --> 00:00:12,374
+In Landlord, each flat keeps its tenant and its rent in one place. When a payment comes in, you record it.
 
 3
-00:00:10,215 --> 00:00:14,405
-Each month at a glance. See what's recorded and what's due.
+00:00:12,374 --> 00:00:17,737
+So every month is clear at a glance: what has been recorded, and what is still due.
 
 4
-00:00:14,405 --> 00:00:19,953
-Plots and papers in the same place. All of your property details, organised.
+00:00:17,737 --> 00:00:24,098
+Your plots and property papers sit right alongside, so nothing is scattered across phones and files.
 
 5
-00:00:19,953 --> 00:00:26,627
-Your property, in order. Landlord is free to use. landlordsbd.com
+00:00:24,098 --> 00:00:30,830
+Landlord is free to use. Visit landlordsbd.com and start with one property.

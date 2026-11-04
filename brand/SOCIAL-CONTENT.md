@@ -81,16 +81,16 @@ Alt text per card:
 
 Post the three frames together. Keep any platform UI away from the main headline and button.
 
-## Reel: 18-second brand introduction
+## Reel: 24-second brand introduction
 
-The supplied MP4 is 1080 × 1920 at 30 fps, with gentle movement and crossfades. It has a synthetic English voiceover reading the lines below over an original music bed (see BRAND-GUIDE.md for credits). All key messages are also on screen, and the SRT matches the voiceover. Scene timings follow the narration, so they run slightly longer than the 4-second slots below.
+The supplied MP4 is 1080 × 1920 at 30 fps, with gentle movement and crossfades. It has a synthetic English voiceover reading the lines below over an original music bed (see BRAND-GUIDE.md for credits). All key messages are also on screen, and the SRT matches the voiceover. Scene timings follow the narration, so they run longer than the 4-second slots below.
 
 | Time | Visual | Voiceover |
 | --- | --- | --- |
-| 0–4 s | Property admin taking over? | Property admin taking over? |
-| 4–8 s | Bring it together. | Bring your land, apartments, documents and rent records together. |
-| 8–12 s | A little less keeping track. | A little less keeping track. A clearer view of your property. |
-| 12–16 s | Your property, in order. | Landlord. Your property, in order. Get started free. |
+| 0–4 s | Property admin taking over? | Property admin taking over? Papers in one place, rent in another, and the plot map somewhere on your phone. |
+| 4–8 s | Bring it together. | Landlord brings your land, apartments, documents and rent records together, in one calm place. |
+| 8–12 s | A little less keeping track. | A little less keeping track, and a clearer view of the properties you look after. |
+| 12–16 s | Your property, in order. | Landlord. Your property, in order. It's free to get started. |
 
 Caption: Less keeping track. A clearer view. Meet Landlord: a free place to organise property records in Bangladesh. Start with one property through our profile link. #LandlordApp #PropertyManagement #Bangladesh
 
