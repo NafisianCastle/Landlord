@@ -1,6 +1,6 @@
 # Facebook launch posts
 
-Ten posts for the first two and a half weeks: image posts, text posts, a carousel, two reels, a story and a feed video. Six are in English and four in Bangla, plus one bilingual story. Artwork is in `assets/facebook/posts/`. Page setup is in [FACEBOOK-PAGE.md](FACEBOOK-PAGE.md).
+Ten posts for the first two and a half weeks: image posts, text posts, a carousel, two reels, a story and a feed video. Five are in English and four in Bangla, plus one bilingual story. Artwork is in `assets/facebook/posts/`. Page setup is in [FACEBOOK-PAGE.md](FACEBOOK-PAGE.md).
 
 Every link uses this format:
 
