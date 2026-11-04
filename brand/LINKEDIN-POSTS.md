@@ -146,7 +146,7 @@ All paths are under `assets/`. LinkedIn accepts SRT subtitles on video upload, s
 
 ## 07 · Vertical video: rent day (English version)
 
-**File:** `linkedin/posts/07-reel-rent-en.mp4` (1080 × 1920, about 27 s, voiceover + music). **Subtitles:** `linkedin/posts/07-reel-rent-en/captions-en.srt`. **Thumbnail:** `07-reel-rent-en/scene-01.png`.
+**File:** `linkedin/posts/07-reel-rent-en.mp4` (1080 × 1920, about 31 s, voiceover + music). **Subtitles:** `linkedin/posts/07-reel-rent-en/captions-en.srt`. **Thumbnail:** `07-reel-rent-en/scene-01.png`.
 
 > Rent day. Where's the notebook?
 >
@@ -174,7 +174,7 @@ When the poll closes, post a short follow-up with the result and a link to Landl
 
 ## 09 · Video: how Landlord works
 
-**File:** `facebook/posts/09-video-how-it-works.mp4` (1:1, about 34 s, voiceover + music). **Subtitles:** `facebook/posts/09-video/captions-en.srt`. **Thumbnail:** `09-video/scene-01.png`.
+**File:** `facebook/posts/09-video-how-it-works.mp4` (1:1, about 46 s, voiceover + music). **Subtitles:** `facebook/posts/09-video/captions-en.srt`. **Thumbnail:** `09-video/scene-01.png`.
 
 > How Landlord works, in four steps:
 >

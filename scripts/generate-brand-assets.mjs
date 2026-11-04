@@ -758,10 +758,10 @@ const vertical = (s, tag) =>
   (s.art || "");
 // Scene i starts once the previous scene's crossfade (T) begins; returns
 // [start, end, caption] cues and the total length.
-const timing = (scenes, durations, T) => {
+const timing = (texts, durations, T) => {
   let start = 0;
-  const cues = scenes.map((s, i) => {
-    const cue = [start, start + durations[i] - T, s.caption];
+  const cues = texts.map((text, i) => {
+    const cue = [start, start + durations[i] - T, text];
     start += durations[i] - T;
     return cue;
   });
@@ -826,16 +826,74 @@ const seconds = (file) =>
       file,
     ]).toString(),
   );
+// Voiceover scripts, one line per scene. They are written to be heard: they
+// add context the picture doesn't show instead of reading the headline
+// back. The subtitles show these words; only the text-to-speech input is
+// adjusted so the URL and the Latin brand name are pronounced properly.
+const voiceover = {
+  "reel-scenes": [
+    "Property admin taking over? Papers in one place, rent in another, and the plot map somewhere on your phone.",
+    "Landlord brings your land, apartments, documents and rent records together, in one calm place.",
+    "A little less keeping track, and a clearer view of the properties you look after.",
+    "Landlord. Your property, in order. It's free to get started.",
+  ],
+  "facebook/posts/06-reel": [
+    "Be honest. Where is the deed to your plot right now? In a drawer at home, or with a relative in the village?",
+    "And the rent. Some of it is in a notebook, some in text messages, and nobody is quite sure who paid in October.",
+    "Landlord puts it all in one place. Start by drawing your plot's boundary right on the map.",
+    "Then add your flats and tenants, record the rent each month, and keep the deed beside the property it belongs to.",
+    "It's free, and it works in English and Bangla. Visit landlordsbd.com and start with one property today.",
+  ],
+  "facebook/posts/07-reel-bn": [
+    "মাসের শুরু মানেই ভাড়ার হিসাব। কে দিলেন, কে দেননি, খাতা খুলে খুঁজতে খুঁজতেই সময় চলে যায়।",
+    "Landlord-এ প্রতিটি ফ্ল্যাটের ভাড়াটিয়া আর ভাড়ার পরিমাণ একবার লিখে রাখুন। ভাড়া পেলেই রেকর্ড করুন।",
+    "তারপর এক নজরেই দেখুন, কোন মাসের ভাড়া রেকর্ড হয়েছে, আর কোনটি এখনো বাকি।",
+    "শুধু ভাড়া নয়, জমির সীমানা আর দলিলের কপিও থাকুক একই জায়গায়।",
+    "Landlord ব্যবহার করতে কোনো টাকা লাগে না। আজই একটি সম্পত্তি দিয়ে শুরু করুন।",
+  ],
+  "facebook/posts/08-story": [
+    "একটা ছোট্ট প্রশ্ন। আপনার জমির দলিল এখন কোথায়? ফাইলে, ফোনে, নাকি আত্মীয়ের কাছে? স্টিকারে ভোট দিন।",
+    "Whatever your answer, Landlord keeps land, flats, rent and documents together, organised by property.",
+    "আপনার সম্পত্তি, গুছিয়ে রাখুন। লিংকে চাপ দিয়ে ফ্রিতে শুরু করুন।",
+  ],
+  "facebook/posts/09-video": [
+    "Here's how Landlord works, in four simple steps.",
+    "Step one. Find your land on the map and draw its boundary. Landlord saves it with the plot, so you can always see where it is.",
+    "Step two. Add each flat or shop, and who is renting it. You can see at a glance which units are leased and which are vacant.",
+    "Step three. When rent comes in, record it. Each month shows what has been recorded and what is still due. The amount here is just an example.",
+    "Step four. Upload your deeds and other papers as PDFs. If you like, encrypt them on your device first. Just keep your passphrase safe.",
+    "That's it. Landlord is free to use. Start with one property at landlordsbd.com.",
+  ],
+  "linkedin/posts/07-reel-rent-en": [
+    "It's the first of the month. Who has paid, who hasn't, and where did you write it down last time?",
+    "In Landlord, each flat keeps its tenant and its rent in one place. When a payment comes in, you record it.",
+    "So every month is clear at a glance: what has been recorded, and what is still due.",
+    "Your plots and property papers sit right alongside, so nothing is scattered across phones and files.",
+    "Landlord is free to use. Visit landlordsbd.com and start with one property.",
+  ],
+};
+// What the voice actually says: spell out the URL, and write the brand name
+// in Bangla script for the Bangla voice.
+const spoken = (line, lang) =>
+  line
+    .replaceAll("landlordsbd.com", "landlord S B D dot com")
+    .replaceAll("Landlord", lang === "bn" ? "ল্যান্ডলর্ড" : "Landlord");
 const videos = [];
 // Each scene lasts at least D seconds, or longer when its narration needs it,
 // so speech always finishes before the next crossfade.
 async function addVideo(dir, file, lang, scenes, w, h, D, T, prefix) {
+  const lines = voiceover[dir];
+  if (lines?.length !== scenes.length)
+    throw new Error(
+      `${dir}: ${lines?.length ?? 0} voiceover lines for ${scenes.length} scenes`,
+    );
   const narration = [];
   if (hasVoice) {
     const tmp = path.join("work/voiceover", dir);
     await fs.mkdir(tmp, { recursive: true });
     for (let i = 0; i < scenes.length; i++) {
-      const v = voices[scenes[i].lang || lang];
+      const sceneLang = scenes[i].lang || lang;
+      const v = voices[sceneLang];
       const wav = path.join(tmp, `${i + 1}.wav`);
       execFileSync(
         piper,
@@ -850,7 +908,7 @@ async function addVideo(dir, file, lang, scenes, w, h, D, T, prefix) {
           wav,
         ],
         {
-          input: scenes[i].voice || scenes[i].caption,
+          input: spoken(lines[i], sceneLang),
           stdio: ["pipe", "ignore", "ignore"],
         },
       );
@@ -865,7 +923,7 @@ async function addVideo(dir, file, lang, scenes, w, h, D, T, prefix) {
         : 0,
     ),
   );
-  const { cues, total } = timing(scenes, durations, T);
+  const { cues, total } = timing(lines, durations, T);
   await captions(dir, lang, cues);
   // The MP4 sits next to its scene folder.
   const mp4 = path.join(path.dirname(dir), file);
@@ -894,13 +952,11 @@ const reelEn = [
     dark: true,
     title: ["The deed is in", "one drawer."],
     sub: ["The plot map is on", "someone's phone."],
-    caption: "The deed is in one drawer. The plot map is on someone's phone.",
     art: parcel(560, 1150, 1.1, true),
   },
   {
     title: ["Rent is in a", "notebook."],
     sub: ["And the receipts?", "Somewhere."],
-    caption: "Rent is in a notebook. And the receipts? Somewhere.",
     art: rows(80, 1130, [
       ["Flat 2A · October", "Recorded"],
       ["Flat 3B · October", "Due", "due"],
@@ -910,14 +966,11 @@ const reelEn = [
   {
     title: ["Bring it", "together."],
     sub: ["One place for the details", "you keep looking for."],
-    caption:
-      "Bring it together. One place for the details you keep looking for.",
     art: mapCard(260, 1120, "Plot boundary · saved"),
   },
   {
     title: ["Plots. Flats.", "Rent. Papers."],
     sub: ["Each property with its", "own records."],
-    caption: "Plots. Flats. Rent. Papers. Each property with its own records.",
     art: docCard(
       80,
       1150,
@@ -930,10 +983,6 @@ const reelEn = [
     dark: true,
     title: ["Your property,", "in order."],
     sub: ["Landlord is free to use.", "landlordsbd.com"],
-    caption:
-      "Your property, in order. Landlord is free to use. landlordsbd.com",
-    voice:
-      "Your property, in order. Landlord is free to use, at landlord S B D dot com.",
     art:
       parcel(560, 1150, 1.1, true) + button(80, 1430, "Get started free", true),
   },
@@ -957,16 +1006,12 @@ const reelBn = [
     size: 72,
     title: ["ভাড়ার দিন এলেই", "খাতা খোঁজা?"],
     sub: ["কে দিয়েছেন, কে বাকি —", "মনে রাখা কঠিন।"],
-    caption:
-      "ভাড়ার দিন এলেই খাতা খোঁজা? কে দিয়েছেন, কে বাকি — মনে রাখা কঠিন।",
     art: parcel(560, 1180, 1.1, true),
   },
   {
     size: 72,
     title: ["ভাড়াটিয়ার তথ্য ও", "ভাড়ার হিসাব একসাথে।"],
     sub: ["প্রতিটি ফ্ল্যাট, প্রতিটি মাস।"],
-    caption:
-      "ভাড়াটিয়ার তথ্য ও ভাড়ার হিসাব একসাথে। প্রতিটি ফ্ল্যাট, প্রতিটি মাস।",
     art: rentCard(
       80,
       1110,
@@ -980,8 +1025,6 @@ const reelBn = [
     size: 72,
     title: ["প্রতি মাসের রেকর্ড", "এক নজরে।"],
     sub: ["লেখা থাকে কোনটি রেকর্ড হয়েছে,", "কোনটি বাকি।"],
-    caption:
-      "প্রতি মাসের রেকর্ড এক নজরে। লেখা থাকে কোনটি রেকর্ড হয়েছে, কোনটি বাকি।",
     art: rows(80, 1110, [
       ["নভেম্বর", "বাকি", "due"],
       ["অক্টোবর", "রেকর্ডকৃত"],
@@ -992,7 +1035,6 @@ const reelBn = [
     size: 72,
     title: ["জমি আর কাগজপত্রও", "একই জায়গায়।"],
     sub: ["সম্পত্তির সব তথ্য গুছিয়ে।"],
-    caption: "জমি আর কাগজপত্রও একই জায়গায়। সম্পত্তির সব তথ্য গুছিয়ে।",
     art: mapCard(260, 1110, "জমির সীমানা · সংরক্ষিত"),
   },
   {
@@ -1000,9 +1042,6 @@ const reelBn = [
     size: 72,
     title: ["আপনার সম্পত্তি,", "গুছিয়ে রাখুন।"],
     sub: ["Landlord ফ্রিতে ব্যবহার করুন।", "landlordsbd.com"],
-    caption:
-      "আপনার সম্পত্তি, গুছিয়ে রাখুন। Landlord ফ্রিতে ব্যবহার করুন। landlordsbd.com",
-    voice: "আপনার সম্পত্তি, গুছিয়ে রাখুন। ল্যান্ডলর্ড ফ্রিতে ব্যবহার করুন।",
     art:
       parcel(560, 1180, 1.1, true) + button(80, 1430, "ফ্রিতে শুরু করুন", true),
   },
@@ -1027,15 +1066,11 @@ const story = [
     size: 76,
     title: ["সম্পত্তির কাগজ", "কোথায় রাখেন?"],
     sub: ["ফাইলে, ফোনে, নাকি", "আত্মীয়ের কাছে?"],
-    caption: "সম্পত্তির কাগজ কোথায় রাখেন?",
-    voice:
-      "সম্পত্তির কাগজ কোথায় রাখেন? ফাইলে, ফোনে, নাকি আত্মীয়ের কাছে? উত্তর দিন।",
     art: text(80, 1560, "উত্তর দিন ↑", 32, C.lime, 600),
   },
   {
     title: ["Land. Apartments.", "Rent. Documents."],
     sub: ["One place for all four,", "organised by property."],
-    caption: "Land. Apartments. Rent. Documents. One place for all four.",
     lang: "en",
     art: mapCard(260, 1060, "Plot boundary · saved"),
   },
@@ -1044,8 +1079,6 @@ const story = [
     size: 76,
     title: ["আপনার সম্পত্তি,", "গুছিয়ে রাখুন।"],
     sub: ["Free to use · ফ্রিতে ব্যবহার করুন"],
-    caption: "আপনার সম্পত্তি, গুছিয়ে রাখুন। Free to use.",
-    voice: "আপনার সম্পত্তি, গুছিয়ে রাখুন। ফ্রিতে ব্যবহার করুন।",
     art: text(80, 1560, "landlordsbd.com", 34, C.lime, 600),
   },
 ];
@@ -1068,27 +1101,18 @@ const howItWorks = [
     kicker: "HOW LANDLORD WORKS",
     title: ["Your property,", "in four steps."],
     sub: ["Four things, one place."],
-    caption: "How Landlord works: your property, in four steps.",
     art: parcel(640, 640, 0.95, true),
   },
   {
     kicker: "01 · PLOTS",
     title: ["Draw your plot", "on the map."],
     sub: ["The boundary is saved with the plot."],
-    caption:
-      "01. Draw your plot on the map. The boundary is saved with the plot.",
-    voice:
-      "One. Draw your plot on the map. The boundary is saved with the plot.",
     art: mapCard(440, 640, "Plot boundary · saved"),
   },
   {
     kicker: "02 · APARTMENTS",
     title: ["Add apartments", "and tenants."],
     sub: ["Keep tenant details with each unit."],
-    caption:
-      "02. Add apartments and tenants. Keep tenant details with each unit.",
-    voice:
-      "Two. Add apartments and tenants. Keep tenant details with each unit.",
     art: rows(80, 640, [
       ["Flat 2A · Rahman", "Leased"],
       ["Flat 3B · Vacant", "Vacant", "due"],
@@ -1099,10 +1123,6 @@ const howItWorks = [
     kicker: "03 · RENT",
     title: ["Record rent", "each month."],
     sub: ["See what is recorded and what is due."],
-    caption:
-      "03. Record rent each month. See what is recorded and what is due.",
-    voice:
-      "Three. Record rent each month. See what is recorded and what is due.",
     art: rentCard(
       80,
       680,
@@ -1116,10 +1136,6 @@ const howItWorks = [
     kicker: "04 · DOCUMENTS",
     title: ["Keep papers", "together."],
     sub: ["Deeds and records as PDFs."],
-    caption:
-      "04. Keep papers together. Deeds and records as PDFs, with optional encryption before upload.",
-    voice:
-      "Four. Keep papers together. Deeds and records as PDFs, with optional encryption before upload.",
     art: docCard(
       80,
       680,
@@ -1133,10 +1149,6 @@ const howItWorks = [
     kicker: "FREE TO USE",
     title: ["Your property,", "in order."],
     sub: ["Start with one property.", "landlordsbd.com"],
-    caption:
-      "Your property, in order. Start with one property at landlordsbd.com.",
-    voice:
-      "Your property, in order. Start with one property at landlord S B D dot com.",
     art: button(80, 850, "Get started free", true),
   },
 ];
@@ -1351,14 +1363,11 @@ const reelRentEn = [
     dark: true,
     title: ["Rent day.", "Where's the", "notebook?"],
     sub: ["Who has paid, who hasn't —", "hard to keep in your head."],
-    caption:
-      "Rent day. Where's the notebook? Who has paid, who hasn't — hard to keep in your head.",
     art: parcel(560, 1250, 1.1, true),
   },
   {
     title: ["Tenants and rent,", "together."],
     sub: ["Every flat, every month."],
-    caption: "Tenants and rent, together. Every flat, every month.",
     art: rentCard(
       80,
       1060,
@@ -1371,7 +1380,6 @@ const reelRentEn = [
   {
     title: ["Each month at", "a glance."],
     sub: ["See what's recorded", "and what's due."],
-    caption: "Each month at a glance. See what's recorded and what's due.",
     art: rows(80, 1090, [
       ["November", "Due", "due"],
       ["October", "Recorded"],
@@ -1381,18 +1389,12 @@ const reelRentEn = [
   {
     title: ["Plots and papers", "in the same place."],
     sub: ["All of your property", "details, organised."],
-    caption:
-      "Plots and papers in the same place. All of your property details, organised.",
     art: mapCard(260, 1090, "Plot boundary · saved"),
   },
   {
     dark: true,
     title: ["Your property,", "in order."],
     sub: ["Landlord is free to use.", "landlordsbd.com"],
-    caption:
-      "Your property, in order. Landlord is free to use. landlordsbd.com",
-    voice:
-      "Your property, in order. Landlord is free to use, at landlord S B D dot com.",
     art:
       parcel(560, 1150, 1.1, true) + button(80, 1430, "Get started free", true),
   },
@@ -1477,12 +1479,7 @@ await addVideo(
   "reel-scenes",
   "landlord-reel.mp4",
   "en",
-  [
-    "Property admin taking over?",
-    "Bring your land, apartments, documents and rent records together.",
-    "A little less keeping track. A clearer view of your property.",
-    "Landlord. Your property, in order. Get started free.",
-  ].map((caption) => ({ caption })),
+  reel.map(() => ({})),
   1080,
   1920,
   4,

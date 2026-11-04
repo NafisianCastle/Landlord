@@ -1,23 +1,23 @@
 1
 00:00:00,000 --> 00:00:05,000
-How Landlord works: your property, in four steps.
+Here's how Landlord works, in four simple steps.
 
 2
-00:00:05,000 --> 00:00:10,000
-01. Draw your plot on the map. The boundary is saved with the plot.
+00:00:05,000 --> 00:00:12,882
+Step one. Find your land on the map and draw its boundary. Landlord saves it with the plot, so you can always see where it is.
 
 3
-00:00:10,000 --> 00:00:15,398
-02. Add apartments and tenants. Keep tenant details with each unit.
+00:00:12,882 --> 00:00:20,416
+Step two. Add each flat or shop, and who is renting it. You can see at a glance which units are leased and which are vacant.
 
 4
-00:00:15,398 --> 00:00:20,516
-03. Record rent each month. See what is recorded and what is due.
+00:00:20,416 --> 00:00:29,714
+Step three. When rent comes in, record it. Each month shows what has been recorded and what is still due. The amount here is just an example.
 
 5
-00:00:20,516 --> 00:00:27,447
-04. Keep papers together. Deeds and records as PDFs, with optional encryption before upload.
+00:00:29,714 --> 00:00:38,630
+Step four. Upload your deeds and other papers as PDFs. If you like, encrypt them on your device first. Just keep your passphrase safe.
 
 6
-00:00:27,447 --> 00:00:33,958
-Your property, in order. Start with one property at landlordsbd.com.
+00:00:38,630 --> 00:00:45,861
+That's it. Landlord is free to use. Start with one property at landlordsbd.com.

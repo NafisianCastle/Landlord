@@ -108,7 +108,7 @@ Reply to answers in a friendly, specific way. Don't sell in the replies.
 
 ## 06 · Reel: a little less property admin (EN)
 
-**File:** `06-reel-property-admin.mp4` (1080 × 1920, about 25 s, voiceover + music). Captions: `06-reel/captions-en.srt`. Cover frame: `06-reel/scene-05.png`.
+**File:** `06-reel-property-admin.mp4` (1080 × 1920, about 35 s, voiceover + music). Captions: `06-reel/captions-en.srt`. Cover frame: `06-reel/scene-05.png`.
 
 > The deed is in one drawer. Rent is in a notebook. The plot map is on someone's phone. 😅
 >
@@ -120,7 +120,7 @@ Reply to answers in a friendly, specific way. Don't sell in the replies.
 
 ## 07 · Reel: rent day (BN)
 
-**File:** `07-reel-rent-bn.mp4` (1080 × 1920, about 27 s, voiceover + music). Captions: `07-reel-bn/captions-bn.srt`. Cover frame: `07-reel-bn/scene-01.png`.
+**File:** `07-reel-rent-bn.mp4` (1080 × 1920, about 31 s, voiceover + music). Captions: `07-reel-bn/captions-bn.srt`. Cover frame: `07-reel-bn/scene-01.png`.
 
 > ভাড়ার দিন এলেই খাতা খোঁজা? 📒
 >
@@ -135,7 +135,7 @@ Reply to answers in a friendly, specific way. Don't sell in the replies.
 
 ## 08 · Story (3 frames, BN/EN)
 
-**Files:** `08-story/scene-01.png` to `03.png` (1080 × 1920). `08-story.mp4` (about 17 s, voiceover + music) has all three frames joined, if you'd rather post one video story.
+**Files:** `08-story/scene-01.png` to `03.png` (1080 × 1920). `08-story.mp4` (about 21 s, voiceover + music) has all three frames joined, if you'd rather post one video story.
 
 1. **Frame 1:** add a **Poll** sticker in the open space above "উত্তর দিন ↑". Options: "কাগজের ফাইলে" / "ফোনে বা কম্পিউটারে".
 2. **Frame 2:** no sticker.
@@ -145,7 +145,7 @@ Next day, share the poll result as a follow-up story. Save all three frames to t
 
 ## 09 · Feed video: how Landlord works (EN)
 
-**File:** `09-video-how-it-works.mp4` (1080 × 1080, about 34 s, voiceover + music). Captions: `09-video/captions-en.srt`. Thumbnail: `09-video/scene-01.png`.
+**File:** `09-video-how-it-works.mp4` (1080 × 1080, about 46 s, voiceover + music). Captions: `09-video/captions-en.srt`. Thumbnail: `09-video/scene-01.png`.
 
 > How Landlord works, in four steps 🎬
 >
@@ -158,7 +158,7 @@ Next day, share the poll result as a follow-up story. Save all three frames to t
 >
 > #PropertyManagement #Bangladesh #Landlord
 
-**Alt text:** A 34-second explainer in six scenes:
+**Alt text:** A 46-second explainer in six scenes:
 
 1. How Landlord works.
 2. A plot boundary drawn on a map.
