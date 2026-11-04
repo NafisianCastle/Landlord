@@ -2,7 +2,7 @@ export interface TenantShare {
   id: string;
   apartment_id: string;
   owner_id: string;
-  user_id: string;
+  user_id: string | null;
   invited_email: string;
   apartment_label: string;
 }

@@ -41,7 +41,8 @@ As on the web, each plot and apartment has a **Shared with** section:
 - **Collaborators** see their own role.
 - **Viewers** don't get edit, boundary or location buttons, and only the owner
   can delete. The database enforces the same rules.
-- **Tenants** (bills only) are managed in the apartment's Bills section.
+- **Tenants** (bills only) are managed in the apartment's Bills section. They do not
+  need an account: the share button copies a private 90-day bill portal link.
 
 ## Analytics
 
@@ -73,13 +74,15 @@ Ended leases remain in the property history, and leases with financial records c
 be deleted from the mobile app accidentally.
 
 - **Owners.** On an apartment they own, an owner can:
-  - invite or remove tenants ("Tenant — bills only");
+  - add or remove tenants ("Tenant — bills only") without requiring an account;
+  - copy a private 90-day bill portal link to send to each tenant;
   - add a monthly bill with its copy (scan, photo or file);
   - share or hide each bill;
   - approve a tenant's payment proof, or reject it with a reason;
   - share individual apartment expenses with tenants.
 - **Tenants.** The **Bills** tab shows bills shared with them. They can upload
   payment proof, see the owner's review, and view expenses the owner shared.
+  Tenants without an account use the read-only web link instead.
 
 Bill operations need a connection. Each is a multi-step server write of
 evidence that can't be changed afterwards, and the database guards it.
@@ -109,7 +112,8 @@ Bills you've already loaded stay viewable offline.
    ```sh
    flutter run \
      --dart-define=SUPABASE_URL=https://<project>.supabase.co \
-     --dart-define=SUPABASE_PUBLISHABLE_KEY=<publishable key>
+     --dart-define=SUPABASE_PUBLISHABLE_KEY=<publishable key> \
+     --dart-define=WEB_URL=https://your-landlord-domain
    ```
 3. Add `io.landlord.app://login-callback` in Supabase → Authentication →
    URL Configuration → Redirect URLs. Google sign-in and email confirmation
