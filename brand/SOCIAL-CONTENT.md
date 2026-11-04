@@ -1,6 +1,6 @@
 # Launch content
 
-For the Facebook Page (name, intro, About, cover and ten launch posts), see [FACEBOOK-PAGE.md](FACEBOOK-PAGE.md) and [FACEBOOK-POSTS.md](FACEBOOK-POSTS.md). This file covers the original Instagram-first set.
+For the Facebook Page (name, intro, About, cover and ten launch posts), see [FACEBOOK-PAGE.md](FACEBOOK-PAGE.md) and [FACEBOOK-POSTS.md](FACEBOOK-POSTS.md). Instagram and LinkedIn versions of those ten posts are in [INSTAGRAM-POSTS.md](INSTAGRAM-POSTS.md) and [LINKEDIN-POSTS.md](LINKEDIN-POSTS.md). This file covers the original Instagram-first set.
 
 Profile name: **Landlord | Property management**
 
