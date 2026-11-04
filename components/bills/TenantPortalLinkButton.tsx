@@ -25,8 +25,11 @@ export default function TenantPortalLinkButton({ tenantShareId }: { tenantShareI
     setMessage(null);
     startTransition(async () => {
       const result = await createTenantPortalLink(tenantShareId);
-      if (!("url" in result)) return setMessage(result.error ?? t("failed"));
-      const createdUrl = result.url;
+      const createdUrl = "url" in result && typeof result.url === "string" ? result.url : null;
+      if (!createdUrl) {
+        const errorMessage = "error" in result && typeof result.error === "string" ? result.error : t("failed");
+        return setMessage(errorMessage);
+      }
       setUrl(createdUrl);
       if (navigator.share) {
         await navigator.share({ title: t("shareTitle"), text: t("shareText"), url: createdUrl })
