@@ -1,5 +1,7 @@
 # Launch content
 
+For the Facebook Page (name, intro, About, cover and ten launch posts), see [FACEBOOK-PAGE.md](FACEBOOK-PAGE.md) and [FACEBOOK-POSTS.md](FACEBOOK-POSTS.md). This file covers the original Instagram-first set.
+
 Profile name: **Landlord | Property management**
 
 Bio: **Land, apartments, rent & documents. Your property, in order. Built for Bangladesh. Free to use. ↓ Get started**
