@@ -56,7 +56,7 @@ export async function GET(request: Request) {
   const tranIdMatches = execution.merchantInvoiceNumber === txn.tran_id;
   const succeeded = isCompleted && amountMatches && tranIdMatches;
 
-  const { error: updateError } = await admin
+  const { data: claimed, error: updateError } = await admin
     .from("payment_transactions")
     .update({
       bkash_trx_id: execution.trxID ?? null,
@@ -64,10 +64,16 @@ export async function GET(request: Request) {
       raw_ipn_payload: execution,
     })
     .eq("tran_id", txn.tran_id)
-    .eq("status", "pending");
+    .eq("status", "pending")
+    .select("id");
 
   if (updateError || !succeeded) {
     return NextResponse.redirect(new URL("/paywall?status=failed", origin));
+  }
+  // A concurrent callback already moved this row out of pending and is
+  // granting access; don't grant or redeem the coupon a second time.
+  if (!claimed?.length) {
+    return NextResponse.redirect(new URL("/dashboard?payment=processing", origin));
   }
 
   await admin.from("subscriptions").upsert(

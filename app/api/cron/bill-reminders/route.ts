@@ -4,10 +4,10 @@ import { remindersConfigured } from "@/lib/pushConfig";
 import { sendFcm } from "@/lib/fcm";
 import { sendPush } from "@/lib/webPush";
 import { billHorizon } from "@/lib/bills";
+import { cronAuthorized } from "@/lib/cronAuth";
 
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET?.trim();
-  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`)
+  if (!cronAuthorized(request))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!remindersConfigured()) return NextResponse.json({ error: "Push notifications are not configured" }, { status: 503 });
   const admin = createAdminClient();

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cronAuthorized } from "@/lib/cronAuth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPush } from "@/lib/webPush";
 import { sendFcm, leasePropertyPath, leaseReminderSubject } from "@/lib/fcm";
@@ -15,10 +16,11 @@ const bdt = new Intl.NumberFormat("en-BD", {
 // been reminded yet. No SMS/email gateway configured, so push (browser and
 // the mobile app's FCM) is the only channel — reaches the landlord's own
 // devices, not the tenant.
+const PAGE_SIZE = 500;
+const MAX_PAGES = 20;
+
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  const cronSecret = process.env.CRON_SECRET?.trim();
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -34,83 +36,92 @@ export async function GET(request: Request) {
   horizon.setDate(horizon.getDate() + 3);
   const horizonDate = horizon.toISOString().slice(0, 10);
 
-  const { data: duePayments, error } = await admin
-    .from("lease_payments")
-    .select(
-      "id, user_id, due_date, amount, leases!inner(tenant_name, apartment_id, plot_id, land_plots(name), apartments(name))",
-    )
-    .eq("paid", false)
-    .is("reminder_sent_at", null)
-    .lte("due_date", horizonDate);
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-  if (!duePayments || duePayments.length === 0) {
-    return NextResponse.json({ sent: 0, expiredSubscriptionsRemoved: 0 });
-  }
-
-  const userIds = [...new Set(duePayments.map((p) => p.user_id))];
-  const [{ data: subscriptions }, { data: deviceTokens }] = await Promise.all([
-    admin
-      .from("push_subscriptions")
-      .select("user_id, endpoint, p256dh, auth")
-      .in("user_id", userIds),
-    admin.from("device_push_tokens").select("user_id, token").in("user_id", userIds),
-  ]);
-
-  const subsByUser = new Map<string, typeof subscriptions>();
-  for (const sub of subscriptions ?? []) {
-    subsByUser.set(sub.user_id, [...(subsByUser.get(sub.user_id) ?? []), sub]);
-  }
-  const tokensByUser = new Map<string, string[]>();
-  for (const row of deviceTokens ?? []) {
-    tokensByUser.set(row.user_id, [...(tokensByUser.get(row.user_id) ?? []), row.token]);
-  }
-
   let sent = 0;
   const remindedIds: string[] = [];
   const expiredEndpoints: string[] = [];
   const expiredTokens: string[] = [];
   const today = new Date().toISOString().slice(0, 10);
 
-  for (const payment of duePayments) {
-    const userSubs = subsByUser.get(payment.user_id) ?? [];
-    const userTokens = tokensByUser.get(payment.user_id) ?? [];
-    if (userSubs.length === 0 && userTokens.length === 0) continue;
+  // Paged, nearest due date first, with a hard cap per run: rows from owners
+  // with no device (never marked as reminded) or bulk-generated old rows
+  // can't crowd everyone else out of a single capped query any more.
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const { data: duePayments, error } = await admin
+      .from("lease_payments")
+      .select(
+        "id, user_id, due_date, amount, leases!inner(tenant_name, apartment_id, plot_id, land_plots(name), apartments(name))",
+      )
+      .eq("paid", false)
+      .is("reminder_sent_at", null)
+      .lte("due_date", horizonDate)
+      .order("due_date", { ascending: false })
+      .order("id")
+      .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
 
-    const lease = Array.isArray(payment.leases)
-      ? payment.leases[0]
-      : payment.leases;
-    const overdue = payment.due_date < today;
-    const title = overdue ? "Rent overdue" : "Rent due soon";
-    const body = `${leaseReminderSubject(lease)} · ${bdt.format(payment.amount)} · due ${payment.due_date}`;
+    if (error) {
+      console.error("rent-reminders query failed:", error.message);
+      return NextResponse.json({ error: "Query failed" }, { status: 500 });
+    }
+    if (!duePayments || duePayments.length === 0) break;
 
-    const [results, fcmResults] = await Promise.all([
-      Promise.all(userSubs.map((sub) => sendPush(sub, { title, body, url: "/leases" }))),
-      Promise.all(
-        userTokens.map((token) =>
-          sendFcm(token, { title, body, url: leasePropertyPath(lease) }),
-        ),
-      ),
+    const userIds = [...new Set(duePayments.map((p) => p.user_id))];
+    const [{ data: subscriptions }, { data: deviceTokens }] = await Promise.all([
+      admin
+        .from("push_subscriptions")
+        .select("user_id, endpoint, p256dh, auth")
+        .in("user_id", userIds),
+      admin.from("device_push_tokens").select("user_id, token").in("user_id", userIds),
     ]);
-    if ([...results, ...fcmResults].some((r) => r.sent)) {
-      sent += 1;
-      remindedIds.push(payment.id);
+
+    const subsByUser = new Map<string, typeof subscriptions>();
+    for (const sub of subscriptions ?? []) {
+      subsByUser.set(sub.user_id, [...(subsByUser.get(sub.user_id) ?? []), sub]);
     }
-    for (const r of results) {
-      if (r.expired) expiredEndpoints.push(r.endpoint);
+    const tokensByUser = new Map<string, string[]>();
+    for (const row of deviceTokens ?? []) {
+      tokensByUser.set(row.user_id, [...(tokensByUser.get(row.user_id) ?? []), row.token]);
     }
-    for (const r of fcmResults) {
-      if (r.expired) expiredTokens.push(r.token);
+
+    for (const payment of duePayments) {
+      const userSubs = subsByUser.get(payment.user_id) ?? [];
+      const userTokens = tokensByUser.get(payment.user_id) ?? [];
+      if (userSubs.length === 0 && userTokens.length === 0) continue;
+
+      const lease = Array.isArray(payment.leases)
+        ? payment.leases[0]
+        : payment.leases;
+      const overdue = payment.due_date < today;
+      const title = overdue ? "Rent overdue" : "Rent due soon";
+      const body = `${leaseReminderSubject(lease)} · ${bdt.format(payment.amount)} · due ${payment.due_date}`;
+
+      const [results, fcmResults] = await Promise.all([
+        Promise.all(userSubs.map((sub) => sendPush(sub, { title, body, url: "/leases" }))),
+        Promise.all(
+          userTokens.map((token) =>
+            sendFcm(token, { title, body, url: leasePropertyPath(lease) }),
+          ),
+        ),
+      ]);
+      if ([...results, ...fcmResults].some((r) => r.sent)) {
+        sent += 1;
+        remindedIds.push(payment.id);
+      }
+      for (const r of results) {
+        if (r.expired) expiredEndpoints.push(r.endpoint);
+      }
+      for (const r of fcmResults) {
+        if (r.expired) expiredTokens.push(r.token);
+      }
     }
+    if (duePayments.length < PAGE_SIZE) break;
   }
 
-  if (remindedIds.length > 0) {
+  // Chunked so the id list stays well within PostgREST's URL limits.
+  for (let i = 0; i < remindedIds.length; i += 200) {
     await admin
       .from("lease_payments")
       .update({ reminder_sent_at: new Date().toISOString() })
-      .in("id", remindedIds);
+      .in("id", remindedIds.slice(i, i + 200));
   }
   if (expiredEndpoints.length > 0) {
     await admin

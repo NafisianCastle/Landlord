@@ -313,11 +313,18 @@ export async function removeApartmentCollaborator(apartmentId: string, collabora
     .eq("id", collaboratorId)
     .single();
 
-  const { error } = await supabase
+  const { data: removed, error } = await supabase
     .from("apartment_collaborators")
     .delete()
-    .eq("id", collaboratorId);
+    .eq("id", collaboratorId)
+    .eq("apartment_id", apartmentId)
+    .select("id");
   if (error) return { error: error.message };
+  // Nothing matched (not yours, or already gone): nothing to log.
+  if (!removed?.length) {
+    revalidatePath(`/apartments/${apartmentId}`);
+    return { success: true };
+  }
 
   const { error: logError } = await supabase.rpc("log_apartment_collaborator_audit", {
     p_apartment_id: apartmentId,

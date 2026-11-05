@@ -61,6 +61,11 @@ export async function validateCoupon(
 // it, so validateCoupon's per-user reuse check above has something to read.
 export async function recordCouponRedemption(couponId: string, userId: string, tranId: string) {
   const admin = createAdminClient();
-  await admin.from("coupon_redemptions").insert({ coupon_id: couponId, user_id: userId, tran_id: tranId });
+  const { error } = await admin
+    .from("coupon_redemptions")
+    .insert({ coupon_id: couponId, user_id: userId, tran_id: tranId });
+  // The unique (coupon_id, user_id) row already exists: this redemption was
+  // counted before, so don't bump the shared counter again.
+  if (error) return;
   await admin.rpc("increment_coupon_redemptions", { p_coupon_id: couponId });
 }

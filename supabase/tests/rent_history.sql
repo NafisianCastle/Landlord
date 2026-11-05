@@ -4,7 +4,7 @@ begin;
 create function pg_temp.assert_true(ok boolean, description text) returns void language plpgsql as $$
 begin if ok is distinct from true then raise exception 'Assertion failed: %', description; end if; end $$;
 insert into auth.users(id) values ('f1000000-0000-0000-0000-000000000001'), ('f1000000-0000-0000-0000-000000000002');
-insert into public.land_plots(id,user_id) values ('f2000000-0000-0000-0000-000000000001','f1000000-0000-0000-0000-000000000001');
+insert into public.land_plots(id,user_id,name) values ('f2000000-0000-0000-0000-000000000001','f1000000-0000-0000-0000-000000000001','History plot');
 insert into public.leases(id,user_id,plot_id,tenant_name,rent_amount,frequency,start_date,end_date) values
  ('f3000000-0000-0000-0000-000000000001','f1000000-0000-0000-0000-000000000001','f2000000-0000-0000-0000-000000000001','History tenant',22000,'monthly','2022-01-31','2025-12-31'),
  ('f3000000-0000-0000-0000-000000000002','f1000000-0000-0000-0000-000000000001','f2000000-0000-0000-0000-000000000001','Quarterly tenant',22000,'quarterly','2022-01-31',null);

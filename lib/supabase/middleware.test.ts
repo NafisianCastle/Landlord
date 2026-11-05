@@ -44,6 +44,14 @@ describe("updateSession", () => {
     expect((await updateSession(makeRequest("/admin/users"))).status).toBe(307);
   });
 
+  it("lets the mobile app's bearer-token account and tenant-link routes through", async () => {
+    getUserMock.mockResolvedValue({ data: { user: null } });
+    const { updateSession } = await import("./middleware");
+    expect((await updateSession(makeRequest("/api/account"))).status).toBe(200);
+    expect((await updateSession(makeRequest("/api/tenant-links"))).status).toBe(200);
+    expect((await updateSession(makeRequest("/api/account/other"))).status).toBe(307);
+  });
+
   it("redirects to /login when there is no session and the path is private", async () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     const { updateSession } = await import("./middleware");

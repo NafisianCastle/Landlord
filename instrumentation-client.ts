@@ -1,4 +1,4 @@
-import { scrubEvent } from "@/lib/sentryScrub";
+import { scrubEvent, scrubTransaction } from "@/lib/sentryScrub";
 
 // Do not download/initialise monitoring when this deployment has no Sentry DSN.
 const sentry = process.env.NEXT_PUBLIC_SENTRY_DSN
@@ -8,6 +8,7 @@ const sentry = process.env.NEXT_PUBLIC_SENTRY_DSN
         tracesSampleRate: 0.1,
         sendDefaultPii: false,
         beforeSend: scrubEvent,
+        beforeSendTransaction: scrubTransaction,
       });
       return sdk;
     })

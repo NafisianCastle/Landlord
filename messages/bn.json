@@ -60,7 +60,8 @@
     "passwordsDoNotMatch": "নতুন পাসওয়ার্ড দুটি মিলছে না।",
     "currentPasswordIncorrect": "বর্তমান পাসওয়ার্ড সঠিক নয়।",
     "continueWithGoogle": "গুগল দিয়ে চালিয়ে যান",
-    "orContinueWithEmail": "অথবা ইমেইল দিয়ে চালিয়ে যান"
+    "orContinueWithEmail": "অথবা ইমেইল দিয়ে চালিয়ে যান",
+    "signupFailed": "এই তথ্য দিয়ে অ্যাকাউন্ট খোলা যায়নি। আগে থেকে অ্যাকাউন্ট থাকলে লগ ইন করুন।"
   },
   "PaywallPage": {
     "trialEnded": "আপনার ফ্রি ট্রায়াল শেষ হয়ে গেছে",

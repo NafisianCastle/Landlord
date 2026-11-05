@@ -1,5 +1,6 @@
 import webpush from "web-push";
 import { getPushConfiguration } from "@/lib/pushConfig";
+import { isAllowedPushEndpoint } from "@/lib/pushEndpoint";
 
 export interface PushSubscriptionRow {
   endpoint: string;
@@ -20,11 +21,16 @@ export async function sendPush(
   const vapidDetails = getPushConfiguration();
   if (!vapidDetails)
     return { endpoint: sub.endpoint, expired: false, sent: false };
+  // Rows saved before endpoints were checked are treated as expired, so the
+  // caller deletes them instead of the server calling an arbitrary host.
+  if (!isAllowedPushEndpoint(sub.endpoint))
+    return { endpoint: sub.endpoint, expired: true, sent: false };
   try {
     await webpush.sendNotification(
       { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
       JSON.stringify(payload),
-      { vapidDetails },
+      // A push service that never answers must not stall the whole cron.
+      { vapidDetails, timeout: 10_000 },
     );
     return { endpoint: sub.endpoint, expired: false, sent: true };
   } catch (err) {
