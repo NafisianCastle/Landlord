@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:file_picker/file_picker.dart';
@@ -394,7 +393,7 @@ class ApartmentBillsSection extends ConsumerWidget {
       }
     } on ActionException catch (error) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.error.message(l))));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.actionError(error.error))));
       }
     }
   }
