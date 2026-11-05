@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { csvEscape } from "@/lib/csv";
 
-function csvEscape(value: string) {
-  if (/[",\n]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
-  return value;
-}
 
 // RLS scopes this to the caller's own rows, same as every other query in the app.
 export async function GET() {

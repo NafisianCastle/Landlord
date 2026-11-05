@@ -6,11 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { getSessionDEK } from "@/lib/crypto/session";
 import { decryptLeaseSecrets, LEASE_SECRET_COLUMNS, type LeaseSecretSource } from "@/lib/crypto/leaseSecrets";
 import { Button } from "@/components/ui/button";
+import { csvEscape } from "@/lib/csv";
 
-function csvEscape(value: string) {
-  if (/[",\n]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
-  return value;
-}
 
 type LeaseRef = LeaseSecretSource & {
   land_plots: { name: string } | null;

@@ -4,7 +4,7 @@ vi.mock("web-push", () => ({ default: { sendNotification: mocks.send } }));
 vi.mock("@/lib/pushConfig", () => ({ getPushConfiguration: mocks.config }));
 import { sendPush } from "./webPush";
 const sub = {
-  endpoint: "https://push.example/subscription",
+  endpoint: "https://fcm.googleapis.com/fcm/send/subscription",
   p256dh: "test-key",
   auth: "test-auth",
 };
@@ -18,6 +18,17 @@ beforeEach(() => {
   mocks.send.mockResolvedValue(undefined);
 });
 describe("sendPush", () => {
+  it("never contacts a host that isn't a push service, and drops the row", async () => {
+    const rogue = { ...sub, endpoint: "https://169.254.169.254/latest" };
+    await expect(sendPush(rogue, { title: "t", body: "b" })).resolves.toEqual({
+      endpoint: rogue.endpoint, sent: false, expired: true,
+    });
+    expect(mocks.send).not.toHaveBeenCalled();
+  });
+  it("gives up on a push service that doesn't answer", async () => {
+    await sendPush(sub, { title: "t", body: "b" });
+    expect(mocks.send.mock.calls[0][2]).toMatchObject({ timeout: 10_000 });
+  });
   it("only reports sent after provider acceptance", async () => {
     await expect(
       sendPush(sub, { title: "Rent due", body: "Example" }),

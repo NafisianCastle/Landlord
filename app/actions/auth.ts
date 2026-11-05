@@ -33,6 +33,10 @@ export async function signUp(_prevState: unknown, formData: FormData) {
   });
 
   if (error) {
+    // Don't confirm which emails already have accounts.
+    if (error.code === "user_already_exists" || /already registered/i.test(error.message)) {
+      return { error: t("signupFailed") };
+    }
     return { error: error.message };
   }
 
@@ -62,7 +66,9 @@ export async function signIn(_prevState: unknown, formData: FormData) {
 export async function demoSignIn(_prevState: unknown, _formData: FormData) {
   const email = process.env.DEMO_USER_EMAIL;
   const password = process.env.DEMO_USER_PASSWORD;
-  if (!email || !password) {
+  // The button is hidden unless enabled, but the action itself is callable by
+  // anyone who knows its id, so check the flag here too.
+  if (process.env.NEXT_PUBLIC_DEMO_LOGIN_ENABLED !== "true" || !email || !password) {
     return { error: "Demo login is not configured." };
   }
 

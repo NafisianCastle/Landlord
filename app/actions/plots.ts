@@ -309,11 +309,18 @@ export async function removeCollaborator(plotId: string, collaboratorId: string)
     .eq("id", collaboratorId)
     .single();
 
-  const { error } = await supabase
+  const { data: removed, error } = await supabase
     .from("plot_collaborators")
     .delete()
-    .eq("id", collaboratorId);
+    .eq("id", collaboratorId)
+    .eq("plot_id", plotId)
+    .select("id");
   if (error) return { error: error.message };
+  // Nothing matched (not yours, or already gone): nothing to log.
+  if (!removed?.length) {
+    revalidatePath(`/plots/${plotId}`);
+    return { success: true };
+  }
 
   const { error: logError } = await supabase.rpc("log_plot_collaborator_audit", {
     p_plot_id: plotId,

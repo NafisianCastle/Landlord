@@ -25,7 +25,7 @@ const request = () =>
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      endpoint: "https://push.example/test",
+      endpoint: "https://fcm.googleapis.com/fcm/send/test",
       keys: { p256dh: "test", auth: "test" },
     }),
   });

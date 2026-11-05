@@ -34,7 +34,7 @@ beforeEach(() => {
   mocks.admin.mockReturnValue({ from });
   from.mockImplementation((table: string) => {
     const chain: Record<string, unknown> = {};
-    for (const method of ["select", "eq", "is", "lte", "not", "in"])
+    for (const method of ["select", "eq", "is", "lte", "not", "in", "order", "range"])
       chain[method] = () => chain;
     chain.update = (value: unknown) => {
       update(table, value);

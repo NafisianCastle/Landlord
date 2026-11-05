@@ -43,7 +43,7 @@ export async function POST(request: Request) {
   const tranIdMatches = String(validation.tran_id ?? "") === tranId;
   const succeeded = isValid && amountMatches && tranIdMatches;
 
-  const { error: updateError } = await admin
+  const { data: claimed, error: updateError } = await admin
     .from("payment_transactions")
     .update({
       val_id: valId,
@@ -53,7 +53,8 @@ export async function POST(request: Request) {
       raw_ipn_payload: payload,
     })
     .eq("tran_id", tranId)
-    .eq("status", "pending");
+    .eq("status", "pending")
+    .select("id");
 
   // val_id is unique across transactions (migration 0011) — a conflict here
   // means this val_id was already consumed by a different tran_id, so refuse
@@ -62,7 +63,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "val_id already used" }, { status: 409 });
   }
 
-  if (succeeded) {
+  // Only the request that actually moved the row out of pending grants
+  // access; a concurrent duplicate IPN finds nothing left to update.
+  if (succeeded && claimed?.length) {
     await admin.from("subscriptions").upsert(
       {
         user_id: txn.user_id,
