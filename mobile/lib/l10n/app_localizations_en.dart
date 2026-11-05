@@ -376,7 +376,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tenantEmailHistoryHint =>
-      "Use the same email as the tenant's Bills invitation to include bills and payment proofs in this history.";
+      'Use the same email as the tenant\'s Bills invitation to include bills and payment proofs in this history.';
 
   @override
   String get rentAmount => 'Rent amount (BDT)';
@@ -471,7 +471,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get encryptionNotSetUp =>
-      'Encryption isn\'t set up. Set it up from your profile on the web app; it will then unlock here too.';
+      'Encrypt sensitive details (village, mutation number, prices, dates, notes) and new documents on this device, so only you can read them — not even Landlord. Map boundaries stay unencrypted. If you lose both the passphrase and the recovery code, that data is gone for good.';
 
   @override
   String get passphrase => 'Passphrase';
@@ -1392,4 +1392,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get search => 'Search';
+
+  @override
+  String get encryptionPassphrase => 'Encryption passphrase';
+
+  @override
+  String get confirmPassphrase => 'Confirm passphrase';
+
+  @override
+  String get passphraseTooShort => 'Passphrase must be at least 8 characters.';
+
+  @override
+  String get passphraseMismatch => 'Passphrases don\'t match.';
+
+  @override
+  String get enableEncryption => 'Enable encryption';
+
+  @override
+  String get saveRecoveryCode => 'Save your recovery code';
+
+  @override
+  String get recoveryCodeHint =>
+      'If you forget your passphrase, this is the only other way to unlock your encrypted data. Landlord can\'t reset it for you.';
+
+  @override
+  String get savedSomewhereSafe => 'I\'ve saved it somewhere safe';
+
+  @override
+  String get yourData => 'Your data';
+
+  @override
+  String get privacyPolicy => 'Privacy policy';
+
+  @override
+  String get privacyPolicyHint =>
+      'What we store, what\'s encrypted, and who can see it';
+
+  @override
+  String get exportData => 'Export my data';
+
+  @override
+  String get exportDataHint =>
+      'Save a copy of everything you\'ve stored. Encrypted fields stay encrypted.';
+
+  @override
+  String get exportSaved => 'Export saved.';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountHint =>
+      'Permanently delete your account and everything in it';
+
+  @override
+  String get deleteAccountWarning =>
+      'This permanently deletes your account, all your properties, leases, records and uploaded documents. It cannot be undone. Export your data first if you want a copy.';
+
+  @override
+  String typeEmailToConfirm(String email) {
+    return 'Type your email ($email) to confirm';
+  }
+
+  @override
+  String get deleteForever => 'Delete forever';
+
+  @override
+  String get deleteConfirmationMismatch =>
+      'The email you typed doesn\'t match your account.';
+
+  @override
+  String get deletePasswordIncorrect => 'Password is incorrect.';
+
+  @override
+  String get deleteAccountFailed =>
+      'We couldn\'t delete your account. Please try again.';
 }

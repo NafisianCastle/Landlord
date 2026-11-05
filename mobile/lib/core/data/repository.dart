@@ -903,4 +903,65 @@ class Repository {
     await _db.clear();
     await _client.auth.signOut();
   }
+
+  // ---- Encryption setup and account data (need a connection) ---------------
+
+  /// Stores the wrapped keys from KeyVault.setUp. Goes straight to the server,
+  /// never through the outbox, and only if encryption isn't already on there:
+  /// replacing keys set up on another device would orphan that data.
+  Future<void> enableEncryption(Map<String, dynamic> wrappedKeys) async {
+    final values = {...wrappedKeys, 'encryption_enabled': true};
+    final updated = await _client
+        .from('profiles')
+        .update(values)
+        .eq('id', _userId)
+        .eq('encryption_enabled', false)
+        .select('id');
+    if (updated.isEmpty) {
+      await refresh();
+      throw const ActionException(ActionError.saveFailed);
+    }
+    await _db.upsertRow('profiles', _userId, values);
+    _onChanged();
+  }
+
+  /// Google-only accounts have no password to re-enter before deleting.
+  bool get accountNeedsPassword {
+    final providers = _client.auth.currentUser?.appMetadata['providers'];
+    return providers is! List || providers.isEmpty || providers.contains('email');
+  }
+
+  /// Full JSON export of the user's data from the web app's /api/account.
+  Future<String> exportMyData() async {
+    final res = await _account('GET');
+    if (res.statusCode != 200) throw const ActionException(ActionError.saveFailed);
+    return res.body;
+  }
+
+  /// Deletes the account on the server, then wipes this device. Returns the
+  /// server's error code (confirmationMismatch, passwordIncorrect,
+  /// deleteFailed) instead of throwing when it refuses.
+  Future<String?> deleteAccount(String confirmation, String password) async {
+    final res = await _account('DELETE', {'confirmation': confirmation, 'password': password});
+    if (res.statusCode != 200) {
+      final decoded = jsonDecode(res.body.isEmpty ? '{}' : res.body);
+      return decoded is Map<String, dynamic> && decoded['error'] is String
+          ? decoded['error'] as String
+          : 'deleteFailed';
+    }
+    await _db.clear();
+    await _client.auth.signOut().catchError((_) {});
+    return null;
+  }
+
+  Future<http.Response> _account(String method, [Map<String, String>? body]) async {
+    final token = _client.auth.currentSession?.accessToken;
+    if (Env.webUrl.isEmpty || token == null) throw const ActionException(ActionError.saveFailed);
+    final request = http.Request(
+        method, Uri.parse('${Env.webUrl.replaceAll(RegExp(r'/+$'), '')}/api/account'))
+      ..headers['authorization'] = 'Bearer $token'
+      ..headers['content-type'] = 'application/json';
+    if (body != null) request.body = jsonEncode(body);
+    return http.Response.fromStream(await request.send());
+  }
 }

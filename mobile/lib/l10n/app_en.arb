@@ -208,7 +208,7 @@
   "settings": "Settings",
   "language": "Language",
   "encryption": "Encryption",
-  "encryptionNotSetUp": "Encryption isn't set up. Set it up from your profile on the web app; it will then unlock here too.",
+  "encryptionNotSetUp": "Encrypt sensitive details (village, mutation number, prices, dates, notes) and new documents on this device, so only you can read them — not even Landlord. Map boundaries stay unencrypted. If you lose both the passphrase and the recovery code, that data is gone for good.",
   "passphrase": "Passphrase",
   "recoveryCode": "Recovery code",
   "useRecoveryCode": "Use recovery code instead",
@@ -637,5 +637,34 @@
       }
     }
   },
-  "search": "Search"
+  "search": "Search",
+  "encryptionPassphrase": "Encryption passphrase",
+  "confirmPassphrase": "Confirm passphrase",
+  "passphraseTooShort": "Passphrase must be at least 8 characters.",
+  "passphraseMismatch": "Passphrases don't match.",
+  "enableEncryption": "Enable encryption",
+  "saveRecoveryCode": "Save your recovery code",
+  "recoveryCodeHint": "If you forget your passphrase, this is the only other way to unlock your encrypted data. Landlord can't reset it for you.",
+  "savedSomewhereSafe": "I've saved it somewhere safe",
+  "yourData": "Your data",
+  "privacyPolicy": "Privacy policy",
+  "privacyPolicyHint": "What we store, what's encrypted, and who can see it",
+  "exportData": "Export my data",
+  "exportDataHint": "Save a copy of everything you've stored. Encrypted fields stay encrypted.",
+  "exportSaved": "Export saved.",
+  "deleteAccount": "Delete account",
+  "deleteAccountHint": "Permanently delete your account and everything in it",
+  "deleteAccountWarning": "This permanently deletes your account, all your properties, leases, records and uploaded documents. It cannot be undone. Export your data first if you want a copy.",
+  "typeEmailToConfirm": "Type your email ({email}) to confirm",
+  "@typeEmailToConfirm": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteForever": "Delete forever",
+  "deleteConfirmationMismatch": "The email you typed doesn't match your account.",
+  "deletePasswordIncorrect": "Password is incorrect.",
+  "deleteAccountFailed": "We couldn't delete your account. Please try again."
 }

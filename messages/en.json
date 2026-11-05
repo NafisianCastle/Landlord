@@ -410,7 +410,8 @@
   "DocumentRow": {
     "confirmDelete": "Delete \"{fileName}\"? This can't be undone.",
     "deleteFailed": "Couldn't delete this document. Try again.",
-    "delete": "Delete"
+    "delete": "Delete",
+    "encrypted": "Encrypted"
   },
   "DocumentUploader": {
     "uploadingWithSize": "Uploading {size} MB...",
@@ -445,7 +446,8 @@
     "changePassword": "Change password",
     "rentReminders": "Reminders",
     "referrals": "Invite friends",
-    "encryptedPlotData": "Encrypted plot data"
+    "encryptedPlotData": "Encrypted plot data",
+    "yourData": "Your data"
   },
   "ReferralSettings": {
     "explanation": "Share this link — anyone who signs up through it is linked to your account.",
@@ -588,9 +590,9 @@
   },
   "PrivacyPage": {
     "title": "Privacy Policy",
-    "lastUpdated": "Draft — not yet reviewed by counsel.",
-    "draftNotice": "DRAFT — this is placeholder text, not a final legal document. Do not rely on it until it has been reviewed and replaced.",
-    "body": "1. What we collect\nAccount data (name, email, phone), plot data you enter (location, boundaries, purchase/valuation details, notes, documents), and payment records for lifetime-access purchases.\n\n2. Guest mode\nIf you use Landlord without an account, your plot data is stored only in your browser's local storage (IndexedDB) and is never sent to our servers unless and until you create an account, at which point it migrates to your account and this policy applies to it.\n\n3. Client-side encryption\nYou may optionally enable client-side encryption for sensitive plot fields (village, mutation number, prices, dates, notes). When enabled, these fields are encrypted in your browser before being sent to our servers using a key derived from a passphrase only you know — we cannot read this data, and cannot recover it if you lose both your passphrase and recovery code.\n\n4. How we use data\nTo provide the service, process payments (via SSLCommerz/bKash), and communicate essential account/service notices. We do not sell personal data.\n\n5. Sharing\nIf you invite a collaborator to a plot, that collaborator can see the plot's non-encrypted data as described in-app. We may share data with service providers (hosting, payments) strictly to operate the service, and where required by law.\n\n6. Data retention and deletion\nYou may delete plots and documents at any time. Contact us to request full account deletion.\n\n7. Your rights\nYou may request a copy of your data or its deletion by contacting us."
+    "lastUpdated": "Last updated: 5 November 2026",
+    "draftNotice": "",
+    "body": "In short\nYour property records are yours. We store them so you can use Landlord on the web and on your phone, we don't sell them, and we don't use them for advertising. You can export everything or delete your account yourself, at any time, from Profile (web) or Settings (mobile).\n\n1. What we store\nYour account (name, email), the property records you enter (plots, boundaries, apartments, leases and tenant details, rent payments, expenses, vendors, maintenance requests), the documents you upload, and payment records if you pay for access. The mobile app also stores a push-notification token so it can send rent reminders.\n\n2. What is encrypted so only you can read it\nIf you turn on encryption (Profile on the web, Settings in the app), sensitive plot and apartment fields — village, mutation number, prices, dates, notes — and the documents you choose to encrypt are encrypted on your device before they are uploaded. The key comes from a passphrase only you know. We cannot read this data, and we cannot recover it if you lose both your passphrase and your recovery code.\nNot encrypted: plot boundaries and map locations (needed to draw maps and calculate area), lease and tenant details, rent payments, expenses and vendors. These are protected by access controls instead, described below.\n\n3. Who can see your data\nOnly you, and people you explicitly invite as collaborators or tenants. Collaborators see that property's unencrypted details; tenants see only the bills you share with them. Every table and file in our database is locked to its owner, and documents are kept in private storage that is never publicly linked.\nLandlord staff: our admin tools show account email, name and plan status — not your properties or documents. People with direct database access could technically read data you have not encrypted; that access is limited to running and fixing the service, or when the law requires it. Turn on encryption if you want your most sensitive details to be unreadable even to us.\n\n4. Data on your device\nGuest mode (web) keeps records only in your browser and never sends them to us unless you create an account. The mobile app keeps an offline copy of your records on your phone; it can be protected with a fingerprint/face lock, it is left out of Android device backups, and it is wiped when you sign out.\n\n5. Services we use\nSupabase (database, file storage, sign-in), Vercel (hosting and anonymous page-view counts), Sentry (crash reports, configured not to include your personal details or form contents), Google (sign-in if you choose it, and push notifications on Android/iOS), SSLCommerz and bKash (payments), OpenFreeMap and Esri (map images) and Photon by Komoot (address search — only the text you search for is sent). Each receives only what it needs to do its job.\n\n6. What we never do\nWe do not sell your data, share it with advertisers, or use your property records to train models or build profiles.\n\n7. Keeping and deleting data\nYour data stays until you delete it. Deleting a property or document removes it straight away. Deleting your account removes your profile, all your records, and your uploaded files. Error logs and backups held by our providers expire within their normal retention periods.\n\n8. Your rights\nExport a full copy of your data (JSON) or delete your account yourself, at any time. For anything else, contact us and we will respond within 30 days."
   },
   "RefundPage": {
     "title": "Refund Policy",
@@ -712,7 +714,7 @@
     "trust": {
       "local": "Built for Bangladesh",
       "offline": "Guest records work offline",
-      "private": "Optional document encryption"
+      "private": "Encrypted so only you can read it"
     },
     "featuresEyebrow": "One place. A clearer picture.",
     "featuresIntro": "From a family plot to a growing rental portfolio, keep the details close and the admin simple.",
@@ -739,8 +741,8 @@
       }
     },
     "privacyEyebrow": "Your records deserve care",
-    "privacyTitle": "Keep the important things close.",
-    "privacyText": "Store your property PDFs with optional encryption before upload. Your encryption passphrase is yours to keep; losing it can mean losing access to those files.",
+    "privacyTitle": "Your records stay yours.",
+    "privacyText": "Turn on encryption and your sensitive details and documents are locked on your device before upload — Landlord can't read them. We never sell your data, and you can export or delete everything yourself, any time.",
     "privacyCta": "Read our privacy policy",
     "faqEyebrow": "A few useful answers",
     "faqTitle": "Good to know.",
@@ -760,6 +762,18 @@
       "3": {
         "question": "Does a mapped boundary replace a land survey?",
         "answer": "No. Map boundaries help organise your records. They are not a legal survey or proof of ownership. Use verified documents and a qualified surveyor for legal or boundary decisions."
+      },
+      "4": {
+        "question": "Can Landlord staff see my documents?",
+        "answer": "Not if you encrypt them. Encrypted fields and documents are locked on your device with a passphrase only you know, so we can't read them. Everything else is locked to your account and only you and people you invite can see it. Our admin tools don't show your properties or documents."
+      },
+      "5": {
+        "question": "Do you sell or share my data?",
+        "answer": "No. We don't sell data or share it with advertisers. We only use service providers needed to run Landlord (hosting, storage, payments, maps), and each gets only what it needs. The privacy policy lists them all."
+      },
+      "6": {
+        "question": "Can I take my data with me or delete it?",
+        "answer": "Yes. Export everything as a file, or delete your account and all your records and documents yourself, at any time — from Profile on the web or Settings in the app."
       }
     },
     "closingEyebrow": "A clearer view starts here",
@@ -1061,5 +1075,25 @@
     "accessRequired": "Sign in to record rent history.",
     "monthlyOnly": "Rent ranges are available for monthly leases.",
     "saveFailed": "Could not record rent history. Refresh and check the lease dates and selected months. A month with multiple payment entries must be resolved first."
+  },
+  "YourData": {
+    "exportHint": "Download a copy of everything you've stored in Landlord. Encrypted fields stay encrypted in the file.",
+    "export": "Export my data",
+    "exporting": "Preparing...",
+    "delete": "Delete account...",
+    "deleteWarning": "This permanently deletes your account, all your properties, leases, records and uploaded documents. It cannot be undone. Export your data first if you want a copy.",
+    "typeEmail": "Type your email ({email}) to confirm",
+    "password": "Password",
+    "deleting": "Deleting...",
+    "deleteForever": "Delete my account forever",
+    "cancel": "Cancel",
+    "confirmationMismatch": "The email you typed doesn't match your account.",
+    "passwordIncorrect": "Password is incorrect.",
+    "deleteFailed": "We couldn't delete your account. Please try again."
+  },
+  "EncryptionPrompt": {
+    "text": "Sensitive details aren't encrypted yet. Turn on encryption so only you can read them — not even Landlord.",
+    "cta": "Set up encryption",
+    "encrypted": "Encrypted"
   }
 }

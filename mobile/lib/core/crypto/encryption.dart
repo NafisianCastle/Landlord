@@ -68,6 +68,18 @@ Future<Uint8List> _open(List<int> ciphertext, SecretKey key, List<int> iv) async
 
 Future<SecretKey> generateDEK() => _aes.newSecretKey();
 
+/// Same format as the web's generateRecoveryCode: 20 symbols from an alphabet
+/// without 0/O/1/I, in dash-separated groups of four ("XY4K-9F2P-...").
+String generateRecoveryCode() {
+  const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  final code = StringBuffer();
+  for (var i = 0; i < 20; i++) {
+    if (i > 0 && i % 4 == 0) code.write('-');
+    code.write(alphabet[_random.nextInt(alphabet.length)]);
+  }
+  return code.toString();
+}
+
 Future<WrappedKey> wrapDEKWithSecret(SecretKey dek, String secret) async {
   final salt = randomBytes(16);
   final iv = randomBytes(12);

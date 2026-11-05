@@ -470,7 +470,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get encryptionNotSetUp =>
-      'এনক্রিপশন সেট আপ করা হয়নি। ওয়েব অ্যাপের প্রোফাইল থেকে সেট আপ করুন; তারপর এখানেও আনলক করা যাবে।';
+      'সংবেদনশীল তথ্য (গ্রাম, মিউটেশন নম্বর, দাম, তারিখ, নোট) ও নতুন নথি এই ডিভাইসেই এনক্রিপ্ট করুন, যাতে শুধু আপনি পড়তে পারেন — Landlord-ও নয়। ম্যাপের সীমানা এনক্রিপ্ট হয় না। পাসফ্রেজ ও রিকভারি কোড দুটোই হারালে সেই তথ্য চিরতরে হারিয়ে যাবে।';
 
   @override
   String get passphrase => 'পাসফ্রেজ';
@@ -1387,4 +1387,79 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get search => 'খুঁজুন';
+
+  @override
+  String get encryptionPassphrase => 'এনক্রিপশন পাসফ্রেজ';
+
+  @override
+  String get confirmPassphrase => 'পাসফ্রেজ নিশ্চিত করুন';
+
+  @override
+  String get passphraseTooShort => 'পাসফ্রেজ কমপক্ষে ৮ অক্ষরের হতে হবে।';
+
+  @override
+  String get passphraseMismatch => 'পাসফ্রেজ মেলেনি।';
+
+  @override
+  String get enableEncryption => 'এনক্রিপশন চালু করুন';
+
+  @override
+  String get saveRecoveryCode => 'আপনার রিকভারি কোড সংরক্ষণ করুন';
+
+  @override
+  String get recoveryCodeHint =>
+      'পাসফ্রেজ ভুলে গেলে এনক্রিপ্ট করা তথ্য খোলার একমাত্র বিকল্প উপায় এটি। Landlord এটি রিসেট করতে পারে না।';
+
+  @override
+  String get savedSomewhereSafe => 'আমি এটি নিরাপদে রেখেছি';
+
+  @override
+  String get yourData => 'আপনার তথ্য';
+
+  @override
+  String get privacyPolicy => 'গোপনীয়তা নীতি';
+
+  @override
+  String get privacyPolicyHint =>
+      'আমরা কী রাখি, কী এনক্রিপ্টেড, আর কে দেখতে পারে';
+
+  @override
+  String get exportData => 'আমার তথ্য এক্সপোর্ট করুন';
+
+  @override
+  String get exportDataHint =>
+      'আপনার রাখা সব তথ্যের একটি কপি সংরক্ষণ করুন। এনক্রিপ্ট করা তথ্য এনক্রিপ্টেডই থাকবে।';
+
+  @override
+  String get exportSaved => 'এক্সপোর্ট সংরক্ষিত হয়েছে।';
+
+  @override
+  String get deleteAccount => 'অ্যাকাউন্ট মুছুন';
+
+  @override
+  String get deleteAccountHint =>
+      'আপনার অ্যাকাউন্ট ও এর সবকিছু স্থায়ীভাবে মুছে ফেলুন';
+
+  @override
+  String get deleteAccountWarning =>
+      'এতে আপনার অ্যাকাউন্ট, সব সম্পত্তি, লিজ, রেকর্ড ও আপলোড করা নথি স্থায়ীভাবে মুছে যাবে। এটি আর ফেরানো যাবে না। কপি রাখতে চাইলে আগে তথ্য এক্সপোর্ট করুন।';
+
+  @override
+  String typeEmailToConfirm(String email) {
+    return 'নিশ্চিত করতে আপনার ইমেইল ($email) লিখুন';
+  }
+
+  @override
+  String get deleteForever => 'চিরতরে মুছুন';
+
+  @override
+  String get deleteConfirmationMismatch =>
+      'আপনার লেখা ইমেইল অ্যাকাউন্টের সাথে মেলেনি।';
+
+  @override
+  String get deletePasswordIncorrect => 'পাসওয়ার্ড সঠিক নয়।';
+
+  @override
+  String get deleteAccountFailed =>
+      'অ্যাকাউন্ট মুছে ফেলা যায়নি। আবার চেষ্টা করুন।';
 }

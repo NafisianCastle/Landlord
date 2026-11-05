@@ -773,7 +773,7 @@ abstract class AppLocalizations {
   /// No description provided for @tenantEmailHistoryHint.
   ///
   /// In en, this message translates to:
-  /// **'Use the same email as the tenant's Bills invitation to include bills and payment proofs in this history.'**
+  /// **'Use the same email as the tenant\'s Bills invitation to include bills and payment proofs in this history.'**
   String get tenantEmailHistoryHint;
 
   /// No description provided for @rentAmount.
@@ -953,7 +953,7 @@ abstract class AppLocalizations {
   /// No description provided for @encryptionNotSetUp.
   ///
   /// In en, this message translates to:
-  /// **'Encryption isn\'t set up. Set it up from your profile on the web app; it will then unlock here too.'**
+  /// **'Encrypt sensitive details (village, mutation number, prices, dates, notes) and new documents on this device, so only you can read them — not even Landlord. Map boundaries stay unencrypted. If you lose both the passphrase and the recovery code, that data is gone for good.'**
   String get encryptionNotSetUp;
 
   /// No description provided for @passphrase.
@@ -1421,7 +1421,7 @@ abstract class AppLocalizations {
   /// No description provided for @billInviteFirst.
   ///
   /// In en, this message translates to:
-  /// **'Add a tenant above (Tenant — bills only), then create a bill. The tenant needs a Landlord account.'**
+  /// **'Add a tenant above (Tenant — bills only), then create a bill. The tenant does not need a Landlord account.'**
   String get billInviteFirst;
 
   /// No description provided for @createBill.
@@ -2617,6 +2617,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search'**
   String get search;
+
+  /// No description provided for @encryptionPassphrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Encryption passphrase'**
+  String get encryptionPassphrase;
+
+  /// No description provided for @confirmPassphrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm passphrase'**
+  String get confirmPassphrase;
+
+  /// No description provided for @passphraseTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Passphrase must be at least 8 characters.'**
+  String get passphraseTooShort;
+
+  /// No description provided for @passphraseMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passphrases don\'t match.'**
+  String get passphraseMismatch;
+
+  /// No description provided for @enableEncryption.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable encryption'**
+  String get enableEncryption;
+
+  /// No description provided for @saveRecoveryCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Save your recovery code'**
+  String get saveRecoveryCode;
+
+  /// No description provided for @recoveryCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'If you forget your passphrase, this is the only other way to unlock your encrypted data. Landlord can\'t reset it for you.'**
+  String get recoveryCodeHint;
+
+  /// No description provided for @savedSomewhereSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve saved it somewhere safe'**
+  String get savedSomewhereSafe;
+
+  /// No description provided for @yourData.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data'**
+  String get yourData;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @privacyPolicyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What we store, what\'s encrypted, and who can see it'**
+  String get privacyPolicyHint;
+
+  /// No description provided for @exportData.
+  ///
+  /// In en, this message translates to:
+  /// **'Export my data'**
+  String get exportData;
+
+  /// No description provided for @exportDataHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a copy of everything you\'ve stored. Encrypted fields stay encrypted.'**
+  String get exportDataHint;
+
+  /// No description provided for @exportSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Export saved.'**
+  String get exportSaved;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently delete your account and everything in it'**
+  String get deleteAccountHint;
+
+  /// No description provided for @deleteAccountWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes your account, all your properties, leases, records and uploaded documents. It cannot be undone. Export your data first if you want a copy.'**
+  String get deleteAccountWarning;
+
+  /// No description provided for @typeEmailToConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your email ({email}) to confirm'**
+  String typeEmailToConfirm(String email);
+
+  /// No description provided for @deleteForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete forever'**
+  String get deleteForever;
+
+  /// No description provided for @deleteConfirmationMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The email you typed doesn\'t match your account.'**
+  String get deleteConfirmationMismatch;
+
+  /// No description provided for @deletePasswordIncorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is incorrect.'**
+  String get deletePasswordIncorrect;
+
+  /// No description provided for @deleteAccountFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t delete your account. Please try again.'**
+  String get deleteAccountFailed;
 }
 
 class _AppLocalizationsDelegate

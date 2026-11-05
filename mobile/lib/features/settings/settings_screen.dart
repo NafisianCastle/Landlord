@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:cryptography/cryptography.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/crypto/key_vault.dart';
 import '../../core/env.dart';
@@ -82,6 +87,8 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
           ],
+          SectionHeader(l.yourData),
+          const _YourDataCard(),
           const SizedBox(height: 24),
           OutlinedButton.icon(
             icon: const Icon(Icons.logout),
@@ -138,7 +145,7 @@ class _EncryptionCardState extends ConsumerState<_EncryptionCard> {
     final l = context.l10n;
     final enabled = ref.watch(profileProvider).value?['encryption_enabled'] == true;
     final unlocked = ref.watch(keyVaultProvider) != null;
-    if (!enabled) return Card(child: ListTile(title: Text(l.encryptionNotSetUp)));
+    if (!enabled) return const _EncryptionSetupCard();
     if (unlocked) {
       return Card(
         child: ListTile(
@@ -383,6 +390,225 @@ class _OptionSheetState extends State<_OptionSheet> {
             ]),
           ),
         ]),
+      ),
+    );
+  }
+}
+
+/// First-time encryption setup, same flow as the web's EncryptionSettings.
+class _EncryptionSetupCard extends ConsumerStatefulWidget {
+  const _EncryptionSetupCard();
+
+  @override
+  ConsumerState<_EncryptionSetupCard> createState() => _EncryptionSetupCardState();
+}
+
+class _EncryptionSetupCardState extends ConsumerState<_EncryptionSetupCard> {
+  final _passphrase = TextEditingController();
+  final _confirm = TextEditingController();
+  bool _busy = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _passphrase.dispose();
+    _confirm.dispose();
+    super.dispose();
+  }
+
+  Future<void> _setUp() async {
+    final l = context.l10n;
+    if (_passphrase.text.length < 8) return setState(() => _error = l.passphraseTooShort);
+    if (_passphrase.text != _confirm.text) return setState(() => _error = l.passphraseMismatch);
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    String? code;
+    final ok = await runOnlineAction(context, () async {
+      code = await ref.read(keyVaultProvider.notifier).setUp(_passphrase.text);
+    });
+    if (!mounted) return;
+    setState(() => _busy = false);
+    if (!ok || code == null) return;
+    _passphrase.clear();
+    _confirm.clear();
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(l.saveRecoveryCode),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l.recoveryCodeHint),
+            const SizedBox(height: 12),
+            SelectableText(code!, style: const TextStyle(fontFamily: 'monospace', fontSize: 18)),
+          ],
+        ),
+        actions: [
+          FilledButton(onPressed: () => Navigator.pop(context), child: Text(l.savedSomewhereSafe)),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(l.encryptionNotSetUp),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _passphrase,
+              obscureText: true,
+              decoration: InputDecoration(labelText: l.encryptionPassphrase),
+            ),
+            TextField(
+              controller: _confirm,
+              obscureText: true,
+              decoration: InputDecoration(labelText: l.confirmPassphrase, errorText: _error),
+              onSubmitted: (_) => _setUp(),
+            ),
+            const SizedBox(height: 12),
+            FilledButton(
+              onPressed: _busy ? null : _setUp,
+              child: _busy
+                  ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator())
+                  : Text(l.enableEncryption),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Privacy policy, data export and account deletion (needs WEB_URL).
+class _YourDataCard extends ConsumerWidget {
+  const _YourDataCard();
+
+  Future<void> _export(BuildContext context, WidgetRef ref) async {
+    final l = context.l10n;
+    await runOnlineAction(context, () async {
+      final json = await ref.read(repositoryProvider).exportMyData();
+      final date = DateTime.now().toIso8601String().substring(0, 10);
+      final saved = await FilePicker.saveFile(
+        fileName: 'landlord-export-$date.json',
+        bytes: Uint8List.fromList(utf8.encode(json)),
+        mimeType: 'application/json',
+      );
+      if (saved != null && context.mounted) showMessage(context, l.exportSaved);
+    });
+  }
+
+  Future<void> _delete(BuildContext context, WidgetRef ref) async {
+    final l = context.l10n;
+    final repo = ref.read(repositoryProvider);
+    final email = ref.read(supabaseProvider).auth.currentUser?.email ?? '';
+    final confirmation = TextEditingController();
+    final password = TextEditingController();
+    final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(l.deleteAccount),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(l.deleteAccountWarning),
+                  TextField(
+                    controller: confirmation,
+                    keyboardType: TextInputType.emailAddress,
+                    autocorrect: false,
+                    decoration: InputDecoration(labelText: l.typeEmailToConfirm(email)),
+                  ),
+                  if (repo.accountNeedsPassword)
+                    TextField(
+                      controller: password,
+                      obscureText: true,
+                      decoration: InputDecoration(labelText: l.password),
+                    ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l.cancel)),
+              FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l.deleteForever),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+    final typed = confirmation.text;
+    final secret = password.text;
+    confirmation.dispose();
+    password.dispose();
+    if (!confirmed || !context.mounted) return;
+
+    String? error;
+    final ok = await runOnlineAction(context, () async {
+      error = await repo.deleteAccount(typed, secret);
+    });
+    if (!ok || !context.mounted) return;
+    if (error != null) {
+      showMessage(
+        context,
+        switch (error) {
+          'confirmationMismatch' => l.deleteConfirmationMismatch,
+          'passwordIncorrect' => l.deletePasswordIncorrect,
+          _ => l.deleteAccountFailed,
+        },
+      );
+      return;
+    }
+    // The server account is gone; clear this device's reminders and keys too.
+    await ref.read(_pushServiceProvider).disable().catchError((_) {});
+    await ref.read(keyVaultProvider.notifier).forgetAll();
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    final online = Env.webUrl.isNotEmpty;
+    return Card(
+      child: Column(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.privacy_tip_outlined),
+            title: Text(l.privacyPolicy),
+            subtitle: Text(l.privacyPolicyHint),
+            trailing: const Icon(Icons.open_in_new),
+            enabled: online,
+            onTap: () => launchUrl(
+              Uri.parse('${Env.webUrl.replaceAll(RegExp(r'/+$'), '')}/privacy'),
+              mode: LaunchMode.externalApplication,
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.download_outlined),
+            title: Text(l.exportData),
+            subtitle: Text(l.exportDataHint),
+            enabled: online,
+            onTap: () => _export(context, ref),
+          ),
+          ListTile(
+            leading: Icon(Icons.delete_forever_outlined, color: Theme.of(context).colorScheme.error),
+            title: Text(l.deleteAccount),
+            subtitle: Text(l.deleteAccountHint),
+            enabled: online,
+            onTap: () => _delete(context, ref),
+          ),
+        ],
       ),
     );
   }
