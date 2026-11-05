@@ -24,7 +24,7 @@ export default async function ProfilePage() {
     supabase
       .from("profiles")
       .select(
-        "encryption_enabled, dek_salt, dek_wrapped_by_passphrase, dek_wrapped_by_passphrase_iv, referral_code",
+        "encryption_enabled, dek_salt, dek_wrapped_by_passphrase, dek_wrapped_by_passphrase_iv, referral_code, is_demo",
       )
       .eq("id", user.id)
       .single(),
@@ -32,6 +32,11 @@ export default async function ProfilePage() {
   ]);
 
   const t = await getTranslations("ProfilePage");
+  const tDemo = await getTranslations("DemoMode");
+  // The shared demo can't set up encryption, export or delete itself (the
+  // database refuses anyway); say so instead of offering broken buttons.
+  const isDemo = profile?.is_demo === true;
+  const demoNote = <p className="text-sm text-muted-foreground">{tDemo("notAvailable")}</p>;
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
@@ -79,7 +84,7 @@ export default async function ProfilePage() {
           <CardTitle>{t("encryptedPlotData")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <EncryptionSettings
+          {isDemo ? demoNote : <EncryptionSettings
             userId={user.id}
             profile={{
               encryptionEnabled: profile?.encryption_enabled ?? false,
@@ -89,7 +94,7 @@ export default async function ProfilePage() {
               dekWrappedByPassphraseIv:
                 profile?.dek_wrapped_by_passphrase_iv ?? null,
             }}
-          />
+          />}
         </CardContent>
       </Card>
       <Card>
@@ -97,7 +102,7 @@ export default async function ProfilePage() {
           <CardTitle>{t("yourData")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <YourDataSettings email={user.email ?? ""} needsPassword={needsPassword(user)} />
+          {isDemo ? demoNote : <YourDataSettings email={user.email ?? ""} needsPassword={needsPassword(user)} />}
         </CardContent>
       </Card>
     </div>

@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/lease-expiry",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/demo-reset",
+      "schedule": "0 21 * * *"
     }
   ]
 }

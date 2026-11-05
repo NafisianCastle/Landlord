@@ -25,7 +25,7 @@ export async function updateSession(request: NextRequest) {
   // /api/tenant-links and /api/account the mobile app's Supabase access
   // token, without cookies.
   if (
-    ["/api/cron/rent-reminders", "/api/cron/lease-expiry", "/api/cron/bill-reminders"].includes(
+    ["/api/cron/rent-reminders", "/api/cron/lease-expiry", "/api/cron/bill-reminders", "/api/cron/demo-reset"].includes(
       request.nextUrl.pathname,
     ) ||
     request.nextUrl.pathname.startsWith("/api/admin/") ||

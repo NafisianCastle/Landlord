@@ -38,7 +38,9 @@
     "oauthError": "Google sign-in failed. Please try again.",
     "accountExistsError": "An account with this email already exists. Sign in with your email and password instead.",
     "orContinueWithEmail": "or continue with email",
-    "tryDemo": "Try the demo"
+    "tryDemo": "Try the live demo",
+    "justLooking": "Just looking?",
+    "openingDemo": "Opening the demo…"
   },
   "SignupPage": {
     "title": "Sign up",
@@ -781,7 +783,11 @@
     "closingTitle": "More property. Less paperwork.",
     "closingNote": "English & বাংলা · On your phone or computer",
     "tagline": "Your property, in order.",
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "tryDemo": "Try the live demo",
+    "openingDemo": "Opening the demo…",
+    "demoHint": "A sample account with plots, apartments and rent. Browse freely — nothing you do is saved.",
+    "guestLink": "Or keep notes on this device as a guest"
   },
   "AdminNav": {
     "overview": "Overview",
@@ -1101,5 +1107,10 @@
     "encryptedTenant": "🔒 Encrypted tenant",
     "lockedDetails": "🔒 Tenant details are encrypted. Unlock encryption in Profile to see them.",
     "lockedForm": "This lease's tenant details are encrypted. Unlock encryption in Profile to view or edit it."
+  },
+  "DemoMode": {
+    "banner": "You're viewing a read-only demo. Changes aren't saved.",
+    "createAccount": "Create your free account",
+    "notAvailable": "Not available in the demo. Create your own free account to use this."
   }
 }

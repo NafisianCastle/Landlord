@@ -22,6 +22,8 @@ import { SITE_URL, SOCIAL_IMAGE } from "@/lib/site";
 import Logo from "@/components/system/Logo";
 import ThemeToggle from "@/components/system/ThemeToggle";
 import LocaleSwitcher from "@/components/system/LocaleSwitcher";
+import DemoSignInButton from "@/components/auth/DemoSignInButton";
+import { demoEnabled } from "@/lib/demo";
 import styles from "./landing.module.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -62,6 +64,7 @@ export default async function LandingPage() {
   const user = await getCurrentUser();
   if (user) redirect("/dashboard");
   const t = await getTranslations("LandingPage");
+  const showDemo = demoEnabled();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -126,18 +129,33 @@ export default async function LandingPage() {
               <Link href="/signup" className={styles.button}>
                 {t("heroCta")} <ArrowRight size={18} aria-hidden="true" />
               </Link>
-              <Link
-                href="/dashboard"
-                prefetch={false}
-                className={styles.secondaryButton}
-              >
-                {t("tryGuest")} <ArrowRight size={17} aria-hidden="true" />
-              </Link>
+              {showDemo ? (
+                <DemoSignInButton
+                  label={t("tryDemo")}
+                  pendingLabel={t("openingDemo")}
+                  className={styles.secondaryButton}
+                >
+                  <ArrowRight size={17} aria-hidden="true" />
+                </DemoSignInButton>
+              ) : (
+                <Link
+                  href="/dashboard"
+                  prefetch={false}
+                  className={styles.secondaryButton}
+                >
+                  {t("tryGuest")} <ArrowRight size={17} aria-hidden="true" />
+                </Link>
+              )}
             </div>
             <p className={styles.microcopy}>
               <Check size={14} aria-hidden="true" />
-              {t("heroTrialNote")}
+              {showDemo ? t("demoHint") : t("heroTrialNote")}
             </p>
+            {showDemo && (
+              <Link href="/dashboard" prefetch={false} className={styles.guestLink}>
+                {t("guestLink")}
+              </Link>
+            )}
             <a href="#features" className={styles.explore}>
               <ArrowDown size={15} aria-hidden="true" />
               {t("explore")}
@@ -366,10 +384,19 @@ export default async function LandingPage() {
           <p className={styles.eyebrow}>{t("closingEyebrow")}</p>
           <h2 id="cta-title">{t("closingTitle")}</h2>
           <p>{t("pricingHint")}</p>
-          <Link href="/signup" className={styles.limeButton}>
-            {t("heroCta")}
-            <ArrowRight size={18} aria-hidden="true" />
-          </Link>
+          <div className={styles.closingActions}>
+            <Link href="/signup" className={styles.limeButton}>
+              {t("heroCta")}
+              <ArrowRight size={18} aria-hidden="true" />
+            </Link>
+            {showDemo && (
+              <DemoSignInButton
+                label={t("tryDemo")}
+                pendingLabel={t("openingDemo")}
+                className={styles.closingDemo}
+              />
+            )}
+          </div>
           <span>{t("closingNote")}</span>
         </section>
       </main>

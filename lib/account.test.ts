@@ -7,7 +7,9 @@ const mocks = vi.hoisted(() => ({
   removed: [] as [string, string[]][],
   deleteUser: vi.fn(),
   signIn: vi.fn(),
+  isDemo: vi.fn(),
 }));
+vi.mock("@/lib/demo", () => ({ isDemoAccount: mocks.isDemo }));
 
 vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: () => ({
@@ -51,6 +53,7 @@ beforeEach(() => {
   mocks.deletes = [];
   mocks.removed = [];
   mocks.deleteUser.mockResolvedValue({ error: null });
+  mocks.isDemo.mockResolvedValue(false);
   mocks.signIn.mockResolvedValue({ error: null });
 });
 
@@ -77,6 +80,12 @@ describe("deleteAccount", () => {
   it("refuses when the typed email doesn't match, touching nothing", async () => {
     expect(await deleteAccount(user, "someone@else.com", "pw")).toEqual({ error: "confirmationMismatch" });
     expect(mocks.signIn).not.toHaveBeenCalled();
+    expect(mocks.deleteUser).not.toHaveBeenCalled();
+  });
+
+  it("never deletes the shared demo account", async () => {
+    mocks.isDemo.mockResolvedValue(true);
+    expect(await deleteAccount(user, "owner@example.com", "pw")).toEqual({ error: "deleteFailed" });
     expect(mocks.deleteUser).not.toHaveBeenCalled();
   });
 
