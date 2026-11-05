@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Lock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 import { deleteDocument } from "@/app/actions/documents";
 import { Button } from "@/components/ui/button";
@@ -48,7 +50,15 @@ export default function DocumentRow({
   return (
     <li className="flex flex-col gap-1 py-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="truncate text-sm">{fileName}</span>
+        <span className="flex min-w-0 items-center gap-2">
+          <span className="truncate text-sm">{fileName}</span>
+          {isEncrypted && (
+            <Badge variant="success" className="shrink-0 gap-1">
+              <Lock className="size-3" aria-hidden="true" />
+              {t("encrypted")}
+            </Badge>
+          )}
+        </span>
         <div className="flex shrink-0 gap-3">
           <PdfPreviewModal
             storagePath={storagePath}

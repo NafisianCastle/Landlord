@@ -84,4 +84,18 @@ void main() {
     expect(await decryptJSON(sealed.ciphertext, sealed.iv, unwrapped),
         {'notes': 'hi'});
   });
+
+  test('recovery codes match the web format and unwrap the DEK', () async {
+    final code = generateRecoveryCode();
+    expect(code, matches(RegExp(r'^[A-HJ-NP-Z2-9]{4}(-[A-HJ-NP-Z2-9]{4}){4}$')));
+    expect(generateRecoveryCode(), isNot(code));
+
+    final dek = await generateDEK();
+    final byPassphrase = await wrapDEKWithSecret(dek, 'a long passphrase');
+    final byRecovery = await wrapDEKWithSecret(dek, code);
+    for (final (secret, wrapped) in [('a long passphrase', byPassphrase), (code, byRecovery)]) {
+      final unwrapped = await unwrapDEKWithSecret(secret, wrapped.salt, wrapped.wrapped, wrapped.iv);
+      expect(await unwrapped.extractBytes(), await dek.extractBytes());
+    }
+  });
 }

@@ -3,6 +3,7 @@ import SectionLoading from "@/components/system/SectionLoading";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import EncryptionPrompt from "@/components/privacy/EncryptionPrompt";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { updateApartmentMetadata } from "@/app/actions/apartments";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,7 +34,7 @@ export default async function ApartmentDetailPage({
     return <GuestApartmentDetail apartmentId={apartmentId} />;
   }
 
-  const [{ data: apartment, error }, { data: documents }, { data: collaborators }] =
+  const [{ data: apartment, error }, { data: documents }, { data: collaborators }, { data: profile }] =
     await Promise.all([
       supabase.from("apartments").select("*").eq("id", apartmentId).single(),
       supabase
@@ -46,6 +47,7 @@ export default async function ApartmentDetailPage({
         .select("id, invited_email, role")
         .eq("apartment_id", apartmentId)
         .order("created_at", { ascending: true }),
+      supabase.from("profiles").select("encryption_enabled").eq("id", user.id).single(),
     ]);
 
   const t = await getTranslations("ApartmentDetailPage");
@@ -122,6 +124,11 @@ export default async function ApartmentDetailPage({
 
       <div>
         <h2 className="mb-2 font-medium">{t("documents")}</h2>
+        {apartment.user_id === user.id && !profile?.encryption_enabled && (
+          <div className="mb-3">
+            <EncryptionPrompt />
+          </div>
+        )}
         <ul className="mb-3 divide-y divide-border rounded-lg border border-border px-3 py-1">
           {(documents ?? []).map((doc) => (
             <ApartmentDocumentRow

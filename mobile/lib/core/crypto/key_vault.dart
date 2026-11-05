@@ -43,6 +43,27 @@ class KeyVault extends Notifier<SecretKey?> {
     if (await biometricLockEnabled()) await _store(dek);
   }
 
+  /// First-time setup, same scheme as the web's EncryptionSettings: a new DEK
+  /// wrapped by the passphrase and by a recovery code. Returns the recovery
+  /// code, which must be shown to the user exactly once.
+  Future<String> setUp(String passphrase) async {
+    final dek = await generateDEK();
+    final code = generateRecoveryCode();
+    final byPassphrase = await wrapDEKWithSecret(dek, passphrase);
+    final byRecovery = await wrapDEKWithSecret(dek, code);
+    await ref.read(repositoryProvider).enableEncryption({
+      'dek_salt': toPgBytea(byPassphrase.salt),
+      'dek_wrapped_by_passphrase': toPgBytea(byPassphrase.wrapped),
+      'dek_wrapped_by_passphrase_iv': toPgBytea(byPassphrase.iv),
+      'recovery_salt': toPgBytea(byRecovery.salt),
+      'dek_wrapped_by_recovery': toPgBytea(byRecovery.wrapped),
+      'dek_wrapped_by_recovery_iv': toPgBytea(byRecovery.iv),
+    });
+    state = dek;
+    if (await biometricLockEnabled()) await _store(dek);
+    return code;
+  }
+
   /// Forgets the key everywhere, including the keystore copy.
   Future<void> lock() async {
     state = null;

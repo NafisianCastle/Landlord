@@ -11,6 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/crypto/key_vault.dart';
 import 'core/env.dart';
 import 'core/l10n.dart';
+import 'core/offline/backup_exclusion.dart';
 import 'core/offline/local_db.dart';
 import 'core/offline/tile_cache.dart';
 import 'core/providers.dart';
@@ -32,9 +33,17 @@ Future<void> main() async {
     debugPrint('Push disabled: $e');
   }
 
-  final db = await LocalDb.open(p.join(await getDatabasesPath(), 'landlord.db'));
+  final dbPath = p.join(await getDatabasesPath(), 'landlord.db');
+  final db = await LocalDb.open(dbPath);
   final support = await getApplicationSupportDirectory();
-  final tiles = TileCache(Directory(p.join(support.path, 'tiles')));
+  final tilesDir = await Directory(p.join(support.path, 'tiles')).create(recursive: true);
+  final tiles = TileCache(tilesDir);
+  // Re-applied every launch so files SQLite recreates stay excluded too.
+  await excludeFromBackup([
+    dbPath,
+    for (final suffix in ['-journal', '-wal', '-shm']) '$dbPath$suffix',
+    tilesDir.path,
+  ]);
 
   final container = ProviderContainer(overrides: [
     localDbProvider.overrideWithValue(db),

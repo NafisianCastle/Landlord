@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'crypto/key_vault.dart';
 import 'data/property_kind.dart';
 import 'data/repository.dart';
 import 'offline/local_db.dart';
@@ -62,15 +63,23 @@ final propertyProvider =
   return ref.read(repositoryProvider).property(args.$1, args.$2);
 });
 
+/// Leases come back with encrypted tenant details decrypted while the key is
+/// unlocked (see Repository.revealLease).
 final leasesProvider =
-    FutureProvider.family<List<DbRow>, (PropertyKind, String)>((ref, args) {
+    FutureProvider.family<List<DbRow>, (PropertyKind, String)>((ref, args) async {
   ref.watch(dataRevisionProvider);
-  return ref.read(repositoryProvider).leases(args.$1, args.$2);
+  final dek = ref.watch(keyVaultProvider);
+  final repo = ref.read(repositoryProvider);
+  final leases = await repo.leases(args.$1, args.$2);
+  return Future.wait(leases.map((lease) => repo.revealLease(lease, dek)));
 });
 
-final leaseProvider = FutureProvider.family<DbRow?, String>((ref, id) {
+final leaseProvider = FutureProvider.family<DbRow?, String>((ref, id) async {
   ref.watch(dataRevisionProvider);
-  return ref.read(repositoryProvider).lease(id);
+  final dek = ref.watch(keyVaultProvider);
+  final repo = ref.read(repositoryProvider);
+  final lease = await repo.lease(id);
+  return lease == null ? null : repo.revealLease(lease, dek);
 });
 
 final paymentsProvider = FutureProvider.family<List<DbRow>, String>((ref, leaseId) {

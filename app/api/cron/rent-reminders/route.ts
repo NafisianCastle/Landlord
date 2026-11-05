@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPush } from "@/lib/webPush";
-import { sendFcm, leasePropertyPath } from "@/lib/fcm";
+import { sendFcm, leasePropertyPath, leaseReminderSubject } from "@/lib/fcm";
 import { remindersConfigured } from "@/lib/pushConfig";
 
 const bdt = new Intl.NumberFormat("en-BD", {
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
   const { data: duePayments, error } = await admin
     .from("lease_payments")
     .select(
-      "id, user_id, due_date, amount, leases!inner(tenant_name, apartment_id, plot_id)",
+      "id, user_id, due_date, amount, leases!inner(tenant_name, apartment_id, plot_id, land_plots(name), apartments(name))",
     )
     .eq("paid", false)
     .is("reminder_sent_at", null)
@@ -84,7 +84,7 @@ export async function GET(request: Request) {
       : payment.leases;
     const overdue = payment.due_date < today;
     const title = overdue ? "Rent overdue" : "Rent due soon";
-    const body = `${lease?.tenant_name ?? "Tenant"} · ${bdt.format(payment.amount)} · due ${payment.due_date}`;
+    const body = `${leaseReminderSubject(lease)} · ${bdt.format(payment.amount)} · due ${payment.due_date}`;
 
     const [results, fcmResults] = await Promise.all([
       Promise.all(userSubs.map((sub) => sendPush(sub, { title, body, url: "/leases" }))),

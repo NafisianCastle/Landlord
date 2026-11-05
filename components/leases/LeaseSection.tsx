@@ -9,6 +9,8 @@ import EndLeaseButton from "@/components/leases/EndLeaseButton";
 import DeleteLeaseButton from "@/components/leases/DeleteLeaseButton";
 import RenewLeaseButton from "@/components/leases/RenewLeaseButton";
 import RentHistoryForm from "@/components/leases/RentHistoryForm";
+import TenantName from "@/components/leases/TenantName";
+import LeaseTenantDetails from "@/components/leases/LeaseTenantDetails";
 import BillCard from "@/components/bills/BillCard";
 import { billStatus, type ApartmentBill, type BillProof } from "@/lib/bills";
 
@@ -16,7 +18,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 type LeaseRow = {
   id: string;
-  tenant_name: string;
+  tenant_name: string | null;
   tenant_phone: string | null;
   tenant_email: string | null;
   rent_amount: number;
@@ -25,6 +27,8 @@ type LeaseRow = {
   end_date: string | null;
   status: "active" | "ended";
   notes: string | null;
+  sensitive_encrypted: string | null;
+  sensitive_iv: string | null;
 };
 
 function endsWithinDays(endDate: string, days: number) {
@@ -32,10 +36,13 @@ function endsWithinDays(endDate: string, days: number) {
 }
 
 function billsForLease(lease: LeaseRow, bills: ApartmentBill[]) {
+  // An encrypted lease's tenant email can't be read here, so its bills are
+  // the ones dated within the lease (an apartment has one tenant at a time).
+  const encrypted = Boolean(lease.sensitive_encrypted);
   const email = lease.tenant_email?.trim().toLowerCase();
-  if (!email) return [];
+  if (!email && !encrypted) return [];
   return bills.filter((bill) =>
-    bill.tenant_email.trim().toLowerCase() === email &&
+    (encrypted || bill.tenant_email.trim().toLowerCase() === email) &&
     bill.due_date >= lease.start_date &&
     (!lease.end_date || bill.due_date <= lease.end_date));
 }
@@ -71,7 +78,7 @@ export default async function LeaseSection({
 
   const leaseResult = await supabase
     .from("leases")
-    .select("id, tenant_name, tenant_phone, tenant_email, rent_amount, frequency, start_date, end_date, status, notes")
+    .select("id, tenant_name, tenant_phone, tenant_email, rent_amount, frequency, start_date, end_date, status, notes, sensitive_encrypted, sensitive_iv")
     .eq(column, subjectId)
     .order("start_date", { ascending: false });
 
@@ -156,6 +163,8 @@ export default async function LeaseSection({
               startDate: activeLease.start_date,
               endDate: activeLease.end_date,
               notes: activeLease.notes,
+              sensitiveEncryptedHex: activeLease.sensitive_encrypted,
+              sensitiveIvHex: activeLease.sensitive_iv,
             }}
             submitLabel={t("saveChanges")}
           /> : <LeaseForm
@@ -189,7 +198,7 @@ export default async function LeaseSection({
 
           return <details key={lease.id} open={isActive} className="rounded-xl border border-border bg-card">
             <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-2 p-4">
-              <span className="font-medium">{lease.tenant_name}</span>
+              <span className="font-medium"><TenantName lease={lease} /></span>
               <span className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">{lease.start_date} – {lease.end_date ?? t("ongoing")}</span>
                 <Badge variant={isActive ? "secondary" : "outline"}>{t(isActive ? "active" : "ended")}</Badge>
@@ -197,10 +206,8 @@ export default async function LeaseSection({
             </summary>
             <div className="flex flex-col gap-5 border-t border-border p-4">
               <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
-                {lease.tenant_phone && <div><dt className="text-muted-foreground">{t("phone")}</dt><dd>{lease.tenant_phone}</dd></div>}
-                {lease.tenant_email && <div><dt className="text-muted-foreground">{t("email")}</dt><dd className="break-all">{lease.tenant_email}</dd></div>}
                 <div><dt className="text-muted-foreground">{t("rent")}</dt><dd>{money(Number(lease.rent_amount))} · {t(`frequency.${lease.frequency}`)}</dd></div>
-                {lease.notes && <div><dt className="text-muted-foreground">{t("notes")}</dt><dd className="whitespace-pre-wrap break-words">{lease.notes}</dd></div>}
+                <LeaseTenantDetails lease={lease} />
               </dl>
 
               <div>

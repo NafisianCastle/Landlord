@@ -68,18 +68,20 @@ export const propertyRules: Rules = {
   dolilArea: money, actualArea: money, size: money,
   dolilAreaUnit: { choices: areaUnits }, actualAreaUnit: { choices: areaUnits }, sizeUnit: { choices: areaUnits },
 };
+/** Checks the optional client-encrypted blob (sensitiveEncryptedHex + sensitiveIvHex). */
+function invalidCiphertext(form: FormData): boolean {
+  const ciphertext = form.get("sensitiveEncryptedHex");
+  const iv = form.get("sensitiveIvHex");
+  if (!ciphertext && !iv) return false;
+  return form.getAll("sensitiveEncryptedHex").length !== 1 || form.getAll("sensitiveIvHex").length !== 1 ||
+    typeof ciphertext !== "string" || ciphertext.length > 65538 ||
+    !/^\\x(?:[0-9a-f]{2}){16,}$/i.test(ciphertext) ||
+    typeof iv !== "string" || !/^\\x[0-9a-f]{24}$/i.test(iv);
+}
 export function validateProperty(form: FormData): string | null {
   const error = validateForm(form, propertyRules);
   if (error) return error;
-  const ciphertext = form.get("sensitiveEncryptedHex");
-  const iv = form.get("sensitiveIvHex");
-  if (ciphertext || iv) {
-    if (form.getAll("sensitiveEncryptedHex").length !== 1 || form.getAll("sensitiveIvHex").length !== 1 ||
-        typeof ciphertext !== "string" || ciphertext.length > 65538 ||
-        !/^\\x(?:[0-9a-f]{2}){16,}$/i.test(ciphertext) ||
-        typeof iv !== "string" || !/^\\x[0-9a-f]{24}$/i.test(iv)) return "Invalid encrypted property data.";
-  }
-  return null;
+  return invalidCiphertext(form) ? "Invalid encrypted property data." : null;
 }
 export const leaseRules: Rules = {
   tenantName: { max: 200 }, tenantPhone: { kind: "phone", max: 32 }, tenantEmail: { kind: "email", max: 254 },
@@ -89,6 +91,7 @@ export const leaseRules: Rules = {
 export function validateLease(form: FormData): string | null {
   const error = validateForm(form, leaseRules);
   if (error) return error;
+  if (invalidCiphertext(form)) return "Invalid encrypted lease data.";
   const start = String(form.get("startDate") ?? "");
   const end = String(form.get("endDate") ?? "");
   return start && end && end < start ? "Lease end date must be on or after its start date." : null;

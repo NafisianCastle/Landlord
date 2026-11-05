@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPush } from "@/lib/webPush";
-import { sendFcm, leasePropertyPath } from "@/lib/fcm";
+import { sendFcm, leasePropertyPath, leaseReminderSubject } from "@/lib/fcm";
 import { remindersConfigured } from "@/lib/pushConfig";
 
 // Vercel Cron (see vercel.json) hits this daily. Reminds once per lease:
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
   const { data: expiringLeases, error } = await admin
     .from("leases")
-    .select("id, user_id, tenant_name, end_date, plot_id, apartment_id")
+    .select("id, user_id, tenant_name, end_date, plot_id, apartment_id, land_plots(name), apartments(name)")
     .eq("status", "active")
     .is("expiry_reminder_sent_at", null)
     .not("end_date", "is", null)
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
     if (userSubs.length === 0 && userTokens.length === 0) continue;
 
     const title = "Lease ending soon";
-    const body = `${lease.tenant_name}'s lease ends ${lease.end_date} — renew or close it out.`;
+    const body = `${leaseReminderSubject(lease)}: lease ends ${lease.end_date} — renew or close it out.`;
     const [results, fcmResults] = await Promise.all([
       Promise.all(userSubs.map((sub) => sendPush(sub, { title, body, url: "/leases" }))),
       Promise.all(
