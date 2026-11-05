@@ -88,7 +88,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ],
           SectionHeader(l.yourData),
-          const _YourDataCard(),
+          const YourDataCard(),
           const SizedBox(height: 24),
           OutlinedButton.icon(
             icon: const Icon(Icons.logout),
@@ -145,7 +145,7 @@ class _EncryptionCardState extends ConsumerState<_EncryptionCard> {
     final l = context.l10n;
     final enabled = ref.watch(profileProvider).value?['encryption_enabled'] == true;
     final unlocked = ref.watch(keyVaultProvider) != null;
-    if (!enabled) return const _EncryptionSetupCard();
+    if (!enabled) return const EncryptionSetupCard();
     if (unlocked) {
       return Card(
         child: ListTile(
@@ -396,14 +396,14 @@ class _OptionSheetState extends State<_OptionSheet> {
 }
 
 /// First-time encryption setup, same flow as the web's EncryptionSettings.
-class _EncryptionSetupCard extends ConsumerStatefulWidget {
-  const _EncryptionSetupCard();
+class EncryptionSetupCard extends ConsumerStatefulWidget {
+  const EncryptionSetupCard({super.key});
 
   @override
-  ConsumerState<_EncryptionSetupCard> createState() => _EncryptionSetupCardState();
+  ConsumerState<EncryptionSetupCard> createState() => _EncryptionSetupCardState();
 }
 
-class _EncryptionSetupCardState extends ConsumerState<_EncryptionSetupCard> {
+class _EncryptionSetupCardState extends ConsumerState<EncryptionSetupCard> {
   final _passphrase = TextEditingController();
   final _confirm = TextEditingController();
   bool _busy = false;
@@ -491,8 +491,11 @@ class _EncryptionSetupCardState extends ConsumerState<_EncryptionSetupCard> {
 }
 
 /// Privacy policy, data export and account deletion (needs WEB_URL).
-class _YourDataCard extends ConsumerWidget {
-  const _YourDataCard();
+class YourDataCard extends ConsumerWidget {
+  const YourDataCard({super.key, this.webUrl = Env.webUrl});
+
+  /// The web app's base URL; a parameter so tests can enable the tiles.
+  final String webUrl;
 
   Future<void> _export(BuildContext context, WidgetRef ref) async {
     final l = context.l10n;
@@ -512,48 +515,12 @@ class _YourDataCard extends ConsumerWidget {
     final l = context.l10n;
     final repo = ref.read(repositoryProvider);
     final email = ref.read(supabaseProvider).auth.currentUser?.email ?? '';
-    final confirmation = TextEditingController();
-    final password = TextEditingController();
-    final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(l.deleteAccount),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(l.deleteAccountWarning),
-                  TextField(
-                    controller: confirmation,
-                    keyboardType: TextInputType.emailAddress,
-                    autocorrect: false,
-                    decoration: InputDecoration(labelText: l.typeEmailToConfirm(email)),
-                  ),
-                  if (repo.accountNeedsPassword)
-                    TextField(
-                      controller: password,
-                      obscureText: true,
-                      decoration: InputDecoration(labelText: l.password),
-                    ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l.cancel)),
-              FilledButton(
-                style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(l.deleteForever),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-    final typed = confirmation.text;
-    final secret = password.text;
-    confirmation.dispose();
-    password.dispose();
-    if (!confirmed || !context.mounted) return;
+    final answer = await showDialog<(String, String)>(
+      context: context,
+      builder: (_) => _DeleteAccountDialog(email: email, needsPassword: repo.accountNeedsPassword),
+    );
+    if (answer == null || !context.mounted) return;
+    final (typed, secret) = answer;
 
     String? error;
     final ok = await runOnlineAction(context, () async {
@@ -579,7 +546,7 @@ class _YourDataCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
-    final online = Env.webUrl.isNotEmpty;
+    final online = webUrl.isNotEmpty;
     return Card(
       child: Column(
         children: [
@@ -590,7 +557,7 @@ class _YourDataCard extends ConsumerWidget {
             trailing: const Icon(Icons.open_in_new),
             enabled: online,
             onTap: () => launchUrl(
-              Uri.parse('${Env.webUrl.replaceAll(RegExp(r'/+$'), '')}/privacy'),
+              Uri.parse('${webUrl.replaceAll(RegExp(r'/+$'), '')}/privacy'),
               mode: LaunchMode.externalApplication,
             ),
           ),
@@ -610,6 +577,66 @@ class _YourDataCard extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Asks for the account email (and password, for password accounts) before
+/// deleting. Pops (email, password), or null when cancelled. Owns its text
+/// controllers so they outlive the dialog's closing animation.
+class _DeleteAccountDialog extends StatefulWidget {
+  const _DeleteAccountDialog({required this.email, required this.needsPassword});
+  final String email;
+  final bool needsPassword;
+
+  @override
+  State<_DeleteAccountDialog> createState() => _DeleteAccountDialogState();
+}
+
+class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
+  final _confirmation = TextEditingController();
+  final _password = TextEditingController();
+
+  @override
+  void dispose() {
+    _confirmation.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return AlertDialog(
+      title: Text(l.deleteAccount),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(l.deleteAccountWarning),
+            TextField(
+              controller: _confirmation,
+              keyboardType: TextInputType.emailAddress,
+              autocorrect: false,
+              decoration: InputDecoration(labelText: l.typeEmailToConfirm(widget.email)),
+            ),
+            if (widget.needsPassword)
+              TextField(
+                controller: _password,
+                obscureText: true,
+                decoration: InputDecoration(labelText: l.password),
+              ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(l.cancel)),
+        FilledButton(
+          style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+          onPressed: () => Navigator.pop(context, (_confirmation.text, _password.text)),
+          child: Text(l.deleteForever),
+        ),
+      ],
     );
   }
 }
