@@ -953,7 +953,7 @@ abstract class AppLocalizations {
   /// No description provided for @encryptionNotSetUp.
   ///
   /// In en, this message translates to:
-  /// **'Encrypt sensitive details (village, mutation number, prices, dates, notes) and new documents on this device, so only you can read them — not even Landlord. Map boundaries stay unencrypted. If you lose both the passphrase and the recovery code, that data is gone for good.'**
+  /// **'Encrypt sensitive details (village, mutation number, prices, dates, notes), lease tenant details (name, phone, email, notes) and new documents on this device, so only you can read them — not even Landlord. Map boundaries and rent amounts/dates stay unencrypted. If you lose both the passphrase and the recovery code, that data is gone for good.'**
   String get encryptionNotSetUp;
 
   /// No description provided for @passphrase.
@@ -2749,6 +2749,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We couldn\'t delete your account. Please try again.'**
   String get deleteAccountFailed;
+
+  /// No description provided for @encryptedTenant.
+  ///
+  /// In en, this message translates to:
+  /// **'🔒 Encrypted tenant'**
+  String get encryptedTenant;
+
+  /// No description provided for @leaseDetailsLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenant details are encrypted. Unlock encryption in Settings to view or edit them.'**
+  String get leaseDetailsLocked;
 }
 
 class _AppLocalizationsDelegate

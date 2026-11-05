@@ -355,18 +355,64 @@ class Repository {
 
   // ---- Leases --------------------------------------------------------------
 
+  /// Tenant details a lease can store encrypted, keyed like the web's
+  /// LeaseSecrets (lib/crypto/leaseSecrets.ts).
+  static const _leaseSecretColumns = {
+    'tenantName': 'tenant_name',
+    'tenantPhone': 'tenant_phone',
+    'tenantEmail': 'tenant_email',
+    'notes': 'notes',
+  };
+
+  /// [lease] with its encrypted tenant details filled in. When they can't be
+  /// read (key locked, or wrong key) they stay null and 'secrets_locked' is set.
+  Future<DbRow> revealLease(DbRow lease, SecretKey? dek) async {
+    final encrypted = lease['sensitive_encrypted'] as String?;
+    if (encrypted == null) return lease;
+    if (dek != null) {
+      try {
+        final secrets = await decryptJSON(
+            fromPgBytea(encrypted), fromPgBytea(lease['sensitive_iv'] as String), dek);
+        return {
+          ...lease,
+          for (final e in _leaseSecretColumns.entries) e.value: secrets[e.key],
+        };
+      } catch (_) {}
+    }
+    return {...lease, 'secrets_locked': true};
+  }
+
+  /// Saves a lease. With the key unlocked ([dek]), the tenant details go into
+  /// one encrypted blob and their plaintext columns are cleared, as on the web.
   Future<void> saveLease(PropertyKind kind, String propertyId, String? leaseId,
-      Map<String, String> values) async {
+      Map<String, String> values, {required SecretKey? dek}) async {
     String? opt(String k) => (values[k]?.trim().isEmpty ?? true) ? null : values[k]!.trim();
-    final payload = {
+    final tenant = <String, dynamic>{
       'tenant_name': values['tenantName']!.trim(),
       'tenant_phone': opt('tenantPhone'),
       'tenant_email': opt('tenantEmail'),
+      'notes': opt('notes'),
+      'sensitive_encrypted': null,
+      'sensitive_iv': null,
+    };
+    if (dek != null) {
+      final sealed = await encryptJSON({
+        'tenantName': tenant['tenant_name'],
+        'tenantPhone': tenant['tenant_phone'],
+        'tenantEmail': (tenant['tenant_email'] as String?)?.toLowerCase(),
+        'notes': tenant['notes'],
+      }, dek);
+      tenant
+        ..updateAll((_, _) => null)
+        ..['sensitive_encrypted'] = toPgBytea(sealed.ciphertext)
+        ..['sensitive_iv'] = toPgBytea(sealed.iv);
+    }
+    final payload = {
+      ...tenant,
       'rent_amount': num.parse(values['rentAmount']!),
       'frequency': values['frequency'] ?? 'monthly',
       'start_date': values['startDate'],
       'end_date': opt('endDate'),
-      'notes': opt('notes'),
     };
     final id = leaseId ?? _uuid.v4();
     final ensurePayments =

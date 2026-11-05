@@ -8,17 +8,18 @@ const getSessionDEKMock = vi.fn();
 const encryptJSONMock = vi.fn();
 const selectResult: { data?: unknown; error?: unknown } = { data: [], error: null };
 let selectReturn = selectResult;
-function makeChain() {
+let leaseReturn: { data?: unknown; error?: unknown } = { data: [], error: null };
+function makeChain(table: string) {
   const chain: Record<string, unknown> = {};
   chain.select = vi.fn(() => chain);
   chain.eq = vi.fn(() => chain);
-  chain.is = vi.fn(async () => selectReturn);
+  chain.is = vi.fn(async () => (table === "leases" ? leaseReturn : selectReturn));
   chain.update = vi.fn(() => updateChain);
   return chain;
 }
 const updateChain = { eq: vi.fn(async (): Promise<{ error: unknown }> => ({ error: null })) };
 
-const fromMock = vi.fn(() => makeChain());
+const fromMock = vi.fn((table: string) => makeChain(table));
 vi.mock("@/lib/supabase/client", () => ({
   createClient: () => ({ from: fromMock }),
 }));
@@ -38,6 +39,7 @@ beforeEach(() => {
     iv: new Uint8Array([2]),
   });
   selectReturn = { data: [], error: null };
+  leaseReturn = { data: [], error: null };
   updateChain.eq.mockResolvedValue({ error: null });
 });
 
@@ -45,14 +47,14 @@ describe("MigratePlotsToEncrypted", () => {
   it("does nothing if there is no unlocked session DEK", async () => {
     getSessionDEKMock.mockReturnValue(null);
     render(<MigratePlotsToEncrypted userId="u1" />);
-    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots" }));
+    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots and leases" }));
     expect(fromMock).not.toHaveBeenCalled();
   });
 
   it("does nothing if the confirm dialog is declined", async () => {
     vi.spyOn(window, "confirm").mockReturnValue(false);
     render(<MigratePlotsToEncrypted userId="u1" />);
-    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots" }));
+    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots and leases" }));
     expect(fromMock).not.toHaveBeenCalled();
   });
 
@@ -60,7 +62,7 @@ describe("MigratePlotsToEncrypted", () => {
     vi.spyOn(window, "confirm").mockReturnValue(true);
     selectReturn = { data: null, error: { message: "fetch failed" } };
     render(<MigratePlotsToEncrypted userId="u1" />);
-    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots" }));
+    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots and leases" }));
     expect(await screen.findByText("fetch failed")).toBeInTheDocument();
   });
 
@@ -81,8 +83,8 @@ describe("MigratePlotsToEncrypted", () => {
       error: null,
     };
     render(<MigratePlotsToEncrypted userId="u1" />);
-    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots" }));
-    expect(await screen.findByText(/Encrypted 0 existing plots/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots and leases" }));
+    expect(await screen.findByText(/Encrypted 0 existing records/)).toBeInTheDocument();
     expect(encryptJSONMock).not.toHaveBeenCalled();
   });
 
@@ -103,8 +105,8 @@ describe("MigratePlotsToEncrypted", () => {
       error: null,
     };
     render(<MigratePlotsToEncrypted userId="u1" />);
-    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots" }));
-    expect(await screen.findByText(/Encrypted 1 existing plot\./)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots and leases" }));
+    expect(await screen.findByText(/Encrypted 1 existing record\./)).toBeInTheDocument();
     expect(encryptJSONMock).toHaveBeenCalled();
   });
 
@@ -126,7 +128,34 @@ describe("MigratePlotsToEncrypted", () => {
     };
     updateChain.eq.mockResolvedValue({ error: { message: "update failed" } });
     render(<MigratePlotsToEncrypted userId="u1" />);
-    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots" }));
+    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots and leases" }));
     expect(await screen.findByText("update failed")).toBeInTheDocument();
+  });
+
+  it("encrypts lease tenant details and clears the plaintext columns", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    leaseReturn = {
+      data: [{ id: "l1", tenant_name: "Rahim", tenant_phone: "017", tenant_email: null, notes: null }],
+      error: null,
+    };
+    const updates: unknown[] = [];
+    fromMock.mockImplementation((table: string) => {
+      const chain = makeChain(table);
+      chain.update = vi.fn((value: unknown) => {
+        updates.push(value);
+        return updateChain;
+      });
+      return chain;
+    });
+    render(<MigratePlotsToEncrypted userId="u1" />);
+    await userEvent.click(screen.getByRole("button", { name: "Encrypt existing plots and leases" }));
+    expect(await screen.findByText(/Encrypted 1 existing record\./)).toBeInTheDocument();
+    expect(encryptJSONMock).toHaveBeenCalledWith(
+      { tenantName: "Rahim", tenantPhone: "017", tenantEmail: null, notes: null },
+      { fake: "dek" },
+    );
+    expect(updates).toEqual([
+      expect.objectContaining({ tenant_name: null, tenant_phone: null, tenant_email: null, notes: null, sensitive_iv: "\\x02" }),
+    ]);
   });
 });

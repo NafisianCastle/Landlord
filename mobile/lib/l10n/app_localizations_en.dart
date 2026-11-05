@@ -471,7 +471,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get encryptionNotSetUp =>
-      'Encrypt sensitive details (village, mutation number, prices, dates, notes) and new documents on this device, so only you can read them — not even Landlord. Map boundaries stay unencrypted. If you lose both the passphrase and the recovery code, that data is gone for good.';
+      'Encrypt sensitive details (village, mutation number, prices, dates, notes), lease tenant details (name, phone, email, notes) and new documents on this device, so only you can read them — not even Landlord. Map boundaries and rent amounts/dates stay unencrypted. If you lose both the passphrase and the recovery code, that data is gone for good.';
 
   @override
   String get passphrase => 'Passphrase';
@@ -1467,4 +1467,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteAccountFailed =>
       'We couldn\'t delete your account. Please try again.';
+
+  @override
+  String get encryptedTenant => '🔒 Encrypted tenant';
+
+  @override
+  String get leaseDetailsLocked =>
+      'Tenant details are encrypted. Unlock encryption in Settings to view or edit them.';
 }

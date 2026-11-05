@@ -208,7 +208,7 @@
   "settings": "Settings",
   "language": "Language",
   "encryption": "Encryption",
-  "encryptionNotSetUp": "Encrypt sensitive details (village, mutation number, prices, dates, notes) and new documents on this device, so only you can read them — not even Landlord. Map boundaries stay unencrypted. If you lose both the passphrase and the recovery code, that data is gone for good.",
+  "encryptionNotSetUp": "Encrypt sensitive details (village, mutation number, prices, dates, notes), lease tenant details (name, phone, email, notes) and new documents on this device, so only you can read them — not even Landlord. Map boundaries and rent amounts/dates stay unencrypted. If you lose both the passphrase and the recovery code, that data is gone for good.",
   "passphrase": "Passphrase",
   "recoveryCode": "Recovery code",
   "useRecoveryCode": "Use recovery code instead",
@@ -666,5 +666,7 @@
   "deleteForever": "Delete forever",
   "deleteConfirmationMismatch": "The email you typed doesn't match your account.",
   "deletePasswordIncorrect": "Password is incorrect.",
-  "deleteAccountFailed": "We couldn't delete your account. Please try again."
+  "deleteAccountFailed": "We couldn't delete your account. Please try again.",
+  "encryptedTenant": "🔒 Encrypted tenant",
+  "leaseDetailsLocked": "Tenant details are encrypted. Unlock encryption in Settings to view or edit them."
 }

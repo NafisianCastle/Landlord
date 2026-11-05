@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import TenantName from "@/components/leases/TenantName";
+import type { LeaseSecretSource } from "@/lib/crypto/leaseSecrets";
 
 export interface OverduePaymentItem {
   id: string;
   dueDate: string;
   amount: number;
-  tenantName: string;
+  tenant: LeaseSecretSource;
   propertyName: string;
   propertyHref: string;
 }
@@ -69,7 +71,7 @@ export default function RentDueCard({
               <li key={p.id} className="min-w-0 p-2 text-sm">
                 <Link href={p.propertyHref} className="flex min-w-0 flex-col">
                   <span className="truncate font-medium">
-                    {p.tenantName} · {p.propertyName}
+                    <TenantName lease={p.tenant} /> · {p.propertyName}
                   </span>
                   <span className="truncate text-xs text-muted-foreground">
                     {bdt.format(p.amount)} ·{" "}
