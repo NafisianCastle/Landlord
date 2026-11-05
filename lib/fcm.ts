@@ -114,3 +114,19 @@ export function leasePropertyPath(
   if (lease?.plot_id) return `/plots/${lease.plot_id}`;
   return "/leases";
 }
+
+/**
+ * Who a reminder is about. Encrypted leases have no readable tenant name on
+ * the server, so their reminders name the property instead.
+ */
+export function leaseReminderSubject(
+  lease: {
+    tenant_name?: string | null;
+    land_plots?: { name: string } | { name: string }[] | null;
+    apartments?: { name: string } | { name: string }[] | null;
+  } | null | undefined,
+): string {
+  if (lease?.tenant_name) return lease.tenant_name;
+  const one = <T,>(v: T | T[] | null | undefined) => (Array.isArray(v) ? v[0] : v);
+  return one(lease?.apartments)?.name ?? one(lease?.land_plots)?.name ?? "Tenant";
+}

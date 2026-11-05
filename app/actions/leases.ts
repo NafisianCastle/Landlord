@@ -13,18 +13,51 @@ function subjectPath(subjectType: LeaseSubjectType, subjectId: string) {
   return subjectType === "plot" ? `/plots/${subjectId}` : `/apartments/${subjectId}`;
 }
 
-function leaseFieldsFromForm(formData: FormData) {
+/**
+ * Tenant details arrive either plaintext or — when the client has encryption
+ * unlocked — as one AES-GCM blob (see LeaseForm). Whichever mode is used, the
+ * other representation is cleared so a stale plaintext copy can't linger.
+ */
+function tenantFieldsFromForm(formData: FormData) {
+  const encryptedHex = formData.get("sensitiveEncryptedHex");
+  const ivHex = formData.get("sensitiveIvHex");
+  if (typeof encryptedHex === "string" && typeof ivHex === "string" && encryptedHex && ivHex) {
+    return {
+      sensitive_encrypted: encryptedHex,
+      sensitive_iv: ivHex,
+      tenant_name: null,
+      tenant_phone: null,
+      tenant_email: null,
+      notes: null,
+    };
+  }
   const tenantEmail = String(formData.get("tenantEmail") ?? "").trim().toLowerCase();
   return {
+    sensitive_encrypted: null,
+    sensitive_iv: null,
     tenant_name: String(formData.get("tenantName") ?? "").trim(),
     tenant_phone: String(formData.get("tenantPhone") ?? "") || null,
     tenant_email: tenantEmail || null,
+    notes: String(formData.get("notes") ?? "") || null,
+  };
+}
+
+function leaseFieldsFromForm(formData: FormData) {
+  return {
+    ...tenantFieldsFromForm(formData),
     rent_amount: Number(formData.get("rentAmount") ?? 0),
     frequency: String(formData.get("frequency") ?? "monthly"),
     start_date: String(formData.get("startDate") ?? "") || null,
     end_date: String(formData.get("endDate") ?? "") || null,
-    notes: String(formData.get("notes") ?? "") || null,
   };
+}
+
+/** Required tenant fields can only be checked here when they aren't encrypted (the form checks them first). */
+function missingTenantField(fields: ReturnType<typeof leaseFieldsFromForm>, subjectType: LeaseSubjectType) {
+  if (fields.sensitive_encrypted) return null;
+  if (!fields.tenant_name) return "tenantNameRequired" as const;
+  if (subjectType === "apartment" && !fields.tenant_email) return "tenantEmailRequired" as const;
+  return null;
 }
 
 export async function createLease(
@@ -45,8 +78,8 @@ export async function createLease(
   if (validationError) return { error: validationError };
 
   const fields = leaseFieldsFromForm(formData);
-  if (!fields.tenant_name) return { error: t("tenantNameRequired") };
-  if (subjectType === "apartment" && !fields.tenant_email) return { error: t("tenantEmailRequired") };
+  const missing = missingTenantField(fields, subjectType);
+  if (missing) return { error: t(missing) };
   if (!fields.rent_amount || fields.rent_amount <= 0) return { error: t("rentAmountRequired") };
   if (!fields.start_date) return { error: t("startDateRequired") };
 
@@ -90,8 +123,8 @@ export async function updateLease(
   if (validationError) return { error: validationError };
 
   const fields = leaseFieldsFromForm(formData);
-  if (!fields.tenant_name) return { error: t("tenantNameRequired") };
-  if (subjectType === "apartment" && !fields.tenant_email) return { error: t("tenantEmailRequired") };
+  const missing = missingTenantField(fields, subjectType);
+  if (missing) return { error: t(missing) };
   if (!fields.rent_amount || fields.rent_amount <= 0) return { error: t("rentAmountRequired") };
   if (!fields.start_date) return { error: t("startDateRequired") };
 
@@ -185,7 +218,7 @@ export async function deleteLease(
   const t = await getTranslations("LeaseActions");
   const { data: lease, error: leaseError } = await supabase
     .from("leases")
-    .select("id, apartment_id, tenant_email, start_date, end_date")
+    .select("id, apartment_id, tenant_email, sensitive_encrypted, start_date, end_date")
     .eq("id", leaseId)
     .maybeSingle();
   if (leaseError) return { error: leaseError.message };
@@ -199,7 +232,9 @@ export async function deleteLease(
   if (paidResult.error) return { error: paidResult.error.message };
 
   let hasBills = false;
-  if (lease.apartment_id && lease.tenant_email) {
+  // An encrypted lease's email can't be read here, so any bill dated within
+  // it counts (an apartment has one tenant at a time).
+  if (lease.apartment_id && (lease.tenant_email || lease.sensitive_encrypted)) {
     const billResult = await supabase
       .from("apartment_bills")
       .select("tenant_email, due_date")
@@ -207,8 +242,8 @@ export async function deleteLease(
       .gte("due_date", lease.start_date)
       .lte("due_date", lease.end_date ?? "9999-12-31");
     if (billResult.error) return { error: billResult.error.message };
-    const email = lease.tenant_email.trim().toLowerCase();
-    hasBills = (billResult.data ?? []).some((bill) => bill.tenant_email.trim().toLowerCase() === email);
+    const email = lease.tenant_email?.trim().toLowerCase();
+    hasBills = (billResult.data ?? []).some((bill) => !email || bill.tenant_email.trim().toLowerCase() === email);
   }
 
   if ((paidResult.count ?? 0) > 0 || hasBills) return { error: t("historyCannotDelete") };

@@ -57,7 +57,7 @@ export default async function DashboardPage() {
     supabase.from("apartments").select("id", { count: "exact", head: true }),
     supabase
       .from("leases")
-      .select("id, tenant_name, end_date, plot_id, apartment_id, land_plots(name), apartments(name)")
+      .select("id, tenant_name, sensitive_encrypted, sensitive_iv, end_date, plot_id, apartment_id, land_plots(name), apartments(name)")
       .eq("status", "active")
       .not("end_date", "is", null)
       .lte("end_date", isoDateInDays(14))
@@ -69,7 +69,7 @@ export default async function DashboardPage() {
     const ap = row.apartments as unknown as { name: string } | null;
     return {
       id: row.id,
-      tenantName: row.tenant_name,
+      tenant: { tenant_name: row.tenant_name, sensitive_encrypted: row.sensitive_encrypted, sensitive_iv: row.sensitive_iv },
       endDate: row.end_date as string,
       propertyHref: row.plot_id ? `/plots/${row.plot_id}` : `/apartments/${row.apartment_id}`,
       propertyName: lp?.name ?? ap?.name ?? "",

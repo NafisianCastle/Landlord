@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Polygon } from "geojson";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import EncryptionPrompt from "@/components/privacy/EncryptionPrompt";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import { updatePlotMetadata } from "@/app/actions/plots";
 import { convertArea } from "@/lib/units";
@@ -36,7 +37,7 @@ export default async function PlotDetailPage({
     return <GuestPlotDetail plotId={plotId} />;
   }
 
-  const [{ data: plot, error }, { data: documents }, { data: collaborators }] = await Promise.all([
+  const [{ data: plot, error }, { data: documents }, { data: collaborators }, { data: profile }] = await Promise.all([
     supabase.from("land_plots").select("*").eq("id", plotId).single(),
     supabase
       .from("plot_documents")
@@ -48,6 +49,7 @@ export default async function PlotDetailPage({
       .select("id, invited_email, role")
       .eq("plot_id", plotId)
       .order("created_at", { ascending: true }),
+    supabase.from("profiles").select("encryption_enabled").eq("id", user.id).single(),
   ]);
 
   const t = await getTranslations("PlotDetailPage");
@@ -175,6 +177,11 @@ export default async function PlotDetailPage({
 
       <div>
         <h2 className="mb-2 font-medium">{t("documents")}</h2>
+        {plot.user_id === user.id && !profile?.encryption_enabled && (
+          <div className="mb-3">
+            <EncryptionPrompt />
+          </div>
+        )}
         <ul className="mb-3 divide-y divide-border rounded-lg border border-border px-3 py-1">
           {(documents ?? []).map((doc) => (
             <DocumentRow

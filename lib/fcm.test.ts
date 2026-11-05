@@ -102,3 +102,13 @@ describe("leasePropertyPath", () => {
     expect(leasePropertyPath(null)).toBe("/leases");
   });
 });
+
+describe("leaseReminderSubject", () => {
+  it("names the tenant when readable, otherwise the property", async () => {
+    const { leaseReminderSubject } = await import("./fcm");
+    expect(leaseReminderSubject({ tenant_name: "Rahim", apartments: { name: "Flat 3B" } })).toBe("Rahim");
+    expect(leaseReminderSubject({ tenant_name: null, apartments: [{ name: "Flat 3B" }] })).toBe("Flat 3B");
+    expect(leaseReminderSubject({ tenant_name: null, land_plots: { name: "Garden plot" } })).toBe("Garden plot");
+    expect(leaseReminderSubject(null)).toBe("Tenant");
+  });
+});

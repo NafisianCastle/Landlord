@@ -8,6 +8,8 @@ import ChangePasswordForm from "@/components/profile/ChangePasswordForm";
 import EncryptionSettings from "@/components/profile/EncryptionSettings";
 import RentReminderSettings from "@/components/profile/RentReminderSettings";
 import ReferralSettings from "@/components/profile/ReferralSettings";
+import YourDataSettings from "@/components/profile/YourDataSettings";
+import { needsPassword } from "@/lib/account";
 import { getRentReminderPublicKey } from "@/lib/pushConfig";
 
 export default async function ProfilePage() {
@@ -72,7 +74,7 @@ export default async function ProfilePage() {
           />
         </CardContent>
       </Card>
-      <Card>
+      <Card id="encryption" className="scroll-mt-20">
         <CardHeader>
           <CardTitle>{t("encryptedPlotData")}</CardTitle>
         </CardHeader>
@@ -88,6 +90,14 @@ export default async function ProfilePage() {
                 profile?.dek_wrapped_by_passphrase_iv ?? null,
             }}
           />
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("yourData")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <YourDataSettings email={user.email ?? ""} needsPassword={needsPassword(user)} />
         </CardContent>
       </Card>
     </div>
