@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
-import { Document, Page } from "react-pdf";
-import "react-pdf/dist/Page/TextLayer.css";
-import "react-pdf/dist/Page/AnnotationLayer.css";
 import { ChevronLeft, ChevronRight, Eye, X } from "lucide-react";
-import "@/lib/pdfWorker";
 import { getDocumentPreviewUrl } from "@/app/actions/documents";
 import { decryptBytes, fromPgBytea } from "@/lib/crypto/encryption";
 import { getSessionDEK } from "@/lib/crypto/session";
 import { Button } from "@/components/ui/button";
+
+const PdfDocument = dynamic(() => import("@/components/documents/PdfDocument"), { ssr: false });
 
 interface PdfPreviewModalProps {
   storagePath: string;
@@ -103,14 +102,14 @@ export default function PdfPreviewModal({
 
             {(url || bytes) && (
               <div className="flex flex-col items-center gap-2 overflow-auto">
-                <Document
-                  file={bytes ? { data: bytes } : url!}
+                <PdfDocument
+                  url={url}
+                  bytes={bytes}
+                  pageNumber={pageNumber}
                   onLoadSuccess={({ numPages: n }) => setNumPages(n)}
                   onLoadError={(e) => setError(e.message)}
                   loading={<p className="text-sm text-muted-foreground">{t("loadingPdf")}</p>}
-                >
-                  <Page pageNumber={pageNumber} width={420} />
-                </Document>
+                />
                 {numPages > 1 && (
                   <div className="flex items-center gap-3 text-sm">
                     <Button

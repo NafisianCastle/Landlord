@@ -1,12 +1,18 @@
 {
   "Common": {
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "close": "Close",
+    "noSuggestions": "No suggestions. You can enter your own value.",
+    "undo": "Undo",
+    "deleted": "Deleted."
   },
   "Nav": {
     "dashboard": "Dashboard",
     "plots": "Plots",
     "profile": "Profile",
-    "apartments": "Apartments"
+    "apartments": "Apartments",
+    "navigation": "Main navigation",
+    "bills": "Bills"
   },
   "ThemeToggle": {
     "toggleAriaLabel": "Toggle light/dark mode",
@@ -14,7 +20,9 @@
     "light": "Light"
   },
   "LocaleSwitcher": {
-    "label": "Language"
+    "label": "Language",
+    "changing": "Changing language…",
+    "failed": "Could not change language. Please try again."
   },
   "ProtectedLayout": {
     "logOut": "Log out"
@@ -29,11 +37,12 @@
     "signUp": "Sign up",
     "oauthError": "Google sign-in failed. Please try again.",
     "accountExistsError": "An account with this email already exists. Sign in with your email and password instead.",
-    "orContinueWithEmail": "or continue with email"
+    "orContinueWithEmail": "or continue with email",
+    "tryDemo": "Try the demo"
   },
   "SignupPage": {
     "title": "Sign up",
-    "subtitle": "14-day free trial, no card required.",
+    "subtitle": "Free to use. No card or subscription required.",
     "fullName": "Full name",
     "email": "Email",
     "password": "Password",
@@ -57,6 +66,8 @@
     "trialEnded": "Your free trial has ended",
     "pitch": "Pay once, use Landlord for life — no renewals, no subscription.",
     "price": "BDT {amount}",
+    "couponCode": "Coupon code (optional)",
+    "couponCodePlaceholder": "e.g. LAUNCH20",
     "refundPolicyLink": "Refund policy",
     "status": {
       "failed": "Payment failed — please try again.",
@@ -69,20 +80,24 @@
     "addPlot": "Add plot",
     "statsLoadError": "Couldn't load your stats — figures below may be incomplete. Try refreshing.",
     "recentPlots": "Recent plots",
-    "byDistrict": "By district"
+    "byDistrict": "By district",
+    "netThisMonth": "Net this month",
+    "viewAnalytics": "View analytics"
   },
   "LocationBreakdown": {
     "noPlots": "No plots yet.",
     "summary": "{count, plural, =1 {# plot} other {# plots}} · {area} decimal"
   },
   "NeedsAttention": {
-    "missingBoundary": "{count, plural, =1 {# plot} other {# plots}} missing a boundary"
+    "missingBoundary": "{count, plural, =1 {# plot} other {# plots}} missing a boundary",
+    "leasesExpiring": "{count, plural, =1 {# lease} other {# leases}} expiring soon",
+    "leaseExpiringItem": "{tenant} — ends {date}"
   },
   "RecentPlots": {
     "noPlots": "No plots yet.",
     "noLocationSet": "No location set",
     "areaValue": "{area} m²",
-    "boundaryNotWalked": "boundary not walked yet",
+    "boundaryNotWalked": "boundary not drawn yet",
     "sharedBadge": "Shared"
   },
   "StatsCards": {
@@ -104,7 +119,7 @@
   },
   "WelcomeCard": {
     "title": "Add your first plot",
-    "subtitle": "Walk or draw a boundary to see area, value, and location stats here.",
+    "subtitle": "Draw a boundary to see area, value, and location stats here.",
     "addPlot": "Add plot"
   },
   "PlotsPage": {
@@ -113,11 +128,17 @@
     "loadError": "Couldn't load your plots — {message}. Try refreshing the page.",
     "noLocationSet": "No location set",
     "areaValue": "{area} m²",
-    "boundaryNotWalked": "boundary not walked yet",
+    "boundaryNotWalked": "boundary not drawn yet",
     "noPlotsYet": "No plots yet. Add your first one.",
     "sharedBadge": "Shared",
     "searchPlaceholder": "Search by name, village, or district",
-    "noSearchResults": "No plots match your search."
+    "noSearchResults": "No plots match your search.",
+    "allDistricts": "All districts",
+    "sortBy": "Sort by",
+    "sortNewest": "Newest",
+    "sortName": "Name",
+    "sortArea": "Largest area",
+    "filterDistrict": "Filter by district"
   },
   "ApartmentsPage": {
     "title": "Your apartments",
@@ -128,11 +149,16 @@
     "noApartmentsYet": "No apartments yet. Add your first one.",
     "sharedBadge": "Shared",
     "searchPlaceholder": "Search by name, upazila, or district",
-    "noSearchResults": "No apartments match your search."
+    "noSearchResults": "No apartments match your search.",
+    "allDistricts": "All districts",
+    "sortBy": "Sort by",
+    "sortNewest": "Newest",
+    "sortName": "Name",
+    "filterDistrict": "Filter by district"
   },
   "PlotsMapClient": {
     "loadingMap": "Loading map…",
-    "noBoundaries": "No walked boundaries yet — plots with a drawn boundary appear here."
+    "noBoundaries": "No drawn boundaries yet — plots with a drawn boundary appear here."
   },
   "PlotMetadataForm": {
     "plotName": "Plot name",
@@ -159,7 +185,9 @@
     "decryptError": "Couldn't decrypt with the current session key.",
     "willEncryptNotice": "Village, mutation number, prices, dates, and notes will be saved encrypted.",
     "saving": "Saving...",
-    "saved": "Saved"
+    "saved": "Saved",
+    "dolilAreaUnit": "Deed area unit",
+    "actualAreaUnit": "Measured area unit"
   },
   "ApartmentMetadataForm": {
     "apartmentName": "Apartment name",
@@ -184,7 +212,8 @@
     "decryptError": "Couldn't decrypt with the current session key.",
     "willEncryptNotice": "Building name, unit number, prices, dates, and notes will be saved encrypted.",
     "saving": "Saving...",
-    "saved": "Saved"
+    "saved": "Saved",
+    "sizeUnit": "Size unit"
   },
   "NewPlotPage": {
     "title": "Add a plot",
@@ -199,7 +228,7 @@
   "PlotDetailPage": {
     "loadError": "Couldn't load this plot — {message}. Try refreshing the page.",
     "navigateHere": "Navigate here",
-    "areaFromGps": "Area (from GPS boundary)",
+    "areaFromGps": "Area (from drawn boundary)",
     "unitDecimal": "{value} decimal",
     "unitBigha": "{value} bigha",
     "unitKatha": "{value} katha",
@@ -209,7 +238,7 @@
     "unitSqFt": "{value} sq ft",
     "unitSqKm": "{value} sq km",
     "regionalEst": "(regional est.)",
-    "gpsDerivedNotice": "GPS-derived — walking/manual boundary drawing can introduce error. See dolil and actual measurements below for cross-check.",
+    "gpsDerivedNotice": "Derived from the drawn boundary — map tracing can introduce error. See dolil and actual measurements below for cross-check.",
     "dolilVsActual": "Dolil vs. actual measurement",
     "dolilLabel": "(dolil)",
     "actualLabel": "(actual)",
@@ -228,6 +257,31 @@
   },
   "LeaseSection": {
     "title": "Lease / rent",
+    "tenantHistory": "Tenant history",
+    "historyHint": "Contact details, tenancy periods, rent transactions, unpaid bills and payment evidence stay together for each tenant.",
+    "loadFailed": "Couldn't load tenant history. Try refreshing the page.",
+    "noHistory": "No tenant history yet.",
+    "ongoing": "Ongoing",
+    "active": "Active",
+    "ended": "Ended",
+    "phone": "Phone",
+    "email": "Email",
+    "rent": "Rent",
+    "notes": "Lease notes",
+    "financialSummary": "Financial summary",
+    "scheduledRent": "Total scheduled rent",
+    "rentPaid": "Rent paid",
+    "outstandingRent": "Outstanding rent",
+    "unpaidBills": "Unpaid bills",
+    "billCount": "{count, plural, =1 {# bill} other {# bills}}",
+    "transactions": "Transaction history",
+    "bills": "Apartment bills and payment proofs",
+    "noBills": "No apartment bills recorded for this tenant.",
+    "frequency": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    },
     "addLease": "Add lease",
     "saveChanges": "Save changes",
     "payments": "Payment schedule",
@@ -236,11 +290,12 @@
     "confirmEndLease": "End this lease? No further payments will be scheduled.",
     "deleteLease": "Delete lease",
     "deleting": "Deleting...",
-    "confirmDeleteLease": "Delete this lease and its whole payment history? This can't be undone."
+    "confirmDeleteLease": "Delete this lease and its whole payment history? This can't be undone.",
+    "renewLease": "Renew lease",
+    "newEndDate": "New end date",
+    "saving": "Saving..."
   },
   "PlotBoundarySection": {
-    "walkWithGps": "Walk with GPS",
-    "drawOnMap": "Draw on map",
     "redrawBoundary": "Redraw boundary"
   },
   "DeletePlotButton": {
@@ -265,7 +320,11 @@
       "monthly": "monthly",
       "quarterly": "quarterly",
       "yearly": "yearly"
-    }
+    },
+    "receivedThisMonth": "Received this month",
+    "expensesThisMonth": "Expenses this month",
+    "netThisMonth": "Net this month",
+    "exportExpensesCsv": "Export expenses CSV"
   },
   "PlotActions": {
     "plotNameRequired": "Plot name is required",
@@ -279,12 +338,16 @@
   },
   "LeaseActions": {
     "tenantNameRequired": "Tenant name is required",
+    "tenantEmailRequired": "Tenant email is required for apartment leases so bills can be included in the tenant history.",
+    "historyCannotDelete": "This lease has payment or bill history and cannot be deleted.",
     "rentAmountRequired": "Rent amount must be greater than 0",
     "startDateRequired": "Lease start date is required",
-    "trialEnded": "Your trial has ended — please upgrade to continue."
+    "trialEnded": "Your trial has ended — please upgrade to continue.",
+    "newEndDateRequired": "New end date is required"
   },
   "MaintenanceSection": {
-    "title": "Maintenance"
+    "title": "Maintenance",
+    "manageVendors": "Manage vendors"
   },
   "MaintenanceActions": {
     "titleRequired": "Title is required"
@@ -295,7 +358,9 @@
     "reportedDate": "Reported date",
     "description": "Description",
     "saving": "Saving...",
-    "addRequest": "Add request"
+    "addRequest": "Add request",
+    "vendor": "Vendor",
+    "noVendor": "No vendor"
   },
   "MaintenanceRequestsList": {
     "reportedOn": "reported {date}",
@@ -309,28 +374,6 @@
       "in_progress": "In progress",
       "resolved": "Resolved"
     }
-  },
-  "BoundaryWalker": {
-    "webglError": "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
-    "imageryUnavailable": "Imagery not available at this zoom level here — zoom out a bit.",
-    "removePointConfirm": "Remove this point from the boundary?",
-    "geolocationUnavailable": "Geolocation is not available on this device/browser.",
-    "queuedOfflineMessage": "Saved on this device — will finish syncing once you're back online.",
-    "mapErrorWithFallback": "{mapError} You can still mark points below — they'll save without a map preview.",
-    "streets": "Streets",
-    "satellite": "Satellite",
-    "recenterOnMe": "Recenter on me",
-    "walkedSoFar": "{distance} m walked so far",
-    "perimeterStats": "{distance} m perimeter • {decimal} decimal ({sqMeters} m²)",
-    "gpsDotHelp": "The blue dot is your current GPS position — that's the exact point \"Mark point\" will record. Tap a marked point on the map to remove just that one.",
-    "offlineBanner": "Offline — points are saved on this device and will sync automatically.",
-    "pendingSync": "{count} point(s) waiting to sync.",
-    "walkInstructions": "Walk the boundary of the plot. Tap \"Mark point\" at each corner as you go.",
-    "gettingLocation": "Getting location...",
-    "markPoint": "Mark point",
-    "undoLast": "Undo last",
-    "saving": "Saving...",
-    "finish": "Finish ({count} points)"
   },
   "ManualBoundaryDrawer": {
     "webglError": "Map couldn't load — this browser/device doesn't support WebGL, which the map needs.",
@@ -388,6 +431,8 @@
     "next": "Next"
   },
   "DocumentActions": {
+    "invalidPdfContent": "The file does not contain a valid PDF header and end marker.",
+    "invalidEncryption": "Invalid encrypted attachment metadata or content type.",
     "notSignedIn": "Not signed in",
     "trialEnded": "Your trial has ended — please upgrade to continue.",
     "choosePdf": "Choose a PDF file",
@@ -398,7 +443,7 @@
     "title": "Profile",
     "accountDetails": "Account details",
     "changePassword": "Change password",
-    "rentReminders": "Rent reminders",
+    "rentReminders": "Reminders",
     "referrals": "Invite friends",
     "encryptedPlotData": "Encrypted plot data"
   },
@@ -409,16 +454,22 @@
     "referredCount": "{count, plural, =0 {No one has signed up through your link yet.} =1 {# person has signed up through your link.} other {# people have signed up through your link.}}"
   },
   "RentReminderSettings": {
-    "explanation": "Get a notification on this device when rent is due soon or overdue.",
+    "explanation": "Enable browser notifications for rent, lease expiry and tenant utility bills. Notifications require permission on each device.",
     "unsupported": "Your browser doesn't support push notifications.",
     "denied": "Notifications are blocked for this site. Enable them in your browser settings to use reminders.",
-    "notConfigured": "Push notifications aren't configured yet.",
+    "notConfigured": "Browser reminders aren’t available on this site yet. Upcoming and overdue items are still visible in Bills and Leases.",
     "subscribeFailed": "Couldn't enable reminders. Please try again.",
     "unsubscribeFailed": "Couldn't disable reminders. Please try again.",
-    "enable": "Enable rent reminders",
+    "enable": "Enable reminders",
     "enabling": "Enabling...",
-    "disable": "Disable rent reminders",
-    "disabling": "Disabling..."
+    "disable": "Disable reminders",
+    "disabling": "Disabling...",
+    "checking": "Checking this device’s reminder settings…",
+    "statusFailed": "Couldn’t check reminders on this device. Please try again.",
+    "retry": "Try again",
+    "permissionDismissed": "Notification permission wasn’t granted. You can try again when you’re ready.",
+    "enabled": "Reminders are enabled on this device.",
+    "savedSubscription": "This device has a saved reminder subscription."
   },
   "ProfileForm": {
     "email": "Email",
@@ -442,7 +493,7 @@
     "notSetUp": "Encryption isn't set up yet.",
     "wrongPassphrase": "Wrong passphrase.",
     "saveRecoveryCode": "Save your recovery code",
-    "recoveryCodeHint": "If you forget your passphrase, this is the only other way to recover encrypted plot data. Landly cannot reset it for you.",
+    "recoveryCodeHint": "If you forget your passphrase, this is the only other way to recover encrypted plot data. Landlord cannot reset it for you.",
     "savedSomewhereSafe": "I've saved this somewhere safe",
     "done": "Done",
     "unlockedForSession": "Unlocked for this session. Sensitive plot fields (mutation number, prices, dates, notes, village) are encrypted before leaving your device.",
@@ -451,7 +502,7 @@
     "passphrase": "Passphrase",
     "unlocking": "Unlocking...",
     "unlock": "Unlock",
-    "setupExplanation": "Encrypt sensitive plot fields (mutation number, purchase price, dates, notes, village) client-side, so only you can read them — not even Landly. Boundary/map data stays unencrypted (needed for area calculation and map rendering). This passphrase is separate from your login password, and lost passphrase + lost recovery code means that data is gone for good.",
+    "setupExplanation": "Encrypt sensitive plot fields (mutation number, purchase price, dates, notes, village) client-side, so only you can read them — not even Landlord. Boundary/map data stays unencrypted (needed for area calculation and map rendering). This passphrase is separate from your login password, and lost passphrase + lost recovery code means that data is gone for good.",
     "encryptionPassphrase": "Encryption passphrase",
     "confirmPassphrase": "Confirm passphrase",
     "settingUp": "Setting up...",
@@ -468,9 +519,6 @@
     "redirecting": "Redirecting to payment...",
     "payWith": "Pay with bKash / card / bank"
   },
-  "SyncManager": {
-    "syncFailed": "Some changes couldn't sync — will retry automatically."
-  },
   "PlotCollaborators": {
     "title": "Shared with",
     "trialEnded": "Your trial has ended — please upgrade to continue.",
@@ -482,7 +530,7 @@
     "inviteEmail": "Email address",
     "role": "Role",
     "roleViewer": "Viewer (read-only)",
-    "roleEditor": "Editor (can edit and walk boundary)",
+    "roleEditor": "Editor (can edit and draw boundary)",
     "invite": "Invite",
     "inviting": "Inviting...",
     "invited": "Invited",
@@ -492,7 +540,10 @@
     "noCollaborators": "Not shared with anyone yet.",
     "ownerOnlyNotice": "Only the plot's owner can manage who it's shared with.",
     "sharedByOwner": "Shared with you by the plot owner.",
-    "sharedAsRole": "Your role: {role}"
+    "sharedAsRole": "Your role: {role}",
+    "roleTenant": "Tenant — bills only",
+    "tenantHelp": "Tenants do not need an account. Add their email, create bills, then use Share link to send a private 90-day bill portal. Signed-in tenants can still use Bills from the menu.",
+    "removeBroadAccess": "Remove this account’s Viewer or Editor access before inviting them as a tenant."
   },
   "PlotAuditLog": {
     "title": "History",
@@ -555,12 +606,14 @@
     "plotNotFound": "This plot doesn't exist on this device.",
     "documentsRequireSignup": "Sign up to attach and store documents for this plot.",
     "migratedNotice": "{count, plural, =1 {# item} other {# items}} saved to your account.",
-    "apartmentNotFound": "This apartment doesn't exist on this device."
+    "apartmentNotFound": "This apartment doesn't exist on this device.",
+    "signUpShort": "Sign up"
   },
   "LeaseForm": {
     "tenantName": "Tenant name",
     "tenantPhone": "Tenant phone",
     "tenantEmail": "Tenant email",
+    "tenantEmailHistoryHint": "Use the same email as the tenant's Bills invitation to include bills and payment proofs in this history.",
     "rentAmount": "Rent amount (BDT)",
     "frequency": "Payment frequency",
     "frequencyOption": {
@@ -581,6 +634,432 @@
     "markPaid": "Mark as paid",
     "undo": "Undo",
     "updating": "Updating...",
-    "noPaymentsYet": "No payments scheduled yet."
+    "noPaymentsYet": "No payments scheduled yet.",
+    "paidDateUnknown": "Paid · payment date not recorded",
+    "paidAmount": "Paid amount: {amount}"
+  },
+  "LandingPage": {
+    "metaTitle": "Landlord — Your property, in order",
+    "metaDescription": "Manage land plots, apartments, rent and property documents in one place. Built for property owners in Bangladesh. Free to use, with guest mode to get started.",
+    "logIn": "Log in",
+    "getStarted": "Get started",
+    "heroTitle": "Your property,",
+    "heroSubtitle": "Land, apartments, rent, and the paperwork that comes with them. Bring it all together in one calm, organised place. Built for property owners in Bangladesh.",
+    "heroCta": "Get started free",
+    "heroTrialNote": "Free to use. No card. No subscription.",
+    "featuresTitle": "Less keeping track. More peace of mind.",
+    "features": {
+      "0": {
+        "title": "Map plot boundaries",
+        "description": "Record plot corners on a map and keep land details together. A helpful record, not a legal survey."
+      },
+      "1": {
+        "title": "Track apartments",
+        "description": "Keep floor, size, purchase price, and ownership details for every unit you own."
+      },
+      "2": {
+        "title": "Leases & rent tracking",
+        "description": "One place for tenant details, rent schedule, and which payments are paid, upcoming, or overdue."
+      },
+      "3": {
+        "title": "Rent due reminders",
+        "description": "Get a push notification before rent is due and when it's overdue — no more chasing tenants from memory."
+      },
+      "4": {
+        "title": "Maintenance log",
+        "description": "Log repair requests per plot or apartment and track them from open to resolved."
+      },
+      "5": {
+        "title": "Encrypted documents",
+        "description": "Store deeds and ownership papers as PDFs, optionally encrypted client-side so only you can read them."
+      },
+      "6": {
+        "title": "Works offline",
+        "description": "Keep guest property records on this device. Previously viewed map tiles may also be available without a connection."
+      },
+      "7": {
+        "title": "Reports & export",
+        "description": "Export your full rent payment history to CSV any time — for your own records or for tax season."
+      }
+    },
+    "pricingTitle": "Free to use",
+    "pricingAmount": "Free",
+    "pricingHint": "Your plots, apartments, documents, and rent. One free place to keep them together.",
+    "heroAccent": "in order.",
+    "eyebrow": "A little less property admin",
+    "tryGuest": "Explore as a guest",
+    "explore": "A clearer way to manage property",
+    "skipToContent": "Skip to content",
+    "navigation": "Main navigation",
+    "navFeatures": "What you can do",
+    "navHow": "How it works",
+    "navFaq": "Questions",
+    "previewLabel": "Illustrative Landlord property overview with sample data",
+    "demo": "Sample overview",
+    "previewNote": "Illustrative preview · sample data, not a live account",
+    "preview": {
+      "eyebrow": "A little clarity, every day.",
+      "title": "Your property overview",
+      "properties": "Properties",
+      "propertyBreakdown": "4 plots · 2 apartments",
+      "rent": "Rent collected",
+      "rentStatus": "This month",
+      "plot": "Garden plot · Dhaka",
+      "boundary": "Boundary recorded",
+      "documents": "Property papers, together",
+      "documentsHint": "Deeds, records, and the details that matter"
+    },
+    "trust": {
+      "local": "Built for Bangladesh",
+      "offline": "Guest records work offline",
+      "private": "Optional document encryption"
+    },
+    "featuresEyebrow": "One place. A clearer picture.",
+    "featuresIntro": "From a family plot to a growing rental portfolio, keep the details close and the admin simple.",
+    "featureDetails": {
+      "0": "Plot details & boundary mapping",
+      "1": "Units, floors & ownership details",
+      "2": "Tenant details & payment history",
+      "3": "PDF storage & optional encryption"
+    },
+    "howEyebrow": "Make room for clarity",
+    "howTitle": "Start with one property.",
+    "steps": {
+      "0": {
+        "title": "Make yourself at home",
+        "description": "Create a free account, or explore guest mode to organise a plot on this device first."
+      },
+      "1": {
+        "title": "Put the details in place",
+        "description": "Add your property, record its details, and attach the documents you want close at hand."
+      },
+      "2": {
+        "title": "Keep the day-to-day in view",
+        "description": "Check rent, update a lease, or review your property records from your phone."
+      }
+    },
+    "privacyEyebrow": "Your records deserve care",
+    "privacyTitle": "Keep the important things close.",
+    "privacyText": "Store your property PDFs with optional encryption before upload. Your encryption passphrase is yours to keep; losing it can mean losing access to those files.",
+    "privacyCta": "Read our privacy policy",
+    "faqEyebrow": "A few useful answers",
+    "faqTitle": "Good to know.",
+    "faq": {
+      "0": {
+        "question": "Is Landlord really free?",
+        "answer": "Yes. Landlord is currently free to use, with no card or subscription required."
+      },
+      "1": {
+        "question": "Can I try it without signing up?",
+        "answer": "Yes. Guest mode lets you add and organise plots on this device. Create an account to move your guest records into your account. Browser storage can be cleared, so guest mode is not a backup."
+      },
+      "2": {
+        "question": "What works without an internet connection?",
+        "answer": "Guest property records are stored locally on your device. Previously viewed map tiles may be available offline. Signing in, cloud documents, and account updates need an internet connection."
+      },
+      "3": {
+        "question": "Does a mapped boundary replace a land survey?",
+        "answer": "No. Map boundaries help organise your records. They are not a legal survey or proof of ownership. Use verified documents and a qualified surveyor for legal or boundary decisions."
+      }
+    },
+    "closingEyebrow": "A clearer view starts here",
+    "closingTitle": "More property. Less paperwork.",
+    "closingNote": "English & বাংলা · On your phone or computer",
+    "tagline": "Your property, in order.",
+    "backToTop": "Back to top"
+  },
+  "AdminNav": {
+    "overview": "Overview",
+    "settings": "Settings",
+    "coupons": "Coupons",
+    "users": "Users",
+    "backToApp": "Back to app"
+  },
+  "AdminOverviewPage": {
+    "title": "Admin overview",
+    "totalUsers": "Total users",
+    "activeTrials": "Active trials",
+    "paidUsers": "Paid users",
+    "totalRevenue": "Total revenue",
+    "referredSignups": "Referred signups"
+  },
+  "AdminSettingsPage": {
+    "title": "Settings"
+  },
+  "AdminSettingsForm": {
+    "lifetimePriceBdt": "Lifetime price (BDT)",
+    "trialDays": "Trial length (days)",
+    "trialDaysHint": "Applies to new signups going forward — existing trials keep their original end date.",
+    "saving": "Saving...",
+    "save": "Save",
+    "saved": "Saved."
+  },
+  "AdminSettingsActions": {
+    "priceRequired": "Price must be greater than 0",
+    "trialDaysRequired": "Trial days must be greater than 0"
+  },
+  "AdminCouponsPage": {
+    "title": "Coupons"
+  },
+  "AdminCouponForm": {
+    "code": "Code",
+    "discountType": "Discount type",
+    "percent": "Percent off",
+    "fixed": "Fixed amount off (BDT)",
+    "discountValue": "Discount value",
+    "maxRedemptions": "Max redemptions (optional)",
+    "expiresAt": "Expires on (optional)",
+    "creating": "Creating...",
+    "create": "Create coupon"
+  },
+  "AdminCouponsActions": {
+    "codeRequired": "Code is required",
+    "discountValueRequired": "Discount value must be greater than 0",
+    "percentTooHigh": "Percent discount can't exceed 100",
+    "codeAlreadyExists": "A coupon with this code already exists"
+  },
+  "AdminCouponsList": {
+    "redeemed": "{count}/{max} redeemed",
+    "expires": "expires {date}",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "noCouponsYet": "No coupons yet."
+  },
+  "AdminUsersPage": {
+    "title": "Users",
+    "searchPlaceholder": "Search by email",
+    "admin": "admin",
+    "paid": "paid",
+    "trialActive": "trial active",
+    "trialExpired": "trial expired",
+    "noUsersFound": "No users found.",
+    "grantAccess": "Grant lifetime access",
+    "granting": "Granting...",
+    "granted": "Access granted"
+  },
+  "ExpenseActions": {
+    "amountRequired": "Amount must be greater than 0"
+  },
+  "ExpenseForm": {
+    "category": "Category",
+    "categoryOption": {
+      "tax": "Tax",
+      "insurance": "Insurance",
+      "utility": "Utility",
+      "repair": "Repair",
+      "management_fee": "Management fee",
+      "other": "Other"
+    },
+    "amount": "Amount",
+    "expenseDate": "Expense date",
+    "notes": "Notes",
+    "saving": "Saving...",
+    "addExpense": "Add expense"
+  },
+  "ExpensesList": {
+    "categoryOption": {
+      "tax": "Tax",
+      "insurance": "Insurance",
+      "utility": "Utility",
+      "repair": "Repair",
+      "management_fee": "Management fee",
+      "other": "Other"
+    },
+    "delete": "Delete",
+    "noExpensesYet": "No expenses yet.",
+    "total": "Total: {amount}"
+  },
+  "ExpenseSection": {
+    "title": "Expenses"
+  },
+  "VendorActions": {
+    "nameRequired": "Vendor name is required"
+  },
+  "VendorForm": {
+    "name": "Name",
+    "trade": "Trade",
+    "tradePlaceholder": "e.g. Plumber, Electrician",
+    "phone": "Phone",
+    "notes": "Notes",
+    "saving": "Saving...",
+    "addVendor": "Add vendor"
+  },
+  "VendorsList": {
+    "delete": "Delete",
+    "edit": "Edit",
+    "editVendor": "Edit vendor",
+    "saveChanges": "Save changes",
+    "noVendorsYet": "No vendors yet."
+  },
+  "VendorsPage": {
+    "title": "Vendors",
+    "signInRequired": "Sign in to manage your vendors."
+  },
+  "AnalyticsPage": {
+    "title": "Analytics",
+    "signInRequired": "Sign in to view analytics.",
+    "occupancyRate": "Occupancy rate",
+    "unitsLeased": "{leased} of {total} units leased",
+    "portfolioProfit12mo": "Profit (last 12 months)",
+    "incomeVsExpense": "Income vs. expense",
+    "roiPerProperty": "ROI per property",
+    "roiValue": "{value}% / yr",
+    "noPropertiesYet": "No properties yet."
+  },
+  "TrendChart": {
+    "income": "Income",
+    "expense": "Expense",
+    "chartLabel": "Monthly income and expense trend",
+    "month": "Month"
+  },
+  "TenantPortalLink": {
+    "shareLink": "Share link",
+    "working": "Creating…",
+    "copy": "Copy",
+    "revoke": "Revoke",
+    "copied": "Link copied. Send it to the tenant.",
+    "revoked": "The tenant link has been revoked.",
+    "failed": "Could not create the tenant link.",
+    "shareTitle": "Your apartment bills",
+    "shareText": "Open this private link to view your apartment bills. No account is required.",
+    "linkLabel": "Tenant bill portal link"
+  },
+  "TenantPortal": {
+    "tenantPortal": "Private tenant portal",
+    "bills": "Your bills",
+    "hint": "You do not need a Landlord account to view these bills. Keep this private link safe.",
+    "noBills": "There are no shared bills yet.",
+    "due": "Due {date}",
+    "viewBill": "View bill copy",
+    "expires": "This link expires {date}.",
+    "status": {
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "unpaid": "Unpaid"
+    }
+  },
+  "Bills": {
+    "title": "Apartment bills",
+    "billTitle": "Bill title",
+    "titlePlaceholder": "Electricity · October 2026",
+    "tenant": "Tenant",
+    "amount": "Amount (BDT)",
+    "dueDate": "Due date",
+    "due": "Due {date}",
+    "billCopy": "Bill copy",
+    "paymentProof": "Payment proof",
+    "fileHint": "JPEG, PNG, WebP or PDF · up to 10 MB.",
+    "visible": "Share this bill with the selected tenant",
+    "inviteFirst": "Add a tenant using Shared with → Tenant — bills only above, then create a bill. The tenant does not need a Landlord account.",
+    "createBill": "Add monthly bill",
+    "submitProof": "Upload payment proof",
+    "saving": "Saving…",
+    "billCreated": "Bill saved.",
+    "proofSubmitted": "Proof submitted for owner review.",
+    "approvalHint": "Uploading proof does not mark a bill paid. The owner will review and approve it.",
+    "ownerHint": "Add a bill copy, amount and due date each month. Approve a tenant’s payment proof to mark the bill paid. Bill collections are separate from rent and expense totals.",
+    "portalHint": "Review bills, upload payment proof and see expenses your apartment owner has shared.",
+    "viewBill": "View bill copy",
+    "viewProof": "View payment proof",
+    "approve": "Approve & mark paid",
+    "reject": "Reject proof",
+    "rejectionReason": "Reason for rejection",
+    "reviewNote": "Owner’s review: {note}",
+    "status": {
+      "paid": "Paid",
+      "pending": "Awaiting review",
+      "overdue": "Overdue",
+      "unpaid": "Unpaid"
+    },
+    "proofStatus": {
+      "pending": "Pending review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "shared": "Visible to tenant",
+    "private": "Private",
+    "hide": "Hide from tenant",
+    "share": "Share with tenant",
+    "tenantRemoved": "Tenant access removed. Historical bill and proof remain available to you.",
+    "noBills": "No bills yet. Owners can add monthly bills from an apartment’s details.",
+    "manageApartment": "Manage apartment",
+    "sharedExpenses": "Other shared expenses",
+    "sharedExpensesHint": "These are for reference. A shared expense is not an additional bill to pay.",
+    "noSharedExpenses": "Your owner has not shared any other expenses.",
+    "shareExpense": "Share with tenants",
+    "hideExpense": "Make private",
+    "expenseVisibilityHint": "Expenses are private by default. Sharing makes the amount, date, category and notes visible to all current tenants of this apartment.",
+    "dueAlert": "{count, plural, one {You have # bill due soon or overdue. View bills.} other {You have # bills due soon or overdue. View bills.}}",
+    "reviewAlert": "{count, plural, one {# bill has payment proof awaiting your review.} other {# bills have payment proof awaiting your review.}}",
+    "notifications": "Bill notifications",
+    "notificationHint": "Due bills appear in the app. Enable browser notifications for a reminder within 3 days of the due date or when overdue.",
+    "accessDenied": "Please sign in with an account that has access.",
+    "notFound": "This bill or tenant is no longer available.",
+    "chooseFile": "Choose a bill copy or payment proof.",
+    "fileTooLarge": "The file must be 10 MB or smaller.",
+    "fileType": "Choose a valid JPEG, PNG, WebP image or PDF.",
+    "saveFailed": "Could not save. Please refresh and try again.",
+    "uploadFailed": "Could not upload the file. Please try again.",
+    "alreadyPending": "A payment proof is already awaiting review.",
+    "reviewFailed": "Could not review this proof. It may have already been reviewed. Refresh and try again.",
+    "loadFailed": "Could not load bills. Please refresh and try again."
+  },
+  "ApartmentLocation": {
+    "title": "Apartment location",
+    "hint": "Save a pin for the building. Search or tap the map, drag the pin, use GPS, or enter coordinates. Changes are saved only when you choose Save location.",
+    "viewHint": "The saved building location.",
+    "noLocation": "No location saved yet.",
+    "savedCoordinates": "Saved: {lat}, {lng}",
+    "openMap": "Open map",
+    "closeMap": "Close map",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "useGps": "Use my current location",
+    "locating": "Finding your location…",
+    "save": "Save location",
+    "saving": "Saving…",
+    "remove": "Remove location",
+    "saved": "Location saved.",
+    "gpsUnavailable": "Could not get your location. Check browser permission or choose a point manually.",
+    "invalidCoordinates": "Enter latitude between −90 and 90 and longitude between −180 and 180.",
+    "accessDenied": "Sign in to save the apartment location.",
+    "saveFailed": "Could not save the location. Check your access and try again.",
+    "mapUnavailable": "The map could not load. You can still enter coordinates or use GPS.",
+    "search": "Search for a place",
+    "searchPlaceholder": "Area, address or building name",
+    "searching": "Searching…",
+    "searchFailed": "Place search is unavailable. Tap the map or enter coordinates instead.",
+    "mapLabel": "Apartment location map",
+    "satellite": "Satellite",
+    "streets": "Streets"
+  },
+  "RentHistory": {
+    "title": "Record past paid rent",
+    "description": "Add one or more month ranges, each with its own monthly rent. Both the first and last month are included. Existing unpaid entries will be marked paid at the amount you enter. Current lease rent stays unchanged.",
+    "leaseHint": "For this tenant only. The lease starts on {start}; update its start date above first if this tenant moved in earlier.",
+    "range": "Range {number}",
+    "from": "From month",
+    "to": "Through month",
+    "amount": "Monthly rent (৳)",
+    "remove": "Remove",
+    "removeRange": "Remove range {number}",
+    "addRange": "Add another range",
+    "preview": "{count, plural, one {# month} other {# months}} will be marked paid · {total}",
+    "skipPreview": "{count, plural, one {# already-paid month will be kept unchanged.} other {# already-paid months will be kept unchanged.}}",
+    "dateHint": "Exact payment dates are left blank. These records will not count as rent received this month.",
+    "save": "Record selected months as paid",
+    "saving": "Recording…",
+    "saved": "Recorded {recorded, plural, one {# month} other {# months}}. Kept {skipped, plural, one {# already-paid month} other {# already-paid months}} unchanged.",
+    "invalidRanges": "Add between 1 and 50 ranges.",
+    "invalidMonth": "Choose a start and end month for every range.",
+    "invalidAmount": "Enter a positive monthly rent with no more than two decimal places (up to ৳1,000,000,000,000).",
+    "reversedRange": "The end month must be the same as or after the start month.",
+    "overlap": "Ranges cannot overlap. Each month can appear only once.",
+    "outsideLease": "Choose months within this tenant’s lease dates.",
+    "futureMonth": "Choose the current month or earlier.",
+    "tooManyMonths": "Record up to 600 months at a time.",
+    "accessRequired": "Sign in to record rent history.",
+    "monthlyOnly": "Rent ranges are available for monthly leases.",
+    "saveFailed": "Could not record rent history. Refresh and check the lease dates and selected months. A month with multiple payment entries must be resolved first."
   }
 }

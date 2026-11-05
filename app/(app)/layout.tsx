@@ -1,31 +1,27 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { hasActiveAccess } from "@/lib/access";
-import SyncManager from "@/components/system/SyncManager";
 import GuestMigration from "@/components/system/GuestMigration";
 import AppShell from "@/components/system/AppShell";
+import AppMessages from "@/components/system/AppMessages";
 
 export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (user && !(await hasActiveAccess(user.id))) {
     redirect("/paywall");
   }
 
   return (
-    <>
-      {user && <SyncManager />}
+    <AppMessages>
       {user && <GuestMigration />}
       <AppShell user={user} showGuestBanner>
         {children}
       </AppShell>
-    </>
+    </AppMessages>
   );
 }

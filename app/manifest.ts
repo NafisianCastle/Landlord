@@ -4,11 +4,12 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Landlord",
     short_name: "Landlord",
-    description: "Land plot mapping and management with boundaries, documents, and offline sync",
+    description:
+      "Your property, in order. Land, apartments, rent, and property documents.",
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#15803d",
+    background_color: "#F7F8F2",
+    theme_color: "#164B3F",
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
       { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },

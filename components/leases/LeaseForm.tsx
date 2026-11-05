@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -22,11 +23,12 @@ export interface LeaseFormValues {
 
 interface LeaseFormProps {
   action: (prevState: unknown, formData: FormData) => Promise<{ error?: string } | undefined>;
+  subjectType: "plot" | "apartment";
   initial?: LeaseFormValues;
   submitLabel: string;
 }
 
-export default function LeaseForm({ action, initial, submitLabel }: LeaseFormProps) {
+export default function LeaseForm({ action, subjectType, initial, submitLabel }: LeaseFormProps) {
   const [state, formAction, pending] = useActionState(action, undefined);
   const t = useTranslations("LeaseForm");
 
@@ -53,7 +55,9 @@ export default function LeaseForm({ action, initial, submitLabel }: LeaseFormPro
             name="tenantEmail"
             type="email"
             defaultValue={initial?.tenantEmail ?? ""}
+            required={subjectType === "apartment"}
           />
+          {subjectType === "apartment" && <p className="text-xs text-muted-foreground">{t("tenantEmailHistoryHint")}</p>}
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="rentAmount">{t("rentAmount")}</Label>
@@ -69,18 +73,17 @@ export default function LeaseForm({ action, initial, submitLabel }: LeaseFormPro
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="frequency">{t("frequency")}</Label>
-          <select
+          <Select
             id="frequency"
             name="frequency"
             defaultValue={initial?.frequency ?? "monthly"}
-            className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm"
           >
             {FREQUENCIES.map((f) => (
               <option key={f} value={f}>
                 {t(`frequencyOption.${f}`)}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="startDate">{t("startDate")}</Label>

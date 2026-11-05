@@ -4,7 +4,10 @@ import { useActionState, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Autocomplete } from "@/components/ui/autocomplete";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { unitOptions } from "@/lib/units";
 import { Textarea } from "@/components/ui/textarea";
 import { encryptJSON, decryptJSON, toPgBytea, fromPgBytea } from "@/lib/crypto/encryption";
 import { getSessionDEK, onSessionChange } from "@/lib/crypto/session";
@@ -28,7 +31,7 @@ const EMPTY_SENSITIVE: ApartmentSensitiveValues = {
   notes: "",
 };
 
-const SIZE_UNITS = ["sqft", "sqmeter", "katha", "decimal"] as const;
+const SIZE_UNITS = ["sqft", "sqmeter", "katha", "decimal"];
 
 export interface ApartmentMetadataValues {
   name?: string;
@@ -89,35 +92,43 @@ export default function ApartmentMetadataForm({
         )
       : UPAZILAS;
 
-  useEffect(() => {
-    if (!upazilaMatch) return;
-    const parentDistrict = DISTRICTS.find((d) => d.id === upazilaMatch.districtId);
-    if (parentDistrict && byName(parentDistrict.name) !== byName(districtName)) {
-      setDistrictName(parentDistrict.name);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [upazilaName]);
-
-  useEffect(() => {
-    if (!districtMatch) return;
-    const parentDivision = DIVISIONS.find((d) => d.id === districtMatch.divisionId);
-    if (parentDivision && byName(parentDivision.name) !== byName(divisionName)) {
-      setDivisionName(parentDivision.name);
-    }
-    if (upazilaMatch && upazilaMatch.districtId !== districtMatch.id) {
-      setUpazilaName("");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [districtName]);
-
-  useEffect(() => {
-    if (!divisionMatch) return;
-    if (districtMatch && districtMatch.divisionId !== divisionMatch.id) {
+  // Selecting a lower level fills in its parents; selecting a higher level clears
+  // lower levels that no longer belong to it.
+  function selectDivision(name: string) {
+    setDivisionName(name);
+    const division = DIVISIONS.find((d) => byName(d.name) === byName(name));
+    if (division && districtMatch && districtMatch.divisionId !== division.id) {
       setDistrictName("");
       setUpazilaName("");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [divisionName]);
+  }
+
+  function selectDistrict(name: string) {
+    setDistrictName(name);
+    const district = DISTRICTS.find((d) => byName(d.name) === byName(name));
+    if (!district) return;
+    const parentDivision = DIVISIONS.find((d) => d.id === district.divisionId);
+    if (parentDivision && byName(parentDivision.name) !== byName(divisionName)) {
+      setDivisionName(parentDivision.name);
+    }
+    if (upazilaMatch && upazilaMatch.districtId !== district.id) {
+      setUpazilaName("");
+    }
+  }
+
+  function selectUpazila(name: string) {
+    setUpazilaName(name);
+    const upazila = UPAZILAS.find((u) => byName(u.name) === byName(name));
+    if (!upazila) return;
+    const parentDistrict = DISTRICTS.find((d) => d.id === upazila.districtId);
+    if (parentDistrict && byName(parentDistrict.name) !== byName(districtName)) {
+      setDistrictName(parentDistrict.name);
+      const parentDivision = DIVISIONS.find((d) => d.id === parentDistrict.divisionId);
+      if (parentDivision && byName(parentDivision.name) !== byName(divisionName)) {
+        setDivisionName(parentDivision.name);
+      }
+    }
+  }
 
   useEffect(() => onSessionChange(() => setUnlocked(getSessionDEK() !== null)), []);
 
@@ -205,54 +216,36 @@ export default function ApartmentMetadataForm({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="division">{t("division")}</Label>
-          <Input
+          <Autocomplete
             id="division"
             name="division"
-            list="apt-division-options"
-            autoComplete="off"
             placeholder={t("selectDivision")}
             value={divisionName}
-            onChange={(e) => setDivisionName(e.target.value)}
+            onValueChange={selectDivision}
+            options={DIVISIONS.map(item => item.name)}
           />
-          <datalist id="apt-division-options">
-            {DIVISIONS.map((d) => (
-              <option key={d.id} value={d.name} />
-            ))}
-          </datalist>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="district">{t("district")}</Label>
-          <Input
+          <Autocomplete
             id="district"
             name="district"
-            list="apt-district-options"
-            autoComplete="off"
             placeholder={t("selectDistrict")}
             value={districtName}
-            onChange={(e) => setDistrictName(e.target.value)}
+            onValueChange={selectDistrict}
+            options={districtOptions.map(item => item.name)}
           />
-          <datalist id="apt-district-options">
-            {districtOptions.map((d) => (
-              <option key={d.id} value={d.name} />
-            ))}
-          </datalist>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="upazila">{t("upazila")}</Label>
-          <Input
+          <Autocomplete
             id="upazila"
             name="upazila"
-            list="apt-upazila-options"
-            autoComplete="off"
             placeholder={t("selectUpazila")}
             value={upazilaName}
-            onChange={(e) => setUpazilaName(e.target.value)}
+            onValueChange={selectUpazila}
+            options={upazilaOptions.map(item => item.name)}
           />
-          <datalist id="apt-upazila-options">
-            {upazilaOptions.map((u) => (
-              <option key={u.id} value={u.name} />
-            ))}
-          </datalist>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="floor">{t("floor")}</Label>
@@ -271,18 +264,19 @@ export default function ApartmentMetadataForm({
             defaultValue={initial?.size ?? ""}
             className="flex-1"
           />
-          <select
+          <Select
             id="sizeUnit"
+            aria-label={t("sizeUnit")}
+            className="w-28 shrink-0"
             name="sizeUnit"
             defaultValue={initial?.sizeUnit ?? "sqft"}
-            className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm"
           >
-            {SIZE_UNITS.map((unit) => (
+            {unitOptions(SIZE_UNITS, initial?.sizeUnit).map((unit) => (
               <option key={unit} value={unit}>
                 {unit}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

@@ -119,14 +119,14 @@ describe("createPlot", () => {
         fd({
           name: "Plot 1",
           village: "Should be ignored",
-          sensitiveEncryptedHex: "abcd",
-          sensitiveIvHex: "1234",
+          sensitiveEncryptedHex: "\\x" + "ab".repeat(16),
+          sensitiveIvHex: "\\x" + "12".repeat(12),
         }),
       ),
     ).rejects.toThrow();
     const insertArg = (chain.insert as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(insertArg.sensitive_encrypted).toBe("abcd");
-    expect(insertArg.sensitive_iv).toBe("1234");
+    expect(insertArg.sensitive_encrypted).toBe("\\x" + "ab".repeat(16));
+    expect(insertArg.sensitive_iv).toBe("\\x" + "12".repeat(12));
     expect(insertArg.village).toBeNull();
   });
 

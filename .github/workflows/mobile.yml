@@ -1,0 +1,44 @@
+name: Mobile
+
+on:
+  pull_request:
+    branches: [staging, main]
+    paths: ["mobile/**", ".github/workflows/mobile.yml"]
+  push:
+    branches: [staging, main]
+    paths: ["mobile/**", ".github/workflows/mobile.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  flutter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.7
+          cache: true
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build Android (debug)
+        run: flutter build apk --debug

@@ -49,7 +49,7 @@ async function trimCache(cache) {
 
 // Rent-due reminders, sent via web-push from app/api/cron/rent-reminders.
 self.addEventListener("push", (event) => {
-  let data = { title: "Landly", body: "" };
+  let data = { title: "Landlord", body: "" };
   try {
     data = event.data.json();
   } catch {

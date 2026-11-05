@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { convertArea, SQ_METERS_PER_DECIMAL } from "./units";
+import { convertArea, SQ_METERS_PER_DECIMAL, unitOptions } from "./units";
 
 describe("convertArea", () => {
   it("converts a positive area to all units", () => {
@@ -47,5 +47,13 @@ describe("convertArea", () => {
   it("produces NaN for NaN input", () => {
     const result = convertArea(NaN);
     expect(Number.isNaN(result.decimal)).toBe(true);
+  });
+});
+
+describe("unitOptions", () => {
+  it("adds a saved unit the form doesn't list, without duplicating listed ones", () => {
+    expect(unitOptions(["sqft", "sqmeter"], "tsubo")).toEqual(["sqft", "sqmeter", "tsubo"]);
+    expect(unitOptions(["sqft", "sqmeter"], "sqft")).toEqual(["sqft", "sqmeter"]);
+    expect(unitOptions(["sqft"], null)).toEqual(["sqft"]);
   });
 });

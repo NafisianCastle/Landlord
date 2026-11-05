@@ -66,6 +66,8 @@ export default function GuestMigration() {
                 purchaseDate: a.purchaseDate,
                 currentEstimatedValue: a.currentEstimatedValue,
                 notes: a.notes,
+                latitude: a.latitude ?? null,
+                longitude: a.longitude ?? null,
               })),
             )
           : { migrated: 0 },

@@ -1,5 +1,7 @@
 "use client";
 
+import "maplibre-gl/dist/maplibre-gl.css";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -161,11 +163,6 @@ export default function ManualBoundaryDrawer({
   }, [points]);
 
   const queryTooShort = searchQuery.trim().length < 3;
-
-  function handleSearchChange(value: string) {
-    setSearchQuery(value);
-    setSearching(value.trim().length >= 3);
-  }
 
   useEffect(() => {
     if (searchQuery.trim().length < 3) return;

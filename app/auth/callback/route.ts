@@ -8,10 +8,10 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const supabase = await createClient();
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      const referralCode = request.cookies.get("landly_ref")?.value;
+      const referralCode = request.cookies.get("landlord_ref")?.value;
       if (referralCode) {
         const { error: refError } = await supabase.rpc("attribute_referral", {
           p_referral_code: referralCode,

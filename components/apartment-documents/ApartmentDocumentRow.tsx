@@ -1,15 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { deleteApartmentDocument } from "@/app/actions/apartmentDocuments";
 import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 
-const ApartmentPdfPreviewModal = dynamic(() => import("./ApartmentPdfPreviewModal"), {
-  ssr: false,
-});
+import ApartmentPdfPreviewModal from "./ApartmentPdfPreviewModal";
 
 interface ApartmentDocumentRowProps {
   apartmentId: string;

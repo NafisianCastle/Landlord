@@ -1,13 +1,6 @@
 import Dexie, { type EntityTable } from "dexie";
 import type { Polygon } from "geojson";
 
-export interface WalkSession {
-  id: string;
-  plotId: string;
-  status: "active" | "pending-finish" | "done";
-  startedAt: number;
-}
-
 export interface GuestPlot {
   id: string;
   name: string;
@@ -45,20 +38,10 @@ export interface GuestApartment {
   purchaseDate: string | null;
   currentEstimatedValue: number | null;
   notes: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   createdAt: number;
   updatedAt: number;
-}
-
-export interface WalkPoint {
-  id?: number;
-  sessionId: string;
-  plotId: string;
-  seq: number;
-  lat: number;
-  lng: number;
-  accuracy: number | null;
-  capturedAt: number;
-  synced: 0 | 1;
 }
 
 export interface OfflineArea {
@@ -76,8 +59,6 @@ export interface OfflineArea {
 }
 
 const db = new Dexie("landlord") as Dexie & {
-  walkSessions: EntityTable<WalkSession, "id">;
-  walkPoints: EntityTable<WalkPoint, "id">;
   offlineAreas: EntityTable<OfflineArea, "id">;
   guestPlots: EntityTable<GuestPlot, "id">;
   guestApartments: EntityTable<GuestApartment, "id">;
@@ -104,6 +85,15 @@ db.version(3).stores({
 db.version(4).stores({
   walkSessions: "id, plotId, status",
   walkPoints: "++id, sessionId, [sessionId+seq], synced",
+  offlineAreas: "id, downloadedAt",
+  guestPlots: "id, createdAt",
+  guestApartments: "id, createdAt",
+});
+
+// GPS walk-mode dropped — browser geolocation was too inaccurate to be usable.
+db.version(5).stores({
+  walkSessions: null,
+  walkPoints: null,
   offlineAreas: "id, downloadedAt",
   guestPlots: "id, createdAt",
   guestApartments: "id, createdAt",

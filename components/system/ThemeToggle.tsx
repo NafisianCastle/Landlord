@@ -14,7 +14,9 @@ let cached: Theme | undefined;
 function computeTheme(): Theme {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored === "light" || stored === "dark") return stored;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
 }
 
 function applyTheme(theme: Theme) {
@@ -55,19 +57,19 @@ export default function ThemeToggle() {
     setTheme(theme === "dark" ? "light" : "dark");
   }
 
-  if (!theme) return null;
-
   return (
     <Button
       type="button"
       variant="outline"
       size="icon"
+      disabled={!theme}
       onClick={toggle}
       aria-label={t("toggleAriaLabel")}
       title={theme === "dark" ? t("dark") : t("light")}
-      className="rounded-full bg-card shadow-sm"
+      className="size-10 shrink-0 rounded-lg border-input bg-card text-card-foreground shadow-sm"
     >
-      {theme === "dark" ? <Moon className="size-3.5" /> : <Sun className="size-3.5" />}
+      <Moon className="hidden size-4 dark:block" aria-hidden="true" />
+      <Sun className="size-4 dark:hidden" aria-hidden="true" />
     </Button>
   );
 }

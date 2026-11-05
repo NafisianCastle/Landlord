@@ -4,14 +4,16 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 interface MaintenanceRequestFormProps {
   action: (prevState: unknown, formData: FormData) => Promise<{ error?: string } | undefined>;
+  vendors?: { id: string; name: string }[];
 }
 
-export default function MaintenanceRequestForm({ action }: MaintenanceRequestFormProps) {
+export default function MaintenanceRequestForm({ action, vendors }: MaintenanceRequestFormProps) {
   const [state, formAction, pending] = useActionState(action, undefined);
   const t = useTranslations("MaintenanceRequestForm");
 
@@ -35,6 +37,23 @@ export default function MaintenanceRequestForm({ action }: MaintenanceRequestFor
             defaultValue={new Date().toISOString().slice(0, 10)}
           />
         </div>
+        {vendors && vendors.length > 0 && (
+          <div className="flex flex-col gap-1.5 sm:col-span-2">
+            <Label htmlFor="vendorId">{t("vendor")}</Label>
+            <Select
+              id="vendorId"
+              name="vendorId"
+              defaultValue=""
+            >
+              <option value="">{t("noVendor")}</option>
+              {vendors.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+        )}
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="description">{t("description")}</Label>

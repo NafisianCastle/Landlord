@@ -1,15 +1,12 @@
 import { getTranslations } from "next-intl/server";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { createApartment } from "@/app/actions/apartments";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ApartmentMetadataForm from "@/components/apartments/ApartmentMetadataForm";
 import GuestApartmentForm from "@/components/apartments/GuestApartmentForm";
 
 export default async function NewApartmentPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   const t = await getTranslations("NewApartmentPage");
 
   return (

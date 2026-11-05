@@ -10,11 +10,6 @@ vi.mock("@/components/map/PlotMap", () => ({
     <div data-testid="plot-map">Map with {plots.length} plot(s)</div>
   ),
 }));
-vi.mock("@/components/map/BoundaryWalker", () => ({
-  default: ({ plotId }: { plotId: string }) => (
-    <div data-testid="boundary-walker">Walker for {plotId}</div>
-  ),
-}));
 vi.mock("@/components/map/ManualBoundaryDrawer", () => ({
   default: ({ plotId }: { plotId: string }) => (
     <div data-testid="manual-drawer">Drawer for {plotId}</div>
@@ -34,42 +29,27 @@ const polygon: Polygon = {
 };
 
 describe("PlotBoundarySection", () => {
-  it("shows the GPS walker by default when there is no boundary yet", () => {
+  it("shows the manual drawer when there is no boundary yet", async () => {
     render(<PlotBoundarySection plotId="p1" plotName="Plot" boundary={null} />);
-    expect(screen.getByTestId("boundary-walker")).toBeInTheDocument();
-    expect(screen.queryByTestId("manual-drawer")).not.toBeInTheDocument();
+    expect(await screen.findByTestId("manual-drawer")).toBeInTheDocument();
     expect(screen.queryByTestId("plot-map")).not.toBeInTheDocument();
   });
 
-  it("switches to the manual drawer when 'Draw on map' is clicked", async () => {
-    render(<PlotBoundarySection plotId="p1" plotName="Plot" boundary={null} />);
-    await userEvent.click(screen.getByRole("button", { name: "Draw on map" }));
-    expect(screen.getByTestId("manual-drawer")).toBeInTheDocument();
-    expect(screen.queryByTestId("boundary-walker")).not.toBeInTheDocument();
-  });
-
-  it("switches back to GPS walker when 'Walk with GPS' is clicked after switching away", async () => {
-    render(<PlotBoundarySection plotId="p1" plotName="Plot" boundary={null} />);
-    await userEvent.click(screen.getByRole("button", { name: "Draw on map" }));
-    await userEvent.click(screen.getByRole("button", { name: "Walk with GPS" }));
-    expect(screen.getByTestId("boundary-walker")).toBeInTheDocument();
-  });
-
-  it("renders the map with the redraw button when a boundary already exists", () => {
+  it("renders the map with the redraw button when a boundary already exists", async () => {
     render(<PlotBoundarySection plotId="p1" plotName="Plot" boundary={polygon} />);
-    expect(screen.getByTestId("plot-map")).toBeInTheDocument();
+    expect(await screen.findByTestId("plot-map")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Redraw boundary" })).toBeInTheDocument();
   });
 
-  it("switches to the walker/drawer picker when 'Redraw boundary' is clicked", async () => {
+  it("switches to the manual drawer when 'Redraw boundary' is clicked", async () => {
     render(<PlotBoundarySection plotId="p1" plotName="Plot" boundary={polygon} />);
     await userEvent.click(screen.getByRole("button", { name: "Redraw boundary" }));
-    expect(screen.getByTestId("boundary-walker")).toBeInTheDocument();
+    expect(screen.getByTestId("manual-drawer")).toBeInTheDocument();
     expect(screen.queryByTestId("plot-map")).not.toBeInTheDocument();
   });
 
-  it("passes the plot id/name/boundary through to PlotMap as a single-plot list", () => {
+  it("passes the plot id/name/boundary through to PlotMap as a single-plot list", async () => {
     render(<PlotBoundarySection plotId="p1" plotName="Plot" boundary={polygon} />);
-    expect(screen.getByText("Map with 1 plot(s)")).toBeInTheDocument();
+    expect(await screen.findByText("Map with 1 plot(s)")).toBeInTheDocument();
   });
 });

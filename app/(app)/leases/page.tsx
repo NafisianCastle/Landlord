@@ -1,15 +1,15 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import PageContainer from "@/components/system/PageContainer";
 import PageHeader from "@/components/system/PageHeader";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default async function LeasesPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   const t = await getTranslations("LeasesPage");
 
@@ -21,9 +21,10 @@ export default async function LeasesPage() {
     );
   }
 
-  await supabase.rpc("ensure_all_lease_payments");
+  const paymentsReady = Promise.resolve(supabase.rpc("ensure_all_lease_payments"));
 
-  const [{ data: leases, error }, { data: unpaidPayments }] = await Promise.all([
+  const [{ data: leases, error }, { data: unpaidPayments }, { data: rentStats }, { data: expenseStats }] =
+    await Promise.all([
     supabase
       .from("leases")
       .select(
@@ -31,11 +32,13 @@ export default async function LeasesPage() {
       )
       .eq("status", "active")
       .order("created_at", { ascending: false }),
-    supabase
+    paymentsReady.then(() => supabase
       .from("lease_payments")
       .select("lease_id, due_date")
       .eq("paid", false)
-      .order("due_date", { ascending: true }),
+      .order("due_date", { ascending: true })),
+    paymentsReady.then(() => supabase.from("lease_payment_stats").select("*").single()),
+    supabase.from("expense_stats").select("*").single(),
   ]);
 
   const nextDueByLease = new Map<string, string>();
@@ -73,6 +76,33 @@ export default async function LeasesPage() {
           </Button>
         }
       />
+
+      <Card>
+        <CardContent className="grid grid-cols-3 gap-3 p-3 text-center">
+          <div>
+            <p className="text-xs text-muted-foreground">{t("receivedThisMonth")}</p>
+            <p className="font-semibold">{bdt.format(rentStats?.received_this_month_amount ?? 0)}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("expensesThisMonth")}</p>
+            <p className="font-semibold">{bdt.format(expenseStats?.this_month_amount ?? 0)}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t("netThisMonth")}</p>
+            <p className="font-semibold">
+              {bdt.format(
+                (rentStats?.received_this_month_amount ?? 0) - (expenseStats?.this_month_amount ?? 0),
+              )}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+      <a
+        href="/api/reports/finances"
+        className="self-start text-xs text-muted-foreground underline underline-offset-2"
+      >
+        {t("exportExpensesCsv")}
+      </a>
 
       {error ? (
         <p className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">

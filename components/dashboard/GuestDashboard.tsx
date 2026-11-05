@@ -64,6 +64,7 @@ export default function GuestDashboard() {
             totalPurchasePrice={totalPurchasePrice}
             totalCurrentValue={totalCurrentValue}
             documentCount={0}
+            valueHref="/plots"
           />
 
           <Card>

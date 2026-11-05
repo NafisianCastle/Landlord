@@ -4,9 +4,10 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
+import { UUID } from "@/lib/validation/forms";
+import { validateDocumentUpload } from "@/lib/validation/documents";
 
 const BUCKET = "land-documents";
-const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024;
 
 export async function uploadDocument(
   plotId: string,
@@ -21,30 +22,16 @@ export async function uploadDocument(
 
   const supabase = await createClient();
 
-  const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) {
-    return { error: t("choosePdf") };
-  }
-  if (file.size > MAX_FILE_SIZE_BYTES) {
-    return { error: t("fileTooLarge") };
-  }
-
-  const encryptionIvHex = formData.get("encryptionIvHex");
-  const isEncrypted = typeof encryptionIvHex === "string" && encryptionIvHex.length > 0;
-  // When encrypted, `file` is ciphertext (opaque bytes) — the client already
-  // checked the original was a PDF before encrypting it, so only enforce the
-  // mime check on the plaintext path.
-  if (!isEncrypted && file.type !== "application/pdf") {
-    return { error: t("onlyPdf") };
-  }
-
-  const fileName =
-    (isEncrypted ? String(formData.get("originalFileName") ?? "") : "") || file.name;
-  const storagePath = `${user.id}/${plotId}/${crypto.randomUUID()}-${fileName}`;
+  if (typeof plotId !== "string" || !UUID.test(plotId)) return { error: "Invalid property ID." };
+  const validated = await validateDocumentUpload(formData);
+  if ("error" in validated) return { error: t(validated.error) };
+  const { file, fileName, isEncrypted, iv, contentType } = validated;
+  // Keep user-controlled filenames out of object keys.
+  const storagePath = `${user.id}/${plotId}/${crypto.randomUUID()}.pdf`;
 
   const { error: uploadError } = await supabase.storage
     .from(BUCKET)
-    .upload(storagePath, file, { contentType: file.type });
+    .upload(storagePath, file, { contentType });
   if (uploadError) return { error: uploadError.message };
 
   const { error: insertError } = await supabase.from("plot_documents").insert({
@@ -55,7 +42,7 @@ export async function uploadDocument(
     file_size_bytes: file.size,
     mime_type: isEncrypted ? "application/pdf" : file.type,
     is_encrypted: isEncrypted,
-    encryption_iv: isEncrypted ? encryptionIvHex : null,
+    encryption_iv: iv,
   });
   if (insertError) {
     await supabase.storage.from(BUCKET).remove([storagePath]);

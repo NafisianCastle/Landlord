@@ -8,6 +8,8 @@ const PUBLIC_PATHS = [
   "/signup",
   "/auth/callback",
   "/api/payments",
+  "/api/tenant-portal",
+  "/tenant/bills",
   "/terms",
   "/privacy",
   "/refund",
@@ -19,6 +21,18 @@ const PUBLIC_PATHS = [
 const GUEST_ALLOWED_PATHS = ["/", "/dashboard", "/plots"];
 
 export async function updateSession(request: NextRequest) {
+  // Cron handlers authenticate their own bearer secret, and /api/admin the
+  // mobile app's Supabase access token (lib/adminApi.ts), without cookies.
+  if (
+    ["/api/cron/rent-reminders", "/api/cron/lease-expiry", "/api/cron/bill-reminders"].includes(
+      request.nextUrl.pathname,
+    ) ||
+    request.nextUrl.pathname.startsWith("/api/admin/") ||
+    request.nextUrl.pathname === "/api/tenant-links"
+  ) {
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(

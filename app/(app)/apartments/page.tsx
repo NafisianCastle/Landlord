@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { Button } from "@/components/ui/button";
 import GuestApartmentsList from "@/components/apartments/GuestApartmentsList";
 import ApartmentsListClient from "@/components/apartments/ApartmentsListClient";
@@ -9,9 +10,7 @@ import PageHeader from "@/components/system/PageHeader";
 
 export default async function ApartmentsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return <GuestApartmentsList />;

@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/current-user";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import StatsCards from "@/components/dashboard/StatsCards";
-import RentDueCard, { type OverduePaymentItem } from "@/components/dashboard/RentDueCard";
+import RentOverview, { loadRentOverview } from "@/components/dashboard/RentOverview";
+import { Suspense } from "react";
+import SectionLoading from "@/components/system/SectionLoading";
 import LocationBreakdown from "@/components/dashboard/LocationBreakdown";
 import RecentPlots from "@/components/dashboard/RecentPlots";
 import NeedsAttention from "@/components/dashboard/NeedsAttention";
@@ -13,17 +16,21 @@ import GuestDashboard from "@/components/dashboard/GuestDashboard";
 import PageContainer from "@/components/system/PageContainer";
 import PageHeader from "@/components/system/PageHeader";
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function isoDateInDays(days: number) {
+  return new Date(Date.now() + days * DAY_MS).toISOString().slice(0, 10);
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return <GuestDashboard />;
   }
 
-  await supabase.rpc("ensure_all_lease_payments");
+  const rentOverview = loadRentOverview();
 
   const [
     { data: stats, error: statsError },
@@ -32,8 +39,7 @@ export default async function DashboardPage() {
     { data: recentPlots, error: recentError },
     { data: unwalkedPlots },
     { count: apartmentCount },
-    { data: rentStats },
-    { data: overdueRows },
+    { data: expiringLeaseRows },
   ] = await Promise.all([
     supabase.from("plot_stats").select("*").single(),
     supabase.from("plot_stats_by_district").select("*"),
@@ -49,39 +55,25 @@ export default async function DashboardPage() {
       .is("area_sq_meters", null)
       .order("created_at", { ascending: false }),
     supabase.from("apartments").select("id", { count: "exact", head: true }),
-    supabase.from("lease_payment_stats").select("*").single(),
     supabase
-      .from("lease_payments")
-      .select(
-        "id, due_date, amount, leases(tenant_name, plot_id, apartment_id, land_plots(name), apartments(name))",
-      )
-      .eq("paid", false)
-      .lt("due_date", new Date().toISOString().slice(0, 10))
-      .order("due_date", { ascending: true })
-      .limit(5),
+      .from("leases")
+      .select("id, tenant_name, end_date, plot_id, apartment_id, land_plots(name), apartments(name)")
+      .eq("status", "active")
+      .not("end_date", "is", null)
+      .lte("end_date", isoDateInDays(14))
+      .order("end_date", { ascending: true }),
   ]);
 
-  const overduePayments: OverduePaymentItem[] = (overdueRows ?? []).flatMap((row) => {
-    const lease = row.leases as unknown as {
-      tenant_name: string;
-      plot_id: string | null;
-      apartment_id: string | null;
-      land_plots: { name: string } | null;
-      apartments: { name: string } | null;
-    } | null;
-    if (!lease) return [];
-    const propertyName = lease.land_plots?.name ?? lease.apartments?.name ?? "";
-    const propertyHref = lease.plot_id ? `/plots/${lease.plot_id}` : `/apartments/${lease.apartment_id}`;
-    return [
-      {
-        id: row.id,
-        dueDate: row.due_date,
-        amount: row.amount,
-        tenantName: lease.tenant_name,
-        propertyName,
-        propertyHref,
-      },
-    ];
+  const expiringLeases = (expiringLeaseRows ?? []).map((row) => {
+    const lp = row.land_plots as unknown as { name: string } | null;
+    const ap = row.apartments as unknown as { name: string } | null;
+    return {
+      id: row.id,
+      tenantName: row.tenant_name,
+      endDate: row.end_date as string,
+      propertyHref: row.plot_id ? `/plots/${row.plot_id}` : `/apartments/${row.apartment_id}`,
+      propertyName: lp?.name ?? ap?.name ?? "",
+    };
   });
 
   const plotCount = stats?.plot_count ?? 0;
@@ -113,7 +105,7 @@ export default async function DashboardPage() {
         <WelcomeCard />
       ) : (
         <>
-          <NeedsAttention plots={unwalkedPlots ?? []} />
+          <NeedsAttention plots={unwalkedPlots ?? []} expiringLeases={expiringLeases} />
 
           <StatsCards
             plotCount={plotCount}
@@ -124,12 +116,9 @@ export default async function DashboardPage() {
             apartmentCount={apartmentCount ?? 0}
           />
 
-          <RentDueCard
-            overdueCount={rentStats?.overdue_count ?? 0}
-            overdueAmount={rentStats?.overdue_amount ?? 0}
-            upcomingCount={rentStats?.upcoming_count ?? 0}
-            overduePayments={overduePayments}
-          />
+          <Suspense fallback={<SectionLoading />}>
+            <RentOverview data={rentOverview} />
+          </Suspense>
 
           <Card>
             <CardHeader>

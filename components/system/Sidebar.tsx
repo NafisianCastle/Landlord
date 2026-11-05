@@ -24,7 +24,7 @@ export default function Sidebar({ signedIn }: { signedIn: boolean }) {
         Landlord
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1 px-2">
+      <nav aria-label={t("navigation")} className="flex flex-1 flex-col gap-1 px-2">
         {NAV_ITEMS.map((item) => {
           const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
@@ -32,10 +32,11 @@ export default function Sidebar({ signedIn }: { signedIn: boolean }) {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={active ? "page" : undefined}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                 active
-                  ? "bg-secondary font-medium text-foreground"
+                  ? "bg-primary/10 font-medium text-primary"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground",
               )}
             >
@@ -48,7 +49,7 @@ export default function Sidebar({ signedIn }: { signedIn: boolean }) {
 
       <div className="flex flex-col gap-2 border-t border-border p-3">
         <div className="flex items-center gap-2">
-          <LocaleSwitcher />
+          <LocaleSwitcher side="top" align="start" />
           <ThemeToggle />
         </div>
         {signedIn && (

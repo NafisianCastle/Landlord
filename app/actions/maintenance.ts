@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getUserWithAccess } from "@/lib/access";
+import { validateForm, maintenanceRules } from "@/lib/validation/forms";
 
 export type MaintenanceSubjectType = "plot" | "apartment";
 
@@ -18,6 +19,7 @@ function fieldsFromForm(formData: FormData) {
     description: String(formData.get("description") ?? "") || null,
     cost: formData.get("cost") ? Number(formData.get("cost")) : null,
     reported_date: String(formData.get("reportedDate") ?? "") || new Date().toISOString().slice(0, 10),
+    vendor_id: String(formData.get("vendorId") ?? "") || null,
   };
 }
 
@@ -27,12 +29,17 @@ export async function createMaintenanceRequest(
   _prevState: unknown,
   formData: FormData,
 ) {
+  if (subjectType !== "plot" && subjectType !== "apartment") return { error: "Invalid property type." };
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
   if (!auth.hasAccess) redirect("/paywall");
   const { user } = auth;
 
   const t = await getTranslations("MaintenanceActions");
+
+  const validationError = validateForm(formData, maintenanceRules);
+  if (validationError) return { error: validationError };
+
   const fields = fieldsFromForm(formData);
   if (!fields.title) return { error: t("titleRequired") };
 
@@ -56,8 +63,11 @@ export async function updateMaintenanceStatus(
   subjectId: string,
   status: "open" | "in_progress" | "resolved",
 ) {
+  if (subjectType !== "plot" && subjectType !== "apartment") return { error: "Invalid property type." };
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
+
+  if (!["open", "in_progress", "resolved"].includes(status)) return { error: "Invalid maintenance status." };
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -78,6 +88,7 @@ export async function deleteMaintenanceRequest(
   subjectType: MaintenanceSubjectType,
   subjectId: string,
 ) {
+  if (subjectType !== "plot" && subjectType !== "apartment") return { error: "Invalid property type." };
   const auth = await getUserWithAccess();
   if (!auth) redirect("/login");
 

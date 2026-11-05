@@ -1,6 +1,7 @@
 "use client";
 
 import db, { type GuestApartment } from "./db";
+import { validApartmentLocation, type ApartmentCoordinates } from "@/lib/apartmentLocation";
 
 export type { GuestApartment };
 
@@ -78,6 +79,15 @@ export async function updateGuestApartmentMetadata(
 
 export async function deleteGuestApartment(id: string): Promise<void> {
   await db.guestApartments.delete(id);
+}
+
+export async function saveGuestApartmentLocation(id: string, point: ApartmentCoordinates | null) {
+  if (!validApartmentLocation(point)) throw new Error("Invalid coordinates");
+  const updated = await db.guestApartments.update(id, {
+    latitude: point?.lat ?? null, longitude: point?.lng ?? null, updatedAt: Date.now(),
+  });
+  if (!updated) throw new Error("Apartment not found");
+  return { success: true };
 }
 
 export async function clearGuestApartments(ids: string[]): Promise<void> {

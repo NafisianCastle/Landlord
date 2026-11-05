@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPush } from "@/lib/webPush";
+import { sendFcm, leasePropertyPath } from "@/lib/fcm";
+import { remindersConfigured } from "@/lib/pushConfig";
 
 const bdt = new Intl.NumberFormat("en-BD", {
   style: "currency",
@@ -10,12 +12,21 @@ const bdt = new Intl.NumberFormat("en-BD", {
 
 // Vercel Cron (see vercel.json) hits this daily. Reminds once per payment row:
 // anything unpaid, due within the next 3 days or already overdue, that hasn't
-// been reminded yet. No SMS/email gateway configured, so push is the only
-// channel — reaches the landlord's own devices, not the tenant.
+// been reminded yet. No SMS/email gateway configured, so push (browser and
+// the mobile app's FCM) is the only channel — reaches the landlord's own
+// devices, not the tenant.
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const cronSecret = process.env.CRON_SECRET?.trim();
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!remindersConfigured()) {
+    return NextResponse.json(
+      { error: "Push notifications are not configured" },
+      { status: 503 },
+    );
   }
 
   const admin = createAdminClient();
@@ -40,39 +51,58 @@ export async function GET(request: Request) {
   }
 
   const userIds = [...new Set(duePayments.map((p) => p.user_id))];
-  const { data: subscriptions } = await admin
-    .from("push_subscriptions")
-    .select("user_id, endpoint, p256dh, auth")
-    .in("user_id", userIds);
+  const [{ data: subscriptions }, { data: deviceTokens }] = await Promise.all([
+    admin
+      .from("push_subscriptions")
+      .select("user_id, endpoint, p256dh, auth")
+      .in("user_id", userIds),
+    admin.from("device_push_tokens").select("user_id, token").in("user_id", userIds),
+  ]);
 
   const subsByUser = new Map<string, typeof subscriptions>();
   for (const sub of subscriptions ?? []) {
     subsByUser.set(sub.user_id, [...(subsByUser.get(sub.user_id) ?? []), sub]);
   }
+  const tokensByUser = new Map<string, string[]>();
+  for (const row of deviceTokens ?? []) {
+    tokensByUser.set(row.user_id, [...(tokensByUser.get(row.user_id) ?? []), row.token]);
+  }
 
   let sent = 0;
   const remindedIds: string[] = [];
   const expiredEndpoints: string[] = [];
+  const expiredTokens: string[] = [];
   const today = new Date().toISOString().slice(0, 10);
 
   for (const payment of duePayments) {
-    const userSubs = subsByUser.get(payment.user_id);
-    if (!userSubs || userSubs.length === 0) continue;
+    const userSubs = subsByUser.get(payment.user_id) ?? [];
+    const userTokens = tokensByUser.get(payment.user_id) ?? [];
+    if (userSubs.length === 0 && userTokens.length === 0) continue;
 
-    const lease = Array.isArray(payment.leases) ? payment.leases[0] : payment.leases;
+    const lease = Array.isArray(payment.leases)
+      ? payment.leases[0]
+      : payment.leases;
     const overdue = payment.due_date < today;
     const title = overdue ? "Rent overdue" : "Rent due soon";
     const body = `${lease?.tenant_name ?? "Tenant"} · ${bdt.format(payment.amount)} · due ${payment.due_date}`;
 
-    const results = await Promise.all(
-      userSubs.map((sub) => sendPush(sub, { title, body, url: "/leases" })),
-    );
-    if (results.some((r) => !r.expired)) {
+    const [results, fcmResults] = await Promise.all([
+      Promise.all(userSubs.map((sub) => sendPush(sub, { title, body, url: "/leases" }))),
+      Promise.all(
+        userTokens.map((token) =>
+          sendFcm(token, { title, body, url: leasePropertyPath(lease) }),
+        ),
+      ),
+    ]);
+    if ([...results, ...fcmResults].some((r) => r.sent)) {
       sent += 1;
       remindedIds.push(payment.id);
     }
     for (const r of results) {
       if (r.expired) expiredEndpoints.push(r.endpoint);
+    }
+    for (const r of fcmResults) {
+      if (r.expired) expiredTokens.push(r.token);
     }
   }
 
@@ -83,8 +113,17 @@ export async function GET(request: Request) {
       .in("id", remindedIds);
   }
   if (expiredEndpoints.length > 0) {
-    await admin.from("push_subscriptions").delete().in("endpoint", expiredEndpoints);
+    await admin
+      .from("push_subscriptions")
+      .delete()
+      .in("endpoint", expiredEndpoints);
+  }
+  if (expiredTokens.length > 0) {
+    await admin.from("device_push_tokens").delete().in("token", expiredTokens);
   }
 
-  return NextResponse.json({ sent, expiredSubscriptionsRemoved: expiredEndpoints.length });
+  return NextResponse.json({
+    sent,
+    expiredSubscriptionsRemoved: expiredEndpoints.length + expiredTokens.length,
+  });
 }

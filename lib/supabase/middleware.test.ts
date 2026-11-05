@@ -21,6 +21,29 @@ function makeRequest(pathname: string) {
 }
 
 describe("updateSession", () => {
+  it("lets only the exact cron handlers perform their own bearer authentication", async () => {
+    getUserMock.mockResolvedValue({ data: { user: null } });
+    const { updateSession } = await import("./middleware");
+    for (const path of ["/api/cron/rent-reminders", "/api/cron/lease-expiry", "/api/cron/bill-reminders"]) {
+      expect((await updateSession(makeRequest(path))).status).toBe(200);
+    }
+    expect(createServerClientMock).not.toHaveBeenCalled();
+    expect(
+      (await updateSession(makeRequest("/api/cron/rent-reminders/extra")))
+        .status,
+    ).toBe(307);
+  });
+
+  it("lets /api/admin routes authenticate their own bearer token", async () => {
+    getUserMock.mockResolvedValue({ data: { user: null } });
+    const { updateSession } = await import("./middleware");
+    expect((await updateSession(makeRequest("/api/admin/users"))).status).toBe(200);
+    expect(createServerClientMock).not.toHaveBeenCalled();
+    // Only the /api/admin/ prefix, not lookalikes.
+    expect((await updateSession(makeRequest("/api/administrator"))).status).toBe(307);
+    expect((await updateSession(makeRequest("/admin/users"))).status).toBe(307);
+  });
+
   it("redirects to /login when there is no session and the path is private", async () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     const { updateSession } = await import("./middleware");
@@ -32,7 +55,12 @@ describe("updateSession", () => {
   it("does not redirect an unauthenticated request to a public path", async () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     const { updateSession } = await import("./middleware");
-    for (const path of ["/login", "/signup", "/auth/callback", "/api/payments"]) {
+    for (const path of [
+      "/login",
+      "/signup",
+      "/auth/callback",
+      "/api/payments",
+    ]) {
       const res = await updateSession(makeRequest(path));
       expect(res.status).not.toBe(307);
     }
@@ -41,7 +69,13 @@ describe("updateSession", () => {
   it("lets an unauthenticated visitor use guest-mode paths (/, /dashboard, /plots)", async () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     const { updateSession } = await import("./middleware");
-    for (const path of ["/", "/dashboard", "/plots", "/plots/new", "/plots/abc"]) {
+    for (const path of [
+      "/",
+      "/dashboard",
+      "/plots",
+      "/plots/new",
+      "/plots/abc",
+    ]) {
       const res = await updateSession(makeRequest(path));
       expect(res.status).not.toBe(307);
     }
@@ -76,7 +110,9 @@ describe("updateSession", () => {
         getUser: async () => {
           // Simulate @supabase/ssr refreshing the session mid-request, which
           // triggers this cookie callback before getUser() resolves.
-          cookies.setAll([{ name: "sb-token", value: "refreshed", options: { path: "/" } }]);
+          cookies.setAll([
+            { name: "sb-token", value: "refreshed", options: { path: "/" } },
+          ]);
           return { data: { user: { id: "u1" } } };
         },
       },

@@ -28,7 +28,7 @@ vi.mock("@/lib/crypto/encryption", () => ({
   toPgBytea: (bytes: Uint8Array) => `\\x${Buffer.from(bytes).toString("hex")}`,
 }));
 
-function makePdf(name = "deed.pdf", content = "pdf-bytes") {
+function makePdf(name = "deed.pdf", content = "%PDF-1.7\nbody\n%%EOF") {
   return new File([content], name, { type: "application/pdf" });
 }
 
@@ -72,7 +72,7 @@ describe("DocumentUploader — plaintext (no session unlocked)", () => {
     render(<DocumentUploader plotId="p1" />);
     const fileInput = document.querySelector('input[name="file"]') as HTMLInputElement;
     // 2 MiB file so the displayed size is a clean, non-zero number.
-    await userEvent.upload(fileInput, makePdf("big.pdf", "x".repeat(2 * 1024 * 1024)));
+    await userEvent.upload(fileInput, makePdf("big.pdf", "%PDF-1.7\n" + "x".repeat(2 * 1024 * 1024 - 14) + "%%EOF"));
     submitForm();
 
     expect(await screen.findByText("Uploading 2.0 MB...")).toBeInTheDocument();

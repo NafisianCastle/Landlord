@@ -50,7 +50,12 @@ function fd(fields: Record<string, unknown>) {
 }
 
 function pdfFile(name = "deed.pdf", size = 1024, type = "application/pdf") {
-  return new File([new Uint8Array(size)], name, { type });
+  const bytes = new Uint8Array(size);
+  if (size >= 16) {
+    bytes.set(new TextEncoder().encode("%PDF-1.7"));
+    bytes.set(new TextEncoder().encode("%%EOF"), size - 5);
+  }
+  return new File([bytes], name, { type });
 }
 
 beforeEach(() => {
@@ -66,28 +71,28 @@ describe("uploadDocument", () => {
   it("returns an error when not signed in", async () => {
     getUserWithAccessMock.mockResolvedValue(null);
     const { uploadDocument } = await import("./documents");
-    const result = await uploadDocument("p1", null, fd({ file: pdfFile() }));
+    const result = await uploadDocument("11111111-1111-4111-8111-111111111111", null, fd({ file: pdfFile() }));
     expect(result).toEqual({ error: "Not signed in" });
   });
 
   it("returns an upgrade-prompt error when access has lapsed", async () => {
     getUserWithAccessMock.mockResolvedValue({ user: { id: "u1" }, hasAccess: false });
     const { uploadDocument } = await import("./documents");
-    const result = await uploadDocument("p1", null, fd({ file: pdfFile() }));
+    const result = await uploadDocument("11111111-1111-4111-8111-111111111111", null, fd({ file: pdfFile() }));
     expect(result).toEqual({ error: "Your trial has ended — please upgrade to continue." });
   });
 
   it("rejects when no file is chosen", async () => {
     getUserWithAccessMock.mockResolvedValue({ user: { id: "u1" }, hasAccess: true });
     const { uploadDocument } = await import("./documents");
-    const result = await uploadDocument("p1", null, new FormData());
+    const result = await uploadDocument("11111111-1111-4111-8111-111111111111", null, new FormData());
     expect(result).toEqual({ error: "Choose a PDF file" });
   });
 
   it("rejects a zero-byte file", async () => {
     getUserWithAccessMock.mockResolvedValue({ user: { id: "u1" }, hasAccess: true });
     const { uploadDocument } = await import("./documents");
-    const result = await uploadDocument("p1", null, fd({ file: pdfFile("deed.pdf", 0) }));
+    const result = await uploadDocument("11111111-1111-4111-8111-111111111111", null, fd({ file: pdfFile("deed.pdf", 0) }));
     expect(result).toEqual({ error: "Choose a PDF file" });
   });
 
@@ -95,7 +100,7 @@ describe("uploadDocument", () => {
     getUserWithAccessMock.mockResolvedValue({ user: { id: "u1" }, hasAccess: true });
     const { uploadDocument } = await import("./documents");
     const result = await uploadDocument(
-      "p1",
+      "11111111-1111-4111-8111-111111111111",
       null,
       fd({ file: pdfFile("deed.pdf", 20 * 1024 * 1024 + 1) }),
     );
@@ -106,7 +111,7 @@ describe("uploadDocument", () => {
     getUserWithAccessMock.mockResolvedValue({ user: { id: "u1" }, hasAccess: true });
     const { uploadDocument } = await import("./documents");
     const result = await uploadDocument(
-      "p1",
+      "11111111-1111-4111-8111-111111111111",
       null,
       fd({ file: pdfFile("deed.pdf", 20 * 1024 * 1024) }),
     );
@@ -117,22 +122,22 @@ describe("uploadDocument", () => {
     getUserWithAccessMock.mockResolvedValue({ user: { id: "u1" }, hasAccess: true });
     const { uploadDocument } = await import("./documents");
     const result = await uploadDocument(
-      "p1",
+      "11111111-1111-4111-8111-111111111111",
       null,
       fd({ file: pdfFile("deed.png", 100, "image/png") }),
     );
     expect(result).toEqual({ error: "Only PDF files are supported" });
   });
 
-  it("skips the mime check for encrypted uploads (opaque ciphertext)", async () => {
+  it("accepts encrypted uploads with a valid IV and opaque content type", async () => {
     getUserWithAccessMock.mockResolvedValue({ user: { id: "u1" }, hasAccess: true });
     const { uploadDocument } = await import("./documents");
     const result = await uploadDocument(
-      "p1",
+      "11111111-1111-4111-8111-111111111111",
       null,
       fd({
         file: pdfFile("deed.bin", 100, "application/octet-stream"),
-        encryptionIvHex: "abcd",
+        encryptionIvHex: "\\x" + "ab".repeat(12),
         originalFileName: "deed.pdf",
       }),
     );
@@ -143,7 +148,7 @@ describe("uploadDocument", () => {
     getUserWithAccessMock.mockResolvedValue({ user: { id: "u1" }, hasAccess: true });
     uploadMock.mockResolvedValue({ error: { message: "storage full" } });
     const { uploadDocument } = await import("./documents");
-    const result = await uploadDocument("p1", null, fd({ file: pdfFile() }));
+    const result = await uploadDocument("11111111-1111-4111-8111-111111111111", null, fd({ file: pdfFile() }));
     expect(result).toEqual({ error: "storage full" });
     expect(fromMock).not.toHaveBeenCalled();
   });
@@ -152,7 +157,7 @@ describe("uploadDocument", () => {
     getUserWithAccessMock.mockResolvedValue({ user: { id: "u1" }, hasAccess: true });
     insertResult = { error: { message: "insert failed" } };
     const { uploadDocument } = await import("./documents");
-    const result = await uploadDocument("p1", null, fd({ file: pdfFile() }));
+    const result = await uploadDocument("11111111-1111-4111-8111-111111111111", null, fd({ file: pdfFile() }));
     expect(result).toEqual({ error: "insert failed" });
     expect(removeMock).toHaveBeenCalled();
   });
@@ -160,8 +165,8 @@ describe("uploadDocument", () => {
   it("revalidates the plot page and returns success on a clean upload", async () => {
     getUserWithAccessMock.mockResolvedValue({ user: { id: "u1" }, hasAccess: true });
     const { uploadDocument } = await import("./documents");
-    const result = await uploadDocument("p1", null, fd({ file: pdfFile() }));
-    expect(revalidatePathMock).toHaveBeenCalledWith("/plots/p1");
+    const result = await uploadDocument("11111111-1111-4111-8111-111111111111", null, fd({ file: pdfFile() }));
+    expect(revalidatePathMock).toHaveBeenCalledWith("/plots/11111111-1111-4111-8111-111111111111");
     expect(result).toEqual({ success: true });
   });
 });
@@ -170,7 +175,7 @@ describe("deleteDocument", () => {
   it("throws when there is no authenticated user", async () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     const { deleteDocument } = await import("./documents");
-    await expect(deleteDocument("p1", "d1", "u1/p1/x.pdf")).rejects.toThrow("Not signed in");
+    await expect(deleteDocument("11111111-1111-4111-8111-111111111111", "d1", "u1/11111111-1111-4111-8111-111111111111/x.pdf")).rejects.toThrow("Not signed in");
     expect(removeMock).not.toHaveBeenCalled();
   });
 
@@ -178,7 +183,7 @@ describe("deleteDocument", () => {
     getUserMock.mockResolvedValue({ data: { user: { id: "u1" } } });
     selectSingleResult = { data: null, error: null };
     const { deleteDocument } = await import("./documents");
-    await expect(deleteDocument("p1", "d1", "u1/p1/x.pdf")).rejects.toThrow(
+    await expect(deleteDocument("11111111-1111-4111-8111-111111111111", "d1", "u1/11111111-1111-4111-8111-111111111111/x.pdf")).rejects.toThrow(
       "Document not found",
     );
     expect(removeMock).not.toHaveBeenCalled();
@@ -188,7 +193,7 @@ describe("deleteDocument", () => {
     getUserMock.mockResolvedValue({ data: { user: { id: "u1" } } });
     selectSingleResult = { data: null, error: null };
     const { deleteDocument } = await import("./documents");
-    await expect(deleteDocument("p1", "d1", "u1/p1/x.pdf")).rejects.toThrow(
+    await expect(deleteDocument("11111111-1111-4111-8111-111111111111", "d1", "u1/11111111-1111-4111-8111-111111111111/x.pdf")).rejects.toThrow(
       "Document not found",
     );
     expect(removeMock).not.toHaveBeenCalled();
@@ -197,10 +202,10 @@ describe("deleteDocument", () => {
   it("throws when the storage path does not match (tampered client call)", async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: "u1" } } });
     selectSingleResult = {
-      data: { id: "d1", storage_path: "u1/p1/other.pdf" },
+      data: { id: "d1", storage_path: "u1/11111111-1111-4111-8111-111111111111/other.pdf" },
     };
     const { deleteDocument } = await import("./documents");
-    await expect(deleteDocument("p1", "d1", "u1/p1/x.pdf")).rejects.toThrow(
+    await expect(deleteDocument("11111111-1111-4111-8111-111111111111", "d1", "u1/11111111-1111-4111-8111-111111111111/x.pdf")).rejects.toThrow(
       "Document not found",
     );
     expect(removeMock).not.toHaveBeenCalled();
@@ -209,12 +214,12 @@ describe("deleteDocument", () => {
   it("removes storage, deletes the row, and revalidates when everything matches (owner or editor-collaborator — enforced by RLS, not app code)", async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: "u1" } } });
     selectSingleResult = {
-      data: { id: "d1", storage_path: "u1/p1/x.pdf" },
+      data: { id: "d1", storage_path: "u1/11111111-1111-4111-8111-111111111111/x.pdf" },
     };
     const { deleteDocument } = await import("./documents");
-    await deleteDocument("p1", "d1", "u1/p1/x.pdf");
-    expect(removeMock).toHaveBeenCalledWith(["u1/p1/x.pdf"]);
-    expect(revalidatePathMock).toHaveBeenCalledWith("/plots/p1");
+    await deleteDocument("11111111-1111-4111-8111-111111111111", "d1", "u1/11111111-1111-4111-8111-111111111111/x.pdf");
+    expect(removeMock).toHaveBeenCalledWith(["u1/11111111-1111-4111-8111-111111111111/x.pdf"]);
+    expect(revalidatePathMock).toHaveBeenCalledWith("/plots/11111111-1111-4111-8111-111111111111");
   });
 });
 
@@ -222,7 +227,7 @@ describe("getDocumentPreviewUrl", () => {
   it("returns the error message when signing fails", async () => {
     createSignedUrlMock.mockResolvedValue({ data: null, error: { message: "not found" } });
     const { getDocumentPreviewUrl } = await import("./documents");
-    const result = await getDocumentPreviewUrl("u1/p1/x.pdf");
+    const result = await getDocumentPreviewUrl("u1/11111111-1111-4111-8111-111111111111/x.pdf");
     expect(result).toEqual({ error: "not found" });
   });
 
@@ -232,8 +237,8 @@ describe("getDocumentPreviewUrl", () => {
       error: null,
     });
     const { getDocumentPreviewUrl } = await import("./documents");
-    const result = await getDocumentPreviewUrl("u1/p1/x.pdf");
+    const result = await getDocumentPreviewUrl("u1/11111111-1111-4111-8111-111111111111/x.pdf");
     expect(result).toEqual({ url: "https://signed/x.pdf" });
-    expect(createSignedUrlMock).toHaveBeenCalledWith("u1/p1/x.pdf", 60);
+    expect(createSignedUrlMock).toHaveBeenCalledWith("u1/11111111-1111-4111-8111-111111111111/x.pdf", 60);
   });
 });

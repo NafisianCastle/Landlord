@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { executeBkashPayment } from "@/lib/bkash";
+import { recordCouponRedemption } from "@/lib/coupons";
 
 // bKash redirects the user's browser here (GET) after checkout with
 // ?paymentID=...&status=success|failure|cancel. The status query param is
@@ -19,7 +20,7 @@ export async function GET(request: Request) {
   const admin = createAdminClient();
   const { data: txn } = await admin
     .from("payment_transactions")
-    .select("tran_id, user_id, amount, status")
+    .select("tran_id, user_id, amount, status, coupon_code")
     .eq("bkash_payment_id", paymentID)
     .single();
 
@@ -82,6 +83,15 @@ export async function GET(request: Request) {
     },
     { onConflict: "user_id" },
   );
+
+  if (txn.coupon_code) {
+    const { data: coupon } = await admin
+      .from("referral_coupons")
+      .select("id")
+      .eq("code", txn.coupon_code)
+      .single();
+    if (coupon) await recordCouponRedemption(coupon.id, txn.user_id, txn.tran_id);
+  }
 
   return NextResponse.redirect(new URL("/dashboard?payment=processing", origin));
 }

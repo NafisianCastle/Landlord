@@ -71,4 +71,19 @@ describe("StatsCards", () => {
     expect(screen.getAllByText("0")).toHaveLength(2);
     expect(screen.getByText("0.00 decimal")).toBeInTheDocument();
   });
+
+  it("links each card to the page behind it", () => {
+    render(
+      <StatsCards
+        plotCount={2}
+        totalAreaSqMeters={0}
+        totalPurchasePrice={0}
+        totalCurrentValue={0}
+        documentCount={0}
+        apartmentCount={1}
+      />,
+    );
+    const hrefs = screen.getAllByRole("link").map((a) => a.getAttribute("href"));
+    expect(hrefs).toEqual(["/plots", "/apartments", "/plots", "/analytics", "/analytics", "/plots"]);
+  });
 });

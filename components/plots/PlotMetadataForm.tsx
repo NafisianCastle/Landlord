@@ -4,7 +4,10 @@ import { useActionState, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Autocomplete } from "@/components/ui/autocomplete";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { unitOptions } from "@/lib/units";
 import { Textarea } from "@/components/ui/textarea";
 import { encryptJSON, decryptJSON, toPgBytea, fromPgBytea } from "@/lib/crypto/encryption";
 import { getSessionDEK, onSessionChange } from "@/lib/crypto/session";
@@ -28,7 +31,7 @@ const EMPTY_SENSITIVE: SensitiveValues = {
   notes: "",
 };
 
-const AREA_UNITS = ["decimal", "katha", "bigha", "acre", "sqft", "sqmeter"] as const;
+const AREA_UNITS = ["decimal", "katha", "bigha", "acre", "sqft", "sqmeter"];
 
 export interface PlotMetadataValues {
   name?: string;
@@ -90,38 +93,43 @@ export default function PlotMetadataForm({
         )
       : UPAZILAS;
 
-  // Selecting a lower level (upazila) fills in its parents (district, division).
-  useEffect(() => {
-    if (!upazilaMatch) return;
-    const parentDistrict = DISTRICTS.find((d) => d.id === upazilaMatch.districtId);
-    if (parentDistrict && byName(parentDistrict.name) !== byName(districtName)) {
-      setDistrictName(parentDistrict.name);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [upazilaName]);
-
-  // Selecting a district fills in its division, and clears an upazila that no longer belongs to it.
-  useEffect(() => {
-    if (!districtMatch) return;
-    const parentDivision = DIVISIONS.find((d) => d.id === districtMatch.divisionId);
-    if (parentDivision && byName(parentDivision.name) !== byName(divisionName)) {
-      setDivisionName(parentDivision.name);
-    }
-    if (upazilaMatch && upazilaMatch.districtId !== districtMatch.id) {
-      setUpazilaName("");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [districtName]);
-
-  // Selecting a division clears a district (and upazila) that no longer belongs to it.
-  useEffect(() => {
-    if (!divisionMatch) return;
-    if (districtMatch && districtMatch.divisionId !== divisionMatch.id) {
+  // Selecting a lower level fills in its parents; selecting a higher level clears
+  // lower levels that no longer belong to it.
+  function selectDivision(name: string) {
+    setDivisionName(name);
+    const division = DIVISIONS.find((d) => byName(d.name) === byName(name));
+    if (division && districtMatch && districtMatch.divisionId !== division.id) {
       setDistrictName("");
       setUpazilaName("");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [divisionName]);
+  }
+
+  function selectDistrict(name: string) {
+    setDistrictName(name);
+    const district = DISTRICTS.find((d) => byName(d.name) === byName(name));
+    if (!district) return;
+    const parentDivision = DIVISIONS.find((d) => d.id === district.divisionId);
+    if (parentDivision && byName(parentDivision.name) !== byName(divisionName)) {
+      setDivisionName(parentDivision.name);
+    }
+    if (upazilaMatch && upazilaMatch.districtId !== district.id) {
+      setUpazilaName("");
+    }
+  }
+
+  function selectUpazila(name: string) {
+    setUpazilaName(name);
+    const upazila = UPAZILAS.find((u) => byName(u.name) === byName(name));
+    if (!upazila) return;
+    const parentDistrict = DISTRICTS.find((d) => d.id === upazila.districtId);
+    if (parentDistrict && byName(parentDistrict.name) !== byName(districtName)) {
+      setDistrictName(parentDistrict.name);
+      const parentDivision = DIVISIONS.find((d) => d.id === parentDistrict.divisionId);
+      if (parentDivision && byName(parentDivision.name) !== byName(divisionName)) {
+        setDivisionName(parentDivision.name);
+      }
+    }
+  }
 
   useEffect(() => onSessionChange(() => setUnlocked(getSessionDEK() !== null)), []);
 
@@ -197,54 +205,36 @@ export default function PlotMetadataForm({
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="division">{t("division")}</Label>
-          <Input
+          <Autocomplete
             id="division"
             name="division"
-            list="division-options"
-            autoComplete="off"
             placeholder={t("selectDivision")}
             value={divisionName}
-            onChange={(e) => setDivisionName(e.target.value)}
+            onValueChange={selectDivision}
+            options={DIVISIONS.map(item => item.name)}
           />
-          <datalist id="division-options">
-            {DIVISIONS.map((d) => (
-              <option key={d.id} value={d.name} />
-            ))}
-          </datalist>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="district">{t("district")}</Label>
-          <Input
+          <Autocomplete
             id="district"
             name="district"
-            list="district-options"
-            autoComplete="off"
             placeholder={t("selectDistrict")}
             value={districtName}
-            onChange={(e) => setDistrictName(e.target.value)}
+            onValueChange={selectDistrict}
+            options={districtOptions.map(item => item.name)}
           />
-          <datalist id="district-options">
-            {districtOptions.map((d) => (
-              <option key={d.id} value={d.name} />
-            ))}
-          </datalist>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="upazila">{t("upazila")}</Label>
-          <Input
+          <Autocomplete
             id="upazila"
             name="upazila"
-            list="upazila-options"
-            autoComplete="off"
             placeholder={t("selectUpazila")}
             value={upazilaName}
-            onChange={(e) => setUpazilaName(e.target.value)}
+            onValueChange={selectUpazila}
+            options={upazilaOptions.map(item => item.name)}
           />
-          <datalist id="upazila-options">
-            {upazilaOptions.map((u) => (
-              <option key={u.id} value={u.name} />
-            ))}
-          </datalist>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -260,18 +250,19 @@ export default function PlotMetadataForm({
               defaultValue={initial?.dolilArea ?? ""}
               className="flex-1"
             />
-            <select
+            <Select
               id="dolilAreaUnit"
+              aria-label={t("dolilAreaUnit")}
+              className="w-28 shrink-0"
               name="dolilAreaUnit"
               defaultValue={initial?.dolilAreaUnit ?? "decimal"}
-              className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm"
             >
-              {AREA_UNITS.map((unit) => (
+              {unitOptions(AREA_UNITS, initial?.dolilAreaUnit).map((unit) => (
                 <option key={unit} value={unit}>
                   {unit}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <p className="text-xs text-muted-foreground">{t("dolilAreaHint")}</p>
         </div>
@@ -287,18 +278,19 @@ export default function PlotMetadataForm({
               defaultValue={initial?.actualArea ?? ""}
               className="flex-1"
             />
-            <select
+            <Select
               id="actualAreaUnit"
+              aria-label={t("actualAreaUnit")}
+              className="w-28 shrink-0"
               name="actualAreaUnit"
               defaultValue={initial?.actualAreaUnit ?? "decimal"}
-              className="h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm"
             >
-              {AREA_UNITS.map((unit) => (
+              {unitOptions(AREA_UNITS, initial?.actualAreaUnit).map((unit) => (
                 <option key={unit} value={unit}>
                   {unit}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <p className="text-xs text-muted-foreground">{t("actualAreaHint")}</p>
         </div>
