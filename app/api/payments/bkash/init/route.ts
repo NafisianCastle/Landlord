@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isDemoAccount } from "@/lib/demo";
 import { createBkashPayment } from "@/lib/bkash";
 import { getAppSettings } from "@/lib/settings";
 import { validateCoupon } from "@/lib/coupons";
@@ -14,6 +15,11 @@ export async function POST(request: Request) {
 
   if (!user) {
     return NextResponse.redirect(new URL("/login", origin));
+  }
+  // The demo has lifetime access already; never start a real payment for it
+  // (the transaction row is written with the service role, past the demo guard).
+  if (await isDemoAccount(supabase, user.id)) {
+    return NextResponse.redirect(new URL("/dashboard", origin));
   }
 
   const formData = await request.formData();

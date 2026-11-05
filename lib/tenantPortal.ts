@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { DEMO_READ_ONLY, isDemoAccount } from "@/lib/demo";
 import { SITE_URL } from "@/lib/site";
 import { UUID } from "@/lib/validation/forms";
 import type { ApartmentBill } from "@/lib/bills";
@@ -14,6 +15,8 @@ function hashToken(token: string) {
 export async function createTenantPortalLinkForOwner(ownerId: string, tenantShareId: string) {
   if (!UUID.test(ownerId) || !UUID.test(tenantShareId)) return { error: "Invalid tenant." };
   const admin = createAdminClient();
+  // Service-role writes bypass the database's demo guard, so check here.
+  if (await isDemoAccount(admin, ownerId)) return { error: DEMO_READ_ONLY };
   const { data: share, error: shareError } = await admin
     .from("apartment_tenants")
     .select("id")
@@ -46,6 +49,7 @@ export async function createTenantPortalLinkForOwner(ownerId: string, tenantShar
 export async function revokeTenantPortalLinksForOwner(ownerId: string, tenantShareId: string) {
   if (!UUID.test(ownerId) || !UUID.test(tenantShareId)) return { error: "Invalid tenant." };
   const admin = createAdminClient();
+  if (await isDemoAccount(admin, ownerId)) return { error: DEMO_READ_ONLY };
   const { data: share } = await admin.from("apartment_tenants").select("id")
     .eq("id", tenantShareId).eq("owner_id", ownerId).maybeSingle();
   if (!share) return { error: "Tenant not found." };

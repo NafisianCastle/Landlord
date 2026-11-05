@@ -125,6 +125,48 @@
 .secondaryButton:hover {
   background: var(--subtle);
 }
+/* The demo CTA is a <button> inside a form (it signs in), styled like links. */
+button.button,
+button.secondaryButton,
+button.limeButton {
+  font-family: inherit;
+  cursor: pointer;
+}
+button.secondaryButton:disabled,
+.closingDemo:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+.guestLink {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--quiet);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.guestLink:hover {
+  color: var(--ink);
+}
+.closingActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 20px;
+}
+.closingDemo {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 13px 4px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .hero {
   max-width: 1280px;
   margin: auto;

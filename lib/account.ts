@@ -1,5 +1,6 @@
 import { createClient as createSupabaseClient, type User } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isDemoAccount } from "@/lib/demo";
 
 // Self-service data export and account deletion, shared by the web server
 // actions (app/actions/account.ts) and the /api/account routes the mobile app
@@ -72,6 +73,8 @@ export async function deleteAccount(
   if (!email || confirmation.trim().toLowerCase() !== email.toLowerCase()) {
     return { error: "confirmationMismatch" };
   }
+  // The shared demo account is never deleted by a visitor.
+  if (await isDemoAccount(createAdminClient(), user.id)) return { error: "deleteFailed" };
 
   if (needsPassword(user)) {
     // A throwaway client so verifying doesn't touch the caller's session.

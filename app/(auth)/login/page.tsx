@@ -4,8 +4,9 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { signIn, demoSignIn } from "@/app/actions/auth";
-import { Button } from "@/components/ui/button";
+import { signIn } from "@/app/actions/auth";
+import { Button, buttonVariants } from "@/components/ui/button";
+import DemoSignInButton from "@/components/auth/DemoSignInButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +15,6 @@ import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
 export default function LoginPage() {
   const [state, formAction, pending] = useActionState(signIn, undefined);
-  const [demoState, demoFormAction, demoPending] = useActionState(demoSignIn, undefined);
   const t = useTranslations("LoginPage");
   const errorParam = useSearchParams().get("error");
   const oauthError = errorParam === "oauth";
@@ -23,6 +23,16 @@ export default function LoginPage() {
   return (
     <div className="mx-auto flex w-full max-w-sm flex-col gap-4 p-6">
       <Logo className="mx-auto size-12 rounded-xl" />
+      {process.env.NEXT_PUBLIC_DEMO_LOGIN_ENABLED === "true" && (
+        <div className="flex flex-col gap-2 rounded-lg border border-border bg-secondary/40 p-3 text-center">
+          <p className="text-sm text-muted-foreground">{t("justLooking")}</p>
+          <DemoSignInButton
+            label={t("tryDemo")}
+            pendingLabel={t("openingDemo")}
+            className={buttonVariants({ variant: "outline", className: "w-full" })}
+          />
+        </div>
+      )}
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">{t("title")}</CardTitle>
@@ -75,14 +85,6 @@ export default function LoginPage() {
           {t("signUp")}
         </Link>
       </p>
-      {process.env.NEXT_PUBLIC_DEMO_LOGIN_ENABLED === "true" && (
-        <form action={demoFormAction}>
-          {demoState?.error && <p className="text-sm text-destructive">{demoState.error}</p>}
-          <Button type="submit" variant="outline" className="w-full" disabled={demoPending}>
-            {t("tryDemo")}
-          </Button>
-        </form>
-      )}
     </div>
   );
 }

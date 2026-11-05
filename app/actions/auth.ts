@@ -82,6 +82,13 @@ export async function demoSignIn(_prevState: unknown, _formData: FormData) {
   redirect("/dashboard");
 }
 
+/** From the read-only demo to a real account: sign out of the demo first. */
+export async function leaveDemoForSignup() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/signup");
+}
+
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();

@@ -4,7 +4,7 @@ import BillAlerts from "@/components/bills/BillAlerts";
 import { LogOut } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { User } from "@supabase/supabase-js";
-import { signOut } from "@/app/actions/auth";
+import { leaveDemoForSignup, signOut } from "@/app/actions/auth";
 import Sidebar from "@/components/system/Sidebar";
 import BottomNav from "@/components/system/BottomNav";
 import ThemeToggle from "@/components/system/ThemeToggle";
@@ -15,14 +15,18 @@ import { Button } from "@/components/ui/button";
 export default async function AppShell({
   user,
   showGuestBanner = false,
+  isDemo = false,
   children,
 }: {
   user: User | null;
   showGuestBanner?: boolean;
+  /** Signed in as the shared read-only demo account. */
+  isDemo?: boolean;
   children: React.ReactNode;
 }) {
   const t = await getTranslations("ProtectedLayout");
   const tGuest = await getTranslations("GuestMode");
+  const tDemo = await getTranslations("DemoMode");
 
   return (
     <div className="min-h-screen md:flex">
@@ -71,6 +75,18 @@ export default async function AppShell({
               {tGuest("signUp")}
             </Link>
           </p>
+        )}
+
+        {isDemo && (
+          <form
+            action={leaveDemoForSignup}
+            className="border-b border-warning/40 bg-warning/10 px-4 py-2 text-center text-sm md:px-6"
+          >
+            {tDemo("banner")}{" "}
+            <button type="submit" className="font-medium underline underline-offset-2">
+              {tDemo("createAccount")}
+            </button>
+          </form>
         )}
 
         {user && <Suspense fallback={null}><BillAlerts userId={user.id} /></Suspense>}

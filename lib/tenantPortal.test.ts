@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ from: vi.fn() }));
+const mocks = vi.hoisted(() => ({ from: vi.fn(), isDemo: vi.fn() }));
+vi.mock("@/lib/demo", () => ({ DEMO_READ_ONLY: "read-only demo", isDemoAccount: mocks.isDemo }));
 vi.mock("@/lib/site", () => ({ SITE_URL: "https://example.test" }));
 vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: () => ({ from: mocks.from }),
@@ -13,6 +14,15 @@ const shareId = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.isDemo.mockResolvedValue(false);
+});
+
+describe("tenant portal links from the demo", () => {
+  it("are refused before anything is written", async () => {
+    mocks.isDemo.mockResolvedValue(true);
+    expect(await createTenantPortalLinkForOwner(ownerId, shareId)).toEqual({ error: "read-only demo" });
+    expect(mocks.from).not.toHaveBeenCalled();
+  });
 });
 
 describe("tenant portal link creation", () => {
