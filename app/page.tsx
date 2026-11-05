@@ -351,7 +351,7 @@ export default async function LandingPage() {
             <h2 id="faq-title">{t("faqTitle")}</h2>
           </div>
           <div>
-            {[0, 1, 2, 3].map((index) => (
+            {[0, 1, 2, 3, 4, 5, 6].map((index) => (
               <details className={styles.question} key={index}>
                 <summary>
                   {t(`faq.${index}.question`)}

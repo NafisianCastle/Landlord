@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/crypto/key_vault.dart';
 import '../../core/data/property_kind.dart';
 import '../../core/data/repository.dart';
 import '../../core/l10n.dart';
@@ -38,7 +39,7 @@ class LeasesSection extends ConsumerWidget {
             for (final lease in leases)
               ListTile(
                 leading: const Icon(Icons.person_outline),
-                title: Text(lease['tenant_name'] as String? ?? ''),
+                title: Text(lease['tenant_name'] as String? ?? l.encryptedTenant),
                 subtitle: Text('${formatMoney(context, lease['rent_amount'])} · '
                     '${l.frequencyLabel(lease['frequency'] as String? ?? 'monthly')}'),
                 trailing: Chip(label: Text(l.statusLabel(lease['status'] as String? ?? 'active'))),
@@ -78,11 +79,15 @@ class LeaseDetailScreen extends ConsumerWidget {
     final tenantEmail = (lease?['tenant_email'] as String? ?? '').trim().toLowerCase();
     final leaseStart = lease?['start_date'] as String? ?? '';
     final leaseEnd = lease?['end_date'] as String?;
-    final tenantBills = kind == PropertyKind.apartment && tenantEmail.isNotEmpty
+    // A locked encrypted lease has no readable email, so its bills are the
+    // ones dated within it (an apartment has one tenant at a time).
+    final emailUnknown = lease?['secrets_locked'] == true;
+    final tenantBills = kind == PropertyKind.apartment && (tenantEmail.isNotEmpty || emailUnknown)
         ? allBills
             .where((bill) =>
                 bill['apartment_id'] == propertyId &&
-                (bill['tenant_email'] as String? ?? '').trim().toLowerCase() == tenantEmail &&
+                (emailUnknown ||
+                    (bill['tenant_email'] as String? ?? '').trim().toLowerCase() == tenantEmail) &&
                 (bill['due_date'] as String).compareTo(leaseStart) >= 0 &&
                 (leaseEnd == null || (bill['due_date'] as String).compareTo(leaseEnd) <= 0))
             .toList()
@@ -109,7 +114,9 @@ class LeaseDetailScreen extends ConsumerWidget {
         (kind == PropertyKind.apartment ? billsValue.error ?? proofsValue.error : null);
     return Scaffold(
       appBar: AppBar(
-        title: Text(lease == null ? l.tenantHistory : '${lease['tenant_name']} · ${l.tenantHistory}'),
+        title: Text(lease == null
+            ? l.tenantHistory
+            : '${lease['tenant_name'] ?? l.encryptedTenant} · ${l.tenantHistory}'),
         actions: [
           IconButton(
             tooltip: l.edit,
@@ -151,6 +158,11 @@ class LeaseDetailScreen extends ConsumerWidget {
                       title: Text('${l.startDate} – ${l.endDate}'),
                       subtitle: Text('${lease['start_date']} – ${lease['end_date'] ?? '…'}'),
                     ),
+                    if (lease['secrets_locked'] == true)
+                      ListTile(
+                          dense: true,
+                          leading: const Icon(Icons.lock_outline),
+                          title: Text(l.leaseDetailsLocked)),
                     if (lease['tenant_phone'] != null)
                       ListTile(
                           dense: true,
@@ -344,6 +356,8 @@ class _LeaseFormScreenState extends ConsumerState<LeaseFormScreen> {
       k: TextEditingController()
   };
   String _frequency = 'monthly';
+  // Saving an encrypted lease while the key is locked would wipe its tenant details.
+  bool _locked = false;
 
   @override
   void initState() {
@@ -352,9 +366,10 @@ class _LeaseFormScreenState extends ConsumerState<LeaseFormScreen> {
   }
 
   Future<void> _load() async {
-    final lease = await ref.read(repositoryProvider).lease(widget.leaseId!);
+    final lease = await ref.read(leaseProvider(widget.leaseId!).future);
     if (lease == null || !mounted) return;
     setState(() {
+      _locked = lease['secrets_locked'] == true;
       _c['tenantName']!.text = lease['tenant_name'] as String? ?? '';
       _c['tenantPhone']!.text = lease['tenant_phone'] as String? ?? '';
       _c['tenantEmail']!.text = lease['tenant_email'] as String? ?? '';
@@ -367,7 +382,7 @@ class _LeaseFormScreenState extends ConsumerState<LeaseFormScreen> {
   }
 
   Future<void> _save() async {
-    if (!_form.currentState!.validate()) return;
+    if (_locked || !_form.currentState!.validate()) return;
     final values = {for (final e in _c.entries) e.key: e.value.text, 'frequency': _frequency};
     final error = validateLease(values);
     if (error != null) {
@@ -376,7 +391,8 @@ class _LeaseFormScreenState extends ConsumerState<LeaseFormScreen> {
     }
     await ref
         .read(repositoryProvider)
-        .saveLease(widget.kind, widget.propertyId, widget.leaseId, values);
+        .saveLease(widget.kind, widget.propertyId, widget.leaseId, values,
+            dek: ref.read(keyVaultProvider));
     if (mounted) context.go('/${widget.kind.route}/${widget.propertyId}');
   }
 
@@ -408,26 +424,36 @@ class _LeaseFormScreenState extends ConsumerState<LeaseFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.leaseId == null ? l.addLease : l.editLease),
-        actions: [TextButton(onPressed: _save, child: Text(l.save))],
+        actions: [TextButton(onPressed: _locked ? null : _save, child: Text(l.save))],
       ),
       body: Form(
         key: _form,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            if (_locked)
+              gap(Card(
+                child: ListTile(
+                  leading: const Icon(Icons.lock_outline),
+                  title: Text(l.leaseDetailsLocked),
+                ),
+              )),
             gap(TextFormField(
               controller: _c['tenantName'],
+              enabled: !_locked,
               decoration: InputDecoration(labelText: l.tenantName),
               validator: (v) => requiredField(v) ?? rule('tenantName', v),
             )),
             gap(TextFormField(
               controller: _c['tenantPhone'],
+              enabled: !_locked,
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(labelText: l.tenantPhone),
               validator: (v) => rule('tenantPhone', v),
             )),
             gap(TextFormField(
               controller: _c['tenantEmail'],
+              enabled: !_locked,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 labelText: l.tenantEmail,
@@ -461,6 +487,7 @@ class _LeaseFormScreenState extends ConsumerState<LeaseFormScreen> {
             gap(date('endDate', l.endDate, helper: l.endDateHint)),
             gap(TextFormField(
               controller: _c['notes'],
+              enabled: !_locked,
               maxLines: 3,
               decoration: InputDecoration(labelText: l.field_notes),
               validator: (v) => rule('notes', v),

@@ -88,6 +88,44 @@ export default function MigratePlotsToEncrypted({ userId }: { userId: string }) 
       migrated++;
     }
 
+    // Lease tenant details (name, phone, email, notes), same scheme as LeaseForm.
+    const { data: leases, error: leaseError } = await supabase
+      .from("leases")
+      .select("id, tenant_name, tenant_phone, tenant_email, notes")
+      .eq("user_id", userId)
+      .is("sensitive_encrypted", null);
+    if (leaseError) {
+      setStatus({ state: "error", message: leaseError.message });
+      return;
+    }
+    for (const lease of leases ?? []) {
+      const { ciphertext, iv } = await encryptJSON(
+        {
+          tenantName: lease.tenant_name,
+          tenantPhone: lease.tenant_phone,
+          tenantEmail: lease.tenant_email,
+          notes: lease.notes,
+        },
+        dek,
+      );
+      const { error: updateError } = await supabase
+        .from("leases")
+        .update({
+          sensitive_encrypted: toPgBytea(ciphertext),
+          sensitive_iv: toPgBytea(iv),
+          tenant_name: null,
+          tenant_phone: null,
+          tenant_email: null,
+          notes: null,
+        })
+        .eq("id", lease.id);
+      if (updateError) {
+        setStatus({ state: "error", message: updateError.message });
+        return;
+      }
+      migrated++;
+    }
+
     setStatus({ state: "done", count: migrated });
   }
 

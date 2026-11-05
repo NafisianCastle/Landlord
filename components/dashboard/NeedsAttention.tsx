@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useTenantName } from "@/components/leases/TenantName";
+import type { LeaseSecretSource } from "@/lib/crypto/leaseSecrets";
 
 interface UnwalkedPlot {
   id: string;
@@ -10,7 +12,7 @@ interface UnwalkedPlot {
 
 interface ExpiringLease {
   id: string;
-  tenantName: string;
+  tenant: LeaseSecretSource;
   endDate: string;
   propertyHref: string;
 }
@@ -49,15 +51,23 @@ export default function NeedsAttention({
           </p>
           <ul className="flex flex-col gap-1">
             {expiringLeases.map((lease) => (
-              <li key={lease.id}>
-                <Link href={lease.propertyHref} className="text-sm underline underline-offset-2">
-                  {t("leaseExpiringItem", { tenant: lease.tenantName, date: lease.endDate })}
-                </Link>
-              </li>
+              <ExpiringLeaseItem key={lease.id} lease={lease} />
             ))}
           </ul>
         </div>
       )}
     </div>
+  );
+}
+
+function ExpiringLeaseItem({ lease }: { lease: ExpiringLease }) {
+  const t = useTranslations("NeedsAttention");
+  const tenant = useTenantName(lease.tenant);
+  return (
+    <li>
+      <Link href={lease.propertyHref} className="text-sm underline underline-offset-2">
+        {t("leaseExpiringItem", { tenant, date: lease.endDate })}
+      </Link>
+    </li>
   );
 }

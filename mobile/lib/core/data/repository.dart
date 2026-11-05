@@ -355,18 +355,64 @@ class Repository {
 
   // ---- Leases --------------------------------------------------------------
 
+  /// Tenant details a lease can store encrypted, keyed like the web's
+  /// LeaseSecrets (lib/crypto/leaseSecrets.ts).
+  static const _leaseSecretColumns = {
+    'tenantName': 'tenant_name',
+    'tenantPhone': 'tenant_phone',
+    'tenantEmail': 'tenant_email',
+    'notes': 'notes',
+  };
+
+  /// [lease] with its encrypted tenant details filled in. When they can't be
+  /// read (key locked, or wrong key) they stay null and 'secrets_locked' is set.
+  Future<DbRow> revealLease(DbRow lease, SecretKey? dek) async {
+    final encrypted = lease['sensitive_encrypted'] as String?;
+    if (encrypted == null) return lease;
+    if (dek != null) {
+      try {
+        final secrets = await decryptJSON(
+            fromPgBytea(encrypted), fromPgBytea(lease['sensitive_iv'] as String), dek);
+        return {
+          ...lease,
+          for (final e in _leaseSecretColumns.entries) e.value: secrets[e.key],
+        };
+      } catch (_) {}
+    }
+    return {...lease, 'secrets_locked': true};
+  }
+
+  /// Saves a lease. With the key unlocked ([dek]), the tenant details go into
+  /// one encrypted blob and their plaintext columns are cleared, as on the web.
   Future<void> saveLease(PropertyKind kind, String propertyId, String? leaseId,
-      Map<String, String> values) async {
+      Map<String, String> values, {required SecretKey? dek}) async {
     String? opt(String k) => (values[k]?.trim().isEmpty ?? true) ? null : values[k]!.trim();
-    final payload = {
+    final tenant = <String, dynamic>{
       'tenant_name': values['tenantName']!.trim(),
       'tenant_phone': opt('tenantPhone'),
       'tenant_email': opt('tenantEmail'),
+      'notes': opt('notes'),
+      'sensitive_encrypted': null,
+      'sensitive_iv': null,
+    };
+    if (dek != null) {
+      final sealed = await encryptJSON({
+        'tenantName': tenant['tenant_name'],
+        'tenantPhone': tenant['tenant_phone'],
+        'tenantEmail': (tenant['tenant_email'] as String?)?.toLowerCase(),
+        'notes': tenant['notes'],
+      }, dek);
+      tenant
+        ..updateAll((_, _) => null)
+        ..['sensitive_encrypted'] = toPgBytea(sealed.ciphertext)
+        ..['sensitive_iv'] = toPgBytea(sealed.iv);
+    }
+    final payload = {
+      ...tenant,
       'rent_amount': num.parse(values['rentAmount']!),
       'frequency': values['frequency'] ?? 'monthly',
       'start_date': values['startDate'],
       'end_date': opt('endDate'),
-      'notes': opt('notes'),
     };
     final id = leaseId ?? _uuid.v4();
     final ensurePayments =
@@ -902,5 +948,66 @@ class Repository {
   Future<void> signOut() async {
     await _db.clear();
     await _client.auth.signOut();
+  }
+
+  // ---- Encryption setup and account data (need a connection) ---------------
+
+  /// Stores the wrapped keys from KeyVault.setUp. Goes straight to the server,
+  /// never through the outbox, and only if encryption isn't already on there:
+  /// replacing keys set up on another device would orphan that data.
+  Future<void> enableEncryption(Map<String, dynamic> wrappedKeys) async {
+    final values = {...wrappedKeys, 'encryption_enabled': true};
+    final updated = await _client
+        .from('profiles')
+        .update(values)
+        .eq('id', _userId)
+        .eq('encryption_enabled', false)
+        .select('id');
+    if (updated.isEmpty) {
+      await refresh();
+      throw const ActionException(ActionError.saveFailed);
+    }
+    await _db.upsertRow('profiles', _userId, values);
+    _onChanged();
+  }
+
+  /// Google-only accounts have no password to re-enter before deleting.
+  bool get accountNeedsPassword {
+    final providers = _client.auth.currentUser?.appMetadata['providers'];
+    return providers is! List || providers.isEmpty || providers.contains('email');
+  }
+
+  /// Full JSON export of the user's data from the web app's /api/account.
+  Future<String> exportMyData() async {
+    final res = await _account('GET');
+    if (res.statusCode != 200) throw const ActionException(ActionError.saveFailed);
+    return res.body;
+  }
+
+  /// Deletes the account on the server, then wipes this device. Returns the
+  /// server's error code (confirmationMismatch, passwordIncorrect,
+  /// deleteFailed) instead of throwing when it refuses.
+  Future<String?> deleteAccount(String confirmation, String password) async {
+    final res = await _account('DELETE', {'confirmation': confirmation, 'password': password});
+    if (res.statusCode != 200) {
+      final decoded = jsonDecode(res.body.isEmpty ? '{}' : res.body);
+      return decoded is Map<String, dynamic> && decoded['error'] is String
+          ? decoded['error'] as String
+          : 'deleteFailed';
+    }
+    await _db.clear();
+    await _client.auth.signOut().catchError((_) {});
+    return null;
+  }
+
+  Future<http.Response> _account(String method, [Map<String, String>? body]) async {
+    final token = _client.auth.currentSession?.accessToken;
+    if (Env.webUrl.isEmpty || token == null) throw const ActionException(ActionError.saveFailed);
+    final request = http.Request(
+        method, Uri.parse('${Env.webUrl.replaceAll(RegExp(r'/+$'), '')}/api/account'))
+      ..headers['authorization'] = 'Bearer $token'
+      ..headers['content-type'] = 'application/json';
+    if (body != null) request.body = jsonEncode(body);
+    return http.Response.fromStream(await request.send());
   }
 }

@@ -12,7 +12,7 @@ export async function loadRentOverview() {
   return Promise.all([
     paymentsReady.then(() => supabase.from("lease_payment_stats").select("*").single()),
     paymentsReady.then(() => supabase.from("lease_payments")
-      .select("id, due_date, amount, leases(tenant_name, plot_id, apartment_id, land_plots(name), apartments(name))")
+      .select("id, due_date, amount, leases(tenant_name, sensitive_encrypted, sensitive_iv, plot_id, apartment_id, land_plots(name), apartments(name))")
       .eq("paid", false)
       .lt("due_date", new Date().toISOString().slice(0, 10))
       .order("due_date", { ascending: true })
@@ -28,7 +28,9 @@ export default async function RentOverview({ data }: { data: ReturnType<typeof l
 
   const overduePayments: OverduePaymentItem[] = (overdueRows ?? []).flatMap((row) => {
     const lease = row.leases as unknown as {
-      tenant_name: string;
+      tenant_name: string | null;
+      sensitive_encrypted: string | null;
+      sensitive_iv: string | null;
       plot_id: string | null;
       apartment_id: string | null;
       land_plots: { name: string } | null;
@@ -42,7 +44,7 @@ export default async function RentOverview({ data }: { data: ReturnType<typeof l
         id: row.id,
         dueDate: row.due_date,
         amount: row.amount,
-        tenantName: lease.tenant_name,
+        tenant: { tenant_name: lease.tenant_name, sensitive_encrypted: lease.sensitive_encrypted, sensitive_iv: lease.sensitive_iv },
         propertyName,
         propertyHref,
       },

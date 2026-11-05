@@ -4,8 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/current-user";
 import PageContainer from "@/components/system/PageContainer";
 import PageHeader from "@/components/system/PageHeader";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import TenantName from "@/components/leases/TenantName";
+import ExportRentCsvButton from "@/components/leases/ExportRentCsvButton";
 
 export default async function LeasesPage() {
   const supabase = await createClient();
@@ -28,7 +29,7 @@ export default async function LeasesPage() {
     supabase
       .from("leases")
       .select(
-        "id, tenant_name, rent_amount, frequency, status, plot_id, apartment_id, land_plots(name), apartments(name)",
+        "id, tenant_name, sensitive_encrypted, sensitive_iv, rent_amount, frequency, status, plot_id, apartment_id, land_plots(name), apartments(name)",
       )
       .eq("status", "active")
       .order("created_at", { ascending: false }),
@@ -57,7 +58,7 @@ export default async function LeasesPage() {
     const apartment = lease.apartments as unknown as { name: string } | null;
     return {
       id: lease.id,
-      tenantName: lease.tenant_name,
+      tenant: { tenant_name: lease.tenant_name, sensitive_encrypted: lease.sensitive_encrypted, sensitive_iv: lease.sensitive_iv },
       rentAmount: lease.rent_amount,
       frequency: lease.frequency,
       propertyName: landPlot?.name ?? apartment?.name ?? "",
@@ -71,9 +72,7 @@ export default async function LeasesPage() {
       <PageHeader
         title={t("title")}
         action={
-          <Button asChild variant="outline" size="sm">
-            <a href="/api/reports/lease-payments">{t("exportCsv")}</a>
-          </Button>
+          <ExportRentCsvButton label={t("exportCsv")} />
         }
       />
 
@@ -114,7 +113,7 @@ export default async function LeasesPage() {
             <li key={row.id} className="p-3">
               <Link href={row.propertyHref} className="flex flex-col">
                 <span className="font-medium">
-                  {row.tenantName} · {row.propertyName}
+                  <TenantName lease={row.tenant} /> · {row.propertyName}
                 </span>
                 <span className="text-sm text-muted-foreground">
                   {bdt.format(row.rentAmount)} · {t(`frequency.${row.frequency}`)}

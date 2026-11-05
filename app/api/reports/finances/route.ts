@@ -6,7 +6,7 @@ function csvEscape(value: string) {
   return value;
 }
 
-// RLS scopes this to the caller's own rows, same as the lease-payments report.
+// RLS scopes this to the caller's own rows, same as every other query in the app.
 export async function GET() {
   const supabase = await createClient();
   const {
